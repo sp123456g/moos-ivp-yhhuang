@@ -1,0 +1,51 @@
+ServerHost = localhost
+ServerPost = 9000
+Community = gggg
+
+ProcessConfig = ANTLER
+{
+    
+    Run = MOOSDB        @ NewConsole = false
+    Run = pPointAssign  @ NewConsole = false
+    Run = uXMS          @ NewConsole = true
+    Run = uTimerScript  @ NewConsole = true
+    Run = pGenPath      @ NewConsole = true
+}
+
+ProcessConfig = uXMS
+{
+    AppTick   = 4
+    CommsTick = 4
+    
+    VAR = VISIT_POINT_HENRY,VISIT_POINT_GILDA,VISIT_POINT, POINT_ASSIGN
+    VAR = UPDATES_VAR
+    
+}
+
+ProcessConfig = pPointAssign
+{
+   AppTick   = 4
+   CommsTick = 4
+
+    assign_by_region = false
+    VNAME1 = gilda
+    VNAME2 = henry
+}
+
+ProcessConfig = uTimerScript
+{
+     rand_var    = varname=RAND_X, min=-25 , max=200,key=at_post
+     rand_var    = varname=RAND_Y, min=-175, max=-25,key=at_post
+//     paused    = true 
+     condition   = POINT_ASSIGN = true  
+     event = var = VISIT_POINT, val="firstpoint", time=0
+     event = var = VISIT_POINT, val="x=$[RAND_X], y=$[RAND_Y], id=$[TCOUNT]",    time=0,amt=100
+     event = var = VISIT_POINT, val="lastpoint", time=0
+}
+
+ProcessConfig = pGenPath
+{
+    AppTick   = 4
+    CommsTick = 4
+
+}
