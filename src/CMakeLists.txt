@@ -24,7 +24,7 @@ ADD_SUBDIRECTORY(pPrimeFactorTester)
 ADD_SUBDIRECTORY(pPointAssign)
 ADD_SUBDIRECTORY(pGenPath)
 ADD_SUBDIRECTORY(pGenPath_RePlanning)
-ADD_SUBDIRECTORY(pSpectrogram)
+#ADD_SUBDIRECTORY(pSpectrogram)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################
