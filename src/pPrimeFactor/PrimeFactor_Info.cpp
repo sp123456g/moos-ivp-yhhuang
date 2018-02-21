@@ -20,11 +20,17 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pPrimeFactor application is used for               ");
+  blk("  The pPrimeFactor application is used for calculating the prime list of the input number");
   blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("     This app use three buffer to manage the prime calculation                             ");
+  blk("   Get input to input_string_buff and check if it has been calculated completely or not  ");
+  blk("   if complete, put it into the output buff otherwise put it to not_done_buff,");
+  blk("");
+  blk("     The iterate loop will get the input value and then calculated, if its calculation need to ");
+  blk("   calculate over than prime=50000000000000, it will stop calculat and then throw it to not_done_buff ");
+  blk("   and calculate the next one first, after next one is calculated, recalculate the one didn't done, start calculating");
+  blk("   50000000000001, after calculate, throw the result to the output buff. In the end, get the result from output_buff");
+  blk("   and Notify it as PRIME_RESULT ");
 }
 
 //----------------------------------------------------------------
@@ -92,12 +98,12 @@ void showInterfaceAndExit()
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
-  blk("SUBSCRIPTIONS:                                                  ");
+  blk("SUBSCRIPTIONS: NUM_VALUE                                        ");
   blk("------------------------------------                            ");
   blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
   blk("                 string_val=BAR                                 ");
   blk("                                                                ");
-  blk("PUBLICATIONS:                                                   ");
+  blk("PUBLICATIONS: PRIME_RESULT                                      ");
   blk("------------------------------------                            ");
   blk("  Publications are determined by the node message content.      ");
   blk("                                                                ");

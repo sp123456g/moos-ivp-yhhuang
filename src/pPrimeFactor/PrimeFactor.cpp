@@ -17,15 +17,8 @@ using namespace std;
 
 PrimeFactor::PrimeFactor()
 {
-        m_input_index     = 0;
-        m_calculate_index = 0;
-        m_input_string    = "";
-        m_output_string   = "";
-        
-        m_prime_vector.clear();
-        m_input_string_buffer.clear();
-        m_not_done_buffer.clear();
-        m_output_buffer.clear();
+        m_input_index     = 1;
+        m_calculate_index = 1;
 }
 
 //---------------------------------------------------------
@@ -48,12 +41,22 @@ bool PrimeFactor::OnNewMail(MOOSMSG_LIST &NewMail)
          string key    = msg.GetKey();
 
     if(key=="NUM_VALUE"){
-//     reportEvent("Get " + msg.GetString());
+            string input_prime_str = msg.GetString();    // Get the string value
+            uint64_t input_prime_num = StrToUint64_t(input_prime_str); // str to uint64_t
+
+            Prime_Node input_node;     //delare the node here
+            input_node.mP_orin      = input_prime_str;   // Set up the member of node
+            input_node.mP_recei_ind = m_input_index;
+            input_node.mP_temp      = 1;
+            input_node.mP_prime_list.push_back(input_prime_num);
+            input_node.mP_done      = false;
+            input_node.mP_time      = 0; 
+            m_input_list.push_back(input_node);   // put the node into the buffer
+            m_input_index+=1;    //After put it in, index up 
+            
     
-     //   cout<<m_input_string<<endl;
-   //     m_input_uint64_t = StrToUint64_t(m_input_string);
-        m_input_string_buffer.push_back(msg.GetString());
-        m_input_index+=1;
+//        m_input_string_buffer.push_back(msg.GetString());
+//        m_input_index+=1;
        //        m_result = "";
     }
         
@@ -67,7 +70,7 @@ bool PrimeFactor::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
 
-     if(key == "FOO") 
+     else if(key == "FOO") 
        cout << "great!";
 
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
@@ -86,62 +89,58 @@ uint64_t PrimeFactor::StrToUint64_t(string input){     //string to uint64_t
         return result;
 }
 
-vector<uint64_t> PrimeFactor::PrimeCalculate(uint64_t input){    //prime calculation   put the prime in the return vector,the first element is origin number,if calculation>50000000, the last value willbe putted in the last and calculate next time 
-    
-    vector<uint64_t> vector_prime;
-    vector_prime.push_back(input); 
-    uint64_t i    = 2;
-    bool done = true;
+void PrimeFactor::PrimeCalculate(Prime_Node &input){    
 
-    while(i<=sqrt(input)){
-//        reportEvent("While loop is running!!!!!!!!!");
-        int re = input%i;
+    double time1 = MOOSTime();
+    double time2; 
+    double total_time;
+    bool done=true; 
+    size_t prime_list_size=(input.mP_prime_list).size();
+    uint64_t i;
+    uint64_t Calculate_number;
+    if(prime_list_size>=1){
+             uint64_t temp_now = input.mP_temp;
+             i=temp_now+1;   //Get the prime calculating now if it is 1 start at 2, else start at the number+1
+             Calculate_number = (input.mP_prime_list).back();
+             (input.mP_prime_list).pop_back(); 
+    
+    while(i<=sqrt(Calculate_number)){
+        int re = Calculate_number%i;
             if(re==0){
-                vector_prime.push_back(i);
-                input /= i;
+                (input.mP_prime_list).push_back(i);
+                Calculate_number /= i;
+                                
             }
+            
               else{
-                i++;
-                 if(i>50000000000000){
+                  i++;                  
+                 if(i>temp_now+10000){
+                  input.mP_temp= i;
                   done = false;
                    break;
                  }
               }
     }
-     vector_prime.push_back(input);
-        if(done)
-            vector_prime.push_back(1);//The last element is bool of done or not
-        else
-            vector_prime.push_back(0);
+             (input.mP_prime_list).push_back(Calculate_number);
 
 
-        return vector_prime; //output is (orig|prime|done)
+
+        input.mP_done = done; 
+        time2 = MOOSTime();
+        total_time = time2-time1;
+        input.mP_time += total_time;
+    }
 }
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 
-void PrimeFactor::Done_or_not(vector<uint64_t> input_vector){
-
-    if(input_vector.back()==1){
-      
-        string Notify_result = vector_to_result(input_vector);
-        m_output_buffer.push_back(Notify_result);
-
-        m_calculate_index +=1;
-    }
-
-    else if(input_vector.back()==0){
-        
-        m_not_done_buffer.push_back(input_vector);
-    }
-};
-
-std::string PrimeFactor::vector_to_result(std::vector<uint64_t> input_vector){
+std::string PrimeFactor::Node_to_result(Prime_Node input){
 
     string primelist="";
-    for(int j=1;j<input_vector.size()-1;j++)
+    vector<uint64_t> input_vector = input.mP_prime_list;
+    for(int j=0;j<input_vector.size();j++)
          {
-            if(j!=1)
+            if(j!=0)
                 primelist += ":";
                 
                 std::stringstream a;
@@ -151,53 +150,20 @@ std::string PrimeFactor::vector_to_result(std::vector<uint64_t> input_vector){
                 primelist += prime;
     }
                   
-         std::stringstream org;
-         org<<input_vector[0];
-         string orig = org.str();
-
    string result  ="";
           result +="PRIME_RESULT=\"orig=";
-          result +=orig;
-          result +=",received="; 
-          result += int_to_str(m_input_index);
+          result +=input.mP_orin;
+          result +=",received index="; 
+          result += double_to_str(input.mP_recei_ind);
           result += ",calculated=";
-          result += int_to_str(m_calculate_index);
+          result += double_to_str(input.mP_cal_ind);
+          result += ",solve_time=";
+          result += double_to_str(input.mP_time);
           result += ",primes=";
           result += primelist;
           result += ",username = YH_HUANG";
 
           return result;
-};
-
-void PrimeFactor::re_calculate(std::vector<uint64_t> input){
-
-    uint64_t  i    = 50000000000001;
-    bool      done = true;
-   
-    uint64_t input_value=input[input.size()-2];
-    
-    input.pop_back();
-    input.pop_back();
-    //remove the done and the last value(because the last value may noy be prime)
-    while(i<=sqrt(input_value)){
-//        reportEvent("While loop is running!!!!!!!!!");
-        int re = input_value%i;
-            if(re==0){
-                input.push_back(i);
-                input_value /= i;
-            }
-              else{
-                i++;
-              }
-    }
-     input.push_back(input_value);
-     input.push_back(1);
-      
-     string recalculate_result = vector_to_result(input);
-     m_output_buffer.push_back(recalculate_result);
-     m_calculate_index +=1;
-     
-     m_not_done_buffer.pop_front();
 };
 
 bool PrimeFactor::OnConnectToServer()
@@ -212,57 +178,55 @@ bool PrimeFactor::OnConnectToServer()
 
 bool PrimeFactor::Iterate()
 {
-  AppCastingMOOSApp::Iterate();
+
+    AppCastingMOOSApp::Iterate();
        // Do your thing here!
-//reportEvent("Iterate!!!!!!!!!!!!!!!!!");
+       //
+       if(!m_input_list.empty())
+       {
+           std::list<Prime_Node>::iterator p;
+        for(p=m_input_list.begin(); p!=m_input_list.end();) {   //check out the list, using pointer
+         Prime_Node  pn;    //pn is the prime_node now is going to be calculated
+           pn= *p; 
+           
+           PrimeCalculate(pn); 
 
-  AppCastingMOOSApp::PostReport();
+           if(pn.mP_done){    //Change to result form, Notify and then remove from the list
 
-  if(!m_input_string_buffer.empty()){
-    
-    m_input_string    =  m_input_string_buffer.front();
-    m_input_string_buffer.pop_front();
-    m_input_uint64_t  =  StrToUint64_t(m_input_string);
-  
-        m_prime_vector = PrimeCalculate(m_input_uint64_t);
-        Done_or_not(m_prime_vector);
-        m_prime_vector.clear();
-  if(!m_input_string_buffer.empty()){
-    m_input_string    =  m_input_string_buffer.front();
-    m_input_string_buffer.pop_front();
-    m_input_uint64_t  =  StrToUint64_t(m_input_string);
-  
-        m_prime_vector = PrimeCalculate(m_input_uint64_t);
-        Done_or_not(m_prime_vector);
-        m_prime_vector.clear();
-  
-    if(!m_not_done_buffer.empty())
-      re_calculate(m_not_done_buffer.front());
+              pn.mP_cal_ind=m_calculate_index;
+              m_calculate_index+=1;
+              string output_result;
 
-  //output loop  
-while(!m_output_buffer.empty()){
-    
-        m_output_string = m_output_buffer.front();
-        m_output_buffer.pop_front();
+              
+              
+              output_result = Node_to_result(pn);
+              Notify("PRIME_RESULT",output_result);
+              m_input_list.erase(p++);
+           }
+           else
+               p++;
+        }
+           Notify("SIZE",m_input_list.size()); 
 
-            Notify("PRIME_RESULT",m_output_string);
-            reportEvent("PRIME_RESULT: "+ m_output_string);
-            
-    //        cout<<"Deque size:"<<m_input_string_buffer.size()<<endl;
-}
-}
-}
+         
+       }
+     AppCastingMOOSApp::PostReport();
+
+//  if(!m_input_string_buffer.empty()){  
+   
+// }
+ 
   return(true);
   
 }
 
-string PrimeFactor::int_to_str(int in){
+string PrimeFactor::double_to_str(double in){
 
     stringstream ss;
     ss<<in;
-    string int_str = ss.str();
+    string double_str = ss.str();
 
-    return int_str;
+    return double_str;
 }
 //---------------------------------------------------------
 // Procedure: OnStartUp()
@@ -307,7 +271,7 @@ bool PrimeFactor::OnStartUp()
 void PrimeFactor::registerVariables()
 {
     Register("NUM_VALUE",0);
-    Register("PRIME_RESULT_VALID",0);
+   // Register("PRIME_RESULT_VALID",0);
     AppCastingMOOSApp::RegisterVariables();
   // Register("FOOBAR", 0);
 }
@@ -319,9 +283,9 @@ void PrimeFactor::registerVariables()
 bool PrimeFactor::buildReport() 
 {
   m_msgs << "============================================ \n";
-  m_msgs << "Input  :"         << m_input_string  << "\n";
-  m_msgs << "Input_index:"     << m_input_index   << "\n";
-  m_msgs << "PRIME_RESULT:"    << m_output_string << "\n"; 
+//  m_msgs << "Input  :"         <<m_output<< "\n";
+  m_msgs << "Input_index:"     << "\n";
+  m_msgs << "PRIME_RESULT:"    << "\n"; 
   m_msgs << "============================================ \n";
  // m_msgs << "Result:"          << m_output_result<<endl;
   return(true);

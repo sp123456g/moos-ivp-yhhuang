@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <vector>
 #include <deque>
+#include <list>
 #include <sstream>
 #include <cstdlib>
 
@@ -31,26 +32,32 @@ class PrimeFactor : public AppCastingMOOSApp
    bool buildReport();
    
  protected:
+
+   class Prime_Node
+   {
+    public:
+        std::string           mP_orin;
+        double                mP_recei_ind;
+        double                mP_cal_ind;
+        double                mP_time;
+        std::vector<uint64_t> mP_prime_list;
+        bool                  mP_done;
+        uint64_t              mP_temp;
+   };
+
    void registerVariables();
-   std::string int_to_str(int in);
-   std::vector<uint64_t> PrimeCalculate(uint64_t input);
-   void Done_or_not(std::vector<uint64_t> input_vector);
-   std::string vector_to_result(std::vector<uint64_t> in_vec);
-   void re_calculate(std::vector<uint64_t> input);
+   std::string double_to_str(double in);
+   void PrimeCalculate(Prime_Node &input);
+   std::string Node_to_result(Prime_Node input);
    uint64_t StrToUint64_t(std::string input);
    
  private: // Configuration variables
    
-    uint64_t m_input_uint64_t;
-    int m_input_index;
-    int m_calculate_index;
-    std::string m_input_string;
-    std::vector<uint64_t> m_prime_vector;  //(orig|prime|done)
-    std::deque<std::string> m_input_string_buffer;
-    std::deque< std::vector<uint64_t> > m_not_done_buffer;
-    std::deque<std::string> m_output_buffer;
-    std::string m_output_string;    
  private: // State variables
+    std::list<Prime_Node> m_input_list;
+    double m_input_index;
+    double m_calculate_index;
+    std::string m_output;
 };
 
 #endif 
