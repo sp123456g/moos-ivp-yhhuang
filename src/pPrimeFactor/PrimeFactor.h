@@ -36,6 +36,13 @@ class PrimeFactor : public AppCastingMOOSApp
    class Prime_Node
    {
     public:
+        Prime_Node(){
+            mP_time = 0;
+            mP_done = false;
+            mP_prime_list.clear();
+            mP_temp = 1;
+            
+        };
         std::string           mP_orin;
         double                mP_recei_ind;
         double                mP_cal_ind;
@@ -57,7 +64,7 @@ class PrimeFactor : public AppCastingMOOSApp
     std::list<Prime_Node> m_input_list;
     double m_input_index;
     double m_calculate_index;
-    std::string m_output;
+    std::string m_output_result;
 };
 
 #endif 
