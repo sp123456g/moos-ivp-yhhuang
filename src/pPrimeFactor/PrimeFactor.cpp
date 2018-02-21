@@ -1,8 +1,8 @@
 /************************************************************/
 /*    NAME: YH_Huang                                              */
-/*    ORGN: MIT                                             */
+/*    ORGN: MIT/NTU                                             */
 /*    FILE: PrimeFactor.cpp                                        */
-/*    DATE:                                                 */
+/*    DATE: FEB.21/2018                                                 */
 /************************************************************/
 
 #include <iterator>
@@ -18,7 +18,9 @@ using namespace std;
 PrimeFactor::PrimeFactor()
 {
         m_input_index     = 1;     //Initialize the index to be 1
-        m_calculate_index = 1;     
+        m_calculate_index = 1; 
+        m_output_result   = "";    
+        m_input_list.clear();
 }
 
 //---------------------------------------------------------
@@ -41,11 +43,13 @@ bool PrimeFactor::OnNewMail(MOOSMSG_LIST &NewMail)
          string key    = msg.GetKey();
 
     if(key=="NUM_VALUE"){
+        
             string input_prime_str = msg.GetString();    // Get the string value
             uint64_t input_prime_num = StrToUint64_t(input_prime_str); // str to uint64_t
 
             Prime_Node input_node;     //delare the node here
-            input_node.mP_orin      = input_prime_str;   // Set up the member of node
+            input_node.mP_orin       = input_prime_str;   // Set up the member of node
+            input_node.mP_orin_value = input_prime_num;
             input_node.mP_recei_ind = m_input_index;
             input_node.mP_prime_list.push_back(input_prime_num);
             m_input_list.push_back(input_node);   // put the node into the buffer
@@ -99,6 +103,9 @@ void PrimeFactor::PrimeCalculate(Prime_Node &input){    //Using call by referenc
              (input.mP_prime_list).pop_back();   
     
     while(i<=sqrt(Calculate_number)){      //Must smaller or equal sqrt(calculate_number), if number come with square number, equal will be used
+        
+                
+        
         int re = Calculate_number%i;
             if(re==0){
                 (input.mP_prime_list).push_back(i);    //If the residual equal zero, this is the prime factor
