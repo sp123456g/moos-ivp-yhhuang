@@ -1,25 +1,36 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <stdint.h>
-class Prime_Node
+class PrimeNode
 {
     public:
        
-        Prime_Node(){
-            mP_time = 0;
-            mP_done = false;
-            mP_prime_list.clear();
-            mP_temp = 1;
-            mP_product_num = 1;
-        };
-       
+         PrimeNode();
+        ~PrimeNode(){};
+        
+        void setOrinStr(std::string input);
+        void setReceiInd(double rin);
+        void setCalInd(double cin);
+        void setDone(bool input);
+        void setTemp(uint64_t input);
+
+        std::string     showOrin() const;
+        double          showReceiInd() const;
+        double          showCalInd() const;
+        bool            showDone() const;
+        uint64_t        showTemp() const;
+
+    public:
+
+        double                mP_time;
+        std::vector<uint64_t> mP_prime_list;
+
+    protected:   
+
         std::string           mP_orin;
         double                mP_recei_ind;
         double                mP_cal_ind;
-        double                mP_time;
-        std::vector<uint64_t> mP_prime_list;
         bool                  mP_done;
         uint64_t              mP_temp;  //uint64_t is in the stdint.h
-        uint64_t              mP_orin_value;
-        uint64_t              mP_product_num;
 };

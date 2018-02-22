@@ -4,7 +4,7 @@
 /*    FILE: PrimeFactor.cpp                                        */
 /*    DATE: FEB.21/2018                                                 */
 /************************************************************/
-
+                                                                            
 #include <iterator>
 #include "MBUtils.h"
 #include "ACTable.h"
@@ -41,22 +41,24 @@ bool PrimeFactor::OnNewMail(MOOSMSG_LIST &NewMail)
         for(p=NewMail.begin(); p!=NewMail.end(); p++) {
          CMOOSMsg &msg = *p;
          string key    = msg.GetKey();
-
-    if(key=="NUM_VALUE"){
+         
+          if(key=="NUM_VALUE"){
         
-            string input_prime_str = msg.GetString();    // Get the string value
-            uint64_t input_prime_num = StrToUint64_t(input_prime_str); // str to uint64_t
+            string input_prime_str = msg.GetString();
+            // Get the string value
+            uint64_t input_prime_num = StrToUint64_t(input_prime_str);
+            // str to uint64_t
 
-            Prime_Node input_node;     //delare the node here
-            input_node.mP_orin       = input_prime_str;   // Set up the member of node
-            input_node.mP_orin_value = input_prime_num;
-            input_node.mP_recei_ind = m_input_index;
+            PrimeNode input_node;     //delare the node here
+            input_node.setOrinStr(input_prime_str);
+            // Set up the member of node
+            input_node.setReceiInd(m_input_index);
             input_node.mP_prime_list.push_back(input_prime_num);
-            m_input_list.push_back(input_node);   // put the node into the buffer
-            m_input_index+=1;    //After put it in, index up 
-            
-    
-    }
+            m_input_list.push_back(input_node);
+            // put the node into the buffer
+            m_input_index+=1;
+            //After put it in, index up 
+           }
         
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
@@ -78,91 +80,110 @@ bool PrimeFactor::OnNewMail(MOOSMSG_LIST &NewMail)
    return(true);
 }
 
-uint64_t PrimeFactor::StrToUint64_t(string input){     //string to uint64_t
+uint64_t PrimeFactor::StrToUint64_t(string input){
+//string to uint64_t
 
         stringstream stream(input);
         uint64_t result;
         stream>>result;
 
-        return result;
+        return(result);
 }
 
-void PrimeFactor::PrimeCalculate(Prime_Node &input){    //Using call by reference for the prime calculation
+void PrimeFactor::PrimeCalculate(PrimeNode &input){    
+//Using call by reference for the prime calculation
 
-    Prime_Node out;
-    double time1 = MOOSTime();     //Get first time
+    PrimeNode out;
+    double time1 = MOOSTime();   //Get first time
     double time2; 
     double total_time;
-    bool done=true;                //Set up done=true here
-    size_t prime_list_size=(input.mP_prime_list).size();     //Get the prime size now
+    bool done=true;              //Set up done=true here
+    size_t prime_list_size=(input.mP_prime_list).size();
+    //Get the prime size now
     uint64_t i;                                              
     uint64_t Calculate_number;
-    uint64_t temp_now = input.mP_temp;                    //Get the number calculated from now one
-             i=temp_now+1;   //Get the prime calculating now if it is 1 start at 2, else start at the number+1
-             Calculate_number = (input.mP_prime_list).back(); //Get the last number in the prime list.
-             (input.mP_prime_list).pop_back();   
+    uint64_t temp_now = input.showTemp();
+    //Get the number calculated from now one
+    i=temp_now+1;   
+    //Get the prime calculating now if it is 1 start at 2,
+    //else start at the number+1
+    Calculate_number = (input.mP_prime_list).back(); 
+    //Get the last number in the prime list.
+    (input.mP_prime_list).pop_back();   
     
-    while(i<=sqrt(Calculate_number)){      //Must smaller or equal sqrt(calculate_number), if number come with square number, equal will be used
-        
-                
-        
+    while(i<=sqrt(Calculate_number)){
+    //Must smaller or equal sqrt(calculate_number)
+    //If number come with square number, equal will be used   
         int re = Calculate_number%i;
-            if(re==0){
-                (input.mP_prime_list).push_back(i);    //If the residual equal zero, this is the prime factor
-                Calculate_number /= i;                 // New calculate number become Calculate_number/i
-                                
-            }
+          if(re==0){
+                (input.mP_prime_list).push_back(i);    
+                //If the residual equal zero,
+                //this is the prime factor
+                Calculate_number /= i;
+          // New calculate number become Calculate_number/i
+          }
             
-              else{
-                  i++;                                 //If residual is not zero, add i
-                 if(i>=temp_now+1000000){              //If i is greater than 1000000,stop calculate
-                  input.mP_temp = i;                   //Get the number now to the temp as a next calculation starting number
-                  done = false;                        //set done to false
-                   break;                               //Break the loop
+            else{
+               i++;    
+              //If residual is not zero, add i
+              if(i>=temp_now+1000000){              
+              //If i is greater than 1000000,stop calculate   
+                   input.setTemp(i);
+                  //set temp to next calculation starting number
+                   done = false;                        
+                   //set done to false
+                   break;   
+                   //Break the loop
                  }
-              }
+            }
     }
-             (input.mP_prime_list).push_back(Calculate_number);    //Add the last prime that don't have any else factor, if it's prime itself, push back it self
+          (input.mP_prime_list).push_back(Calculate_number);    
+          //Add the last prime that don't have any else factor
+          //if it's prime itself, push back it self
 
-
-        input.mP_done = done;        //Set the bool to the member of prime node
-        time2 = MOOSTime();          //Get the time finished
-        total_time = time2-time1;    //Calculation of time
-        input.mP_time += total_time; //Set to total member of prime node
+          input.setDone(done);        
+          //Set the bool to the member of prime node
+          time2 = MOOSTime();          
+          //Get the time finished
+          total_time = time2-time1;    
+          //Calculation of time
+          input.mP_time += total_time; 
+          //Set to total member of prime node
 }
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 
-std::string PrimeFactor::Node_to_result(Prime_Node input){
+std::string PrimeFactor::Node_to_result(PrimeNode input){
 //Change the node to output string result 
     string primelist="";
     vector<uint64_t> input_vector = input.mP_prime_list;
-    for(int j=0;j<input_vector.size();j++)
-         {
-            if(j!=0)
-                primelist += ":";    //Every prime is seperate by :
+    for(int j=0;j<input_vector.size();j++){
+      if(j!=0)
+        primelist += ":";    
+        //Every prime is seperate by :
                 
-                std::stringstream a; 
-                a<<input_vector[j];
-                string prime = a.str();
+        std::stringstream a; 
+        a<<input_vector[j];
+        string prime = a.str();
      
-                primelist += prime;    //Get the string of prime list
+        primelist += prime;    
+        //Get the string of prime list
     }
                   
    string result  ="";     //formating the string
           result +="PRIME_RESULT=\"orig=";
-          result +=input.mP_orin;
+          result +=input.showOrin();
           result +=",received="; 
-          result += double_to_str(input.mP_recei_ind);
+          result += double_to_str(input.showReceiInd());
           result += ",calculated=";
-          result += double_to_str(input.mP_cal_ind);
+          result += double_to_str(input.showCalInd());
           result += ",solve_time=";
           result += double_to_str(input.mP_time);               //Number must change to string
           result += ",primes=";
           result += primelist;
           result += ",username = YH_HUANG";
 
-          return result;
+          return(result);
 };
 
 bool PrimeFactor::OnConnectToServer()
@@ -180,24 +201,34 @@ bool PrimeFactor::Iterate()
 
     AppCastingMOOSApp::Iterate();
        
-       if(!m_input_list.empty())    //If buffer is empty, just skip this loop
-       {
-           std::list<Prime_Node>::iterator p;        //pointer new to the Prime_Node
-                     for(p=m_input_list.begin(); p!=m_input_list.end();) {   //check out the list, using pointer
-           
-                         PrimeCalculate(*p);    //calculate the prime_node which was point by p now 
-           
-                             if(p->mP_done){    //Change to result form, Notify and then remove from the list
+     if(!m_input_list.empty()){    
+     //If buffer is empty, just skip this loop
+        std::list<PrimeNode>::iterator p;        
+        //pointer new to the PrimeNode
+        for(p=m_input_list.begin(); p!=m_input_list.end();) {   
+        //check out the list, using pointer
+            PrimeCalculate(*p);    
+        //calculate the prime_node which was point by p now 
+          if(p->showDone()){    
+          //Form result, Notify and then remove from list
 
-                                     p->mP_cal_ind=m_calculate_index;     //finished so that add calculated index
-                                     m_calculate_index+=1;              
-                                     m_output_result = Node_to_result(*p); //Change the node to result string
-                                     Notify("PRIME_RESULT",m_output_result); //Notify it
-                                     m_input_list.erase(p++);               //delete it from the list and then p get to next. (Must write this format! Can't seperate p++ to the next line)
-                             }
-                             else
-                                     p++;   //If not done, don't delete from the list, just point to next prime node to check, 
-                    }
+            p->setCalInd(m_calculate_index);     
+             //finished so that add calculated index
+            m_calculate_index+=1;              
+            m_output_result = Node_to_result(*p); 
+             //Change the node to result string
+            Notify("PRIME_RESULT",m_output_result); 
+             //Notify it
+            m_input_list.erase(p++);               
+          //delete it from the list and then p get to next.
+          //(Must write this format!) 
+          //(Can't seperate p++ to the next line)
+          }
+          else
+            p++;   
+            //If not done, don't delete from the list,
+            //just point to next prime node to check, 
+        }
 
          
        }
@@ -213,7 +244,7 @@ string PrimeFactor::double_to_str(double in){
     ss<<in;
     string double_str = ss.str();
 
-    return double_str;
+    return(double_str);
 }
 //---------------------------------------------------------
 // Procedure: OnStartUp()

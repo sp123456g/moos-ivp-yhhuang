@@ -38,10 +38,10 @@ class PrimeFactor : public AppCastingMOOSApp
 
 
    void     registerVariables();
-   void     PrimeCalculate(Prime_Node &input);
+   void     PrimeCalculate(PrimeNode &input);
    uint64_t StrToUint64_t(std::string input);
    
-   std::string Node_to_result(Prime_Node input);
+   std::string Node_to_result(PrimeNode input);
    std::string double_to_str(double in);
    
  private: // Configuration variables
@@ -51,7 +51,7 @@ class PrimeFactor : public AppCastingMOOSApp
     double m_input_index;
     double m_calculate_index;
     
-    std::list<Prime_Node> m_input_list;
+    std::list<PrimeNode> m_input_list;
     std::string m_output_result;
 };
 
