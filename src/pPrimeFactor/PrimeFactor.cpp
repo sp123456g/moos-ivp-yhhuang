@@ -17,8 +17,8 @@ using namespace std;
 
 PrimeFactor::PrimeFactor()
 {
-        m_input_index     = 1;     //Initialize the index to be 1
-        m_calculate_index = 1; 
+        m_input_index     = 0; //Initialize the index to be 0
+        m_calculate_index = 0; 
         m_output_result   = "";    
         m_input_list.clear();
 }
@@ -147,7 +147,7 @@ void PrimeFactor::PrimeCalculate(PrimeNode &input){
           //Get the time finished
           total_time = time2-time1;    
           //Calculation of time
-          input.mP_time += total_time; 
+          input.addTime(total_time);
           //Set to total member of prime node
 }
 //---------------------------------------------------------
@@ -178,7 +178,7 @@ std::string PrimeFactor::Node_to_result(PrimeNode input){
           result += ",calculated=";
           result += double_to_str(input.showCalInd());
           result += ",solve_time=";
-          result += double_to_str(input.mP_time);               //Number must change to string
+          result += double_to_str(input.showTime());               //Number must change to string
           result += ",primes=";
           result += primelist;
           result += ",username = YH_HUANG";

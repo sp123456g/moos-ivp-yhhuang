@@ -1,8 +1,8 @@
 /****************************************************************/
 /*   NAME: YH_Huang                                             */
-/*   ORGN: MIT Cambridge MA                                     */
+/*   ORGN: MIT/NTU                                     */
 /*   FILE: PrimeFactor_Info.cpp                               */
-/*   DATE: Dec 29th 1963                                        */
+/*   DATE: FEB.21/2018                                        */
 /****************************************************************/
 
 #include <cstdlib>
@@ -21,7 +21,7 @@ void showSynopsis()
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
   blk("  The pPrimeFactor application is used for calculating the prime list of the input number");
-  blk("  This app use one double-linked-list to manage the prime, create a class \"Prime_Node\" to  ");
+  blk("  This app use one double-linked-list to manage the prime, create a class \"PrimeNode\" to  ");
   blk("  manage the prime is done or not and store the information of the prime calculating process ");
   blk("  ");
   blk("  Using STL list to finish it, in the Iterate loop, pointer will check out the element inside,");
@@ -99,12 +99,13 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS: NUM_VALUE                                        ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk("Using uTimerScript or uPokeDB to give the number to test it,");
+  blk("(NUM_VALUE need to be in type of \"string\")");
   blk("                                                                ");
   blk("PUBLICATIONS: PRIME_RESULT                                      ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk("PRIME_RESULT contains informations including  original number, ");
+  blk("receive index, calculate index, calculate time, prime list and user name ");
   blk("                                                                ");
   exit(0);
 }

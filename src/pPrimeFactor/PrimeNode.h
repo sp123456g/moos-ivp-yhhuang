@@ -14,12 +14,14 @@ class PrimeNode
         void setCalInd(double cin);
         void setDone(bool input);
         void setTemp(uint64_t input);
+        void addTime(double input_time);
 
         std::string     showOrin() const;
         double          showReceiInd() const;
         double          showCalInd() const;
         bool            showDone() const;
         uint64_t        showTemp() const;
+        double          showTime() const;
 
     public:
 
