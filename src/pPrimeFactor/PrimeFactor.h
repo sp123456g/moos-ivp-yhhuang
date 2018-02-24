@@ -52,7 +52,7 @@ class PrimeFactor : public AppCastingMOOSApp
     double m_calculate_index;
     
     std::list<PrimeNode> m_input_list;
-    std::string m_output_result;
+    std::string          m_output_result;
 };
 
 #endif 
