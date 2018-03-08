@@ -1,0 +1,214 @@
+//--------    FILE: bravo.bhv   -------------
+
+initialize   DEPLOY                = false
+initialize   RETURN                = false
+initialize   LOITERING_REGION      = west	
+initialize   COUNT_REQUEST         = false
+initialize   LOITER_COUNTED        = false
+initialize   SURFACE_WAITING_START = false
+initialize   SURFACE_WAITING_TIMER_START = false
+//----------------------------------------------
+
+Set MODE = ACTIVE{
+
+    DEPLOY = true
+    RETURN != true
+}
+
+set MODE = LOITERING{
+
+    MODE = ACTIVE
+    RETURN = false
+    LOITER_COUNTED = false
+}
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = west_loiter       
+   pwt          = 100                
+
+   activeflag   = COUNT_REQUEST = true   
+   
+        condition    = MODE   == LOITERING
+        condition    = RETURN =  false   
+        condition    = LOITERING_REGION = west
+        updates      = LOITER_UPDATES    
+        duration     = 180
+     duration_status = LOITERING_TIME_WEST
+      duration_reset = RESET = west
+ duration_idle_decay = false
+        perpetual    = true
+        endflag      = LOITERING_REGION = east
+        endflag      = RESET = east
+   
+    speed     = 2.5
+    clockwise = false
+    radius    = 4.0
+    nm_radius = 15.0
+    polygon   = radial:: x=100, y=-75, radius=30,pts=8,snap=1,label=west
+ 
+   visual_hints = nextpt_color=red, nextpt_lcolor=khaki
+    visual_hints = edge_color=khaki, vertex_color =white
+    visual_hints = edge_size=1, vertex_size=4
+ }
+//----------------------------------------------
+Behavior = BHV_Loiter
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = east_loiter               // example
+   pwt          = 100                   // default
+
+   activeflag   = COUNT_REQUEST = true
+
+        condition    = MODE==LOITERING
+        condition    = RETURN = false   
+        condition    = LOITERING_REGION = east
+        updates      = LOITER_UPDATES        // example
+        duration     = 200
+     duration_status = LOITERING_TIME_EAST
+      duration_reset = RESET = east
+ duration_idle_decay = false
+        perpetual    = true
+        endflag      = LOITERING_REGION = west
+        endflag      = RESET = west 
+
+    speed     = 2.5
+    clockwise = false
+    radius    = 4.0
+    nm_radius = 15.0
+    polygon   = radial:: x=160, y=-50, radius=20,pts=8,snap=1,label=east
+ 
+   visual_hints = nextpt_color=red, nextpt_lcolor=khaki
+    visual_hints = edge_color=khaki, vertex_color =white
+    visual_hints = edge_size=1, vertex_size=4
+ }
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = RETURN_UPDATE
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+  	
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,0
+ }
+
+//----------------------------------------------
+Behavior=BHV_ConstantSpeed
+{
+  name       = const_speed
+  pwt        = 200
+  condition  = SPD=true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = SPEED_UPDATE
+  endflag    = SPD = false
+
+     speed = 0.5
+		 duration = 10
+		 duration_reset = CONST_SPD_RESET=true
+	
+}
+
+Behavior = BHV_ConstantDepth
+{
+    //General Behavior Parameters 
+    //----------------------------
+    name      = constant_depth_west
+    pwt       = 100
+    condition = LOITERING_REGION = west 
+    condition = MODE == LOITERING 
+    condition = RETURN = false
+
+
+    updates   = CONST_DEP_UPDATES 
+    
+    // Parameters specific to this behavior
+    // ------------------------------------
+             basewidth = 100 
+                 depth = 30 
+    depth_mismatch_var = DEPTH_DIFF
+              duration = no-time-limit
+
+}
+
+Behavior = BHV_ConstantDepth
+{
+    //General Behavior Parameters 
+    //----------------------------
+    name      = const_dep_east
+    pwt       = 100
+    condition = LOITERING_REGION = east  
+    condition = MODE == LOITERING
+    condition = RETURN = false
+    updates   = CONST_DEP_UPDATES 
+    
+    // Parameters specific to this behavior
+    // ------------------------------------
+             basewidth = 100 
+                 depth = 10 
+    depth_mismatch_var = DEPTH_DIFF
+              duration = no-time-limit
+              peakwidth   = 3 
+              summitdelta = 50
+}
+
+Behavior = BHV_ConstantDepth
+{
+    //General Behavior Parameters 
+    //----------------------------
+    name      = constant_depth_return
+    pwt       = 100
+
+    condition = RETURN = true
+    condition = DEPLOY = true
+    updates   = CONST_DEP_UPDATES 
+    
+    // Parameters specific to this behavior
+    // ------------------------------------
+             basewidth = 100 
+                 depth = 0 
+    depth_mismatch_var = DEPTH_DIFF
+              duration = no-time-limit
+}
+
+Behavior = BHV_Timer
+{
+    // General Behavior Parameters
+    // ---------------------------
+    name        =   bhv_timer_loiter_count
+    condition   =   COUNT_REQUEST         = true
+    duration    =   200
+ duration_reset =   TIMER_RESET           = loiter
+    endflag     =   LOITER_COUNTED        = true
+    endflag     =   SURFACE_WAITING_START = true
+    endflag     =   TIMER_RESET           = surface
+    updates     =   TIMER_UPDATES
+    perpetual   =   true
+}
+
+Behavior = BHV_Timer
+{    // General Behavior Parameters
+    // ---------------------------
+    name        =   bhv_timer_surface
+    condition   =   SURFACE_WAITING_START = true
+    condition   =   DEPTH_DIFF            = 0
+    duration    =   60
+ duration_reset =   TIMER_RESET           = surface
+    endflag     =   LOITER_COUNTED        = false
+    endflag     =   SURFACE_WAITING_START = false
+    endflag     =   TIMER_RESET           = loiter
+    perpetual   =   true
+}

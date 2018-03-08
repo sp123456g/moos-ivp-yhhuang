@@ -1,0 +1,14 @@
+ProcessConfig = pGenPath
+{
+    AppTick   = 4
+    CommsTick = 4
+
+}
+
+// ProcessConfig = pGenPath_RePlanning
+//{
+//    visit_radius = 5
+//    AppTick      = 4
+//    CommsTick    = 4
+
+//}
