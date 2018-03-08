@@ -55,6 +55,7 @@ class CommunicationAngle_yhhuang : public AppCastingMOOSApp
     double m_CO_NAV_SPEED;
     double m_CO_NAV_HEADING;
     double m_greater_depth;
+    double m_smaller_depth;
     double thetaZeroCalculate(double theta, double Radius);
     double RCalculate();
     double thetaCalculate(double radius);

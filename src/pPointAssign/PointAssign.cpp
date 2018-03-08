@@ -21,10 +21,7 @@ PointAssign::PointAssign()
     m_vname1 ="";
     m_vname2 ="";
     m_region ="false";
-    m_x_array.clear();
-    m_middle_x = 0;
     m_input_index = 0;
-    m_x_array_input_index = 0;
 }
 
 //---------------------------------------------------------
@@ -107,7 +104,7 @@ bool PointAssign::Iterate()
                                 x_ss<<sub_x1;
                                 x_ss>>x;
                             
-                                if(x>80){
+                                if(x>80){  //middle x
                                  Notify(visit_point_vehicle1,visit_point);
                                 }
                                 else{
@@ -135,7 +132,7 @@ bool PointAssign::Iterate()
                                 stringstream id_ss;
                                 id_ss<<sub_id;
                                 id_ss>>id;
-                            
+                            //odd ID to vehicle1, even ID to vehicle2
                                 if((id%2)==1){
                                  Notify(visit_point_vehicle1,visit_point);
                                 }
@@ -144,8 +141,9 @@ bool PointAssign::Iterate()
                                 }
                      }
                     if(visit_point_buffer.front()=="lastpoint"){
-                        Notify(visit_point_vehicle1,"lastpoint");
+                        Notify(visit_point_vehicle1,"lastpoint");     
                         Notify(visit_point_vehicle2, "lastpoint");
+                        //Both vehicle need lastpoint to do the work
                     }
         }
      
@@ -224,7 +222,6 @@ bool PointAssign::buildReport()
   m_msgs << "m_vname2="<<m_vname2<<"\n";   
   m_msgs << "m_region="<<m_region<<"\n";   
   m_msgs << "buffer size:"<<visit_point_buffer.size()<<"\n";
-  m_msgs << "m_x_array_input_index="<<m_x_array_input_index<<"\n";
   m_msgs << "m_input_index="<<m_input_index<<"\n";
   return(true);
 }

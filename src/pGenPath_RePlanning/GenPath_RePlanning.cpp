@@ -73,7 +73,9 @@ bool GenPath_RePlanning::OnNewMail(MOOSMSG_LIST &NewMail)
      }
 
      else if(key=="ARRIVE"){
-        m_arrive = msg.GetString();     //arrive the point
+        m_arrive = msg.GetString();    
+        //if waypoint behavior arrive the piont
+        //it will publish a wptflag ARRIVE=true
      }
 
      else if(key=="NAV_X"){
@@ -158,7 +160,8 @@ if(m_input_buffer.size()!=0){
       m_calculated_index+=1;    
         string input = m_input_buffer.front();
           
-          if(input=="firstpoint")  //pop the firstpoint out, or it will stay there all the time
+          if(input=="firstpoint") 
+         //pop the firstpoint out, or it will stay there all the time
                m_input_buffer.pop_front();
           
         m_found_id = input.find("id=");   //find id 
@@ -221,9 +224,12 @@ if(m_input_buffer.size()!=0){
 
  if(m_ReGenerate=="true"){  //Go to the point that didn't arrive at first time
 
-  if(m_ReGenerate_buffer.empty())
+  if(m_ReGenerate_buffer.empty()){
       Notify("RETURN","true");
+  }
   else{
+      Notify("DEPLOY","true");
+      Notify("RETURN","false");
     m_update_str = "";
     m_xyid_buff.clear();
 

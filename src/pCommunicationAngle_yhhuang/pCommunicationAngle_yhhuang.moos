@@ -37,6 +37,7 @@ ProcessConfig = pLogger
     WildCardLogging = true
     WildCardOmitPattern = *_STATUS
 
-    LOG = PRIME_RESULT @ 0
-    LOG = TIME_PRIME   @ 0
+    LOG = ELEV_ANGLE @ 0
+    LOG = ANGLE_UP   @ 0
+    LOG = ANGLE_LOWDOWN @ 0 
 }

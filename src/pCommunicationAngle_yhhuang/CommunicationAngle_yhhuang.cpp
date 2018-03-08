@@ -9,7 +9,7 @@
 #include "MBUtils.h"
 #include "ACTable.h"
 #include "CommunicationAngle_yhhuang.h"
-
+#include <unistd.h>
 using namespace std;
 
 //---------------------------------------------------------
@@ -92,45 +92,45 @@ bool CommunicationAngle_yhhuang::OnConnectToServer()
    return(true);
 }
 
-double CommunicationAngle_yhhuang::thetaZeroCalculate(double theta,double Radius)
-{
-   double thetaZero;   //output
-   double total_distance;
-   double x_dif_sq;
-   double y_dif_sq;
+// double CommunicationAngle_yhhuang::thetaZeroCalculate(double theta,double Radius)
+// {
+//    double thetaZero;   //output
+//    double total_distance;
+//    double x_dif_sq;
+//    double y_dif_sq;
     
-    x_dif_sq = pow((m_NAV_X-m_CO_NAV_X),2);
-    y_dif_sq = pow((m_NAV_Y-m_CO_NAV_Y),2);
-    total_distance = sqrt(x_dif_sq+y_dif_sq);
+//     x_dif_sq = pow((m_NAV_X-m_CO_NAV_X),2);
+//     y_dif_sq = pow((m_NAV_Y-m_CO_NAV_Y),2);
+//     total_distance = sqrt(x_dif_sq+y_dif_sq);
      
-    thetaZero = asin((total_distance+Radius*sin(theta))/Radius);
+//     thetaZero = asin((total_distance+Radius*sin(theta))/Radius);
     
-   return(thetaZero); 
-}
+//    return(thetaZero); 
+// }
 
-double CommunicationAngle_yhhuang::RCalculate()
-{
-    double Radius;  //Output Radius
+// double CommunicationAngle_yhhuang::RCalculate()
+// {
+//     double Radius;  //Output Radius
     
-    Radius  = (m_surface_sound_speed+(m_sound_speed_gradient* m_greater_depth))/m_sound_speed_gradient;
+//     Radius  = (m_surface_sound_speed+(m_sound_speed_gradient* m_greater_depth))/m_sound_speed_gradient;
 
 
-    return(Radius);
-}
+//     return(Radius);
+// }
 
-double CommunicationAngle_yhhuang::thetaCalculate(double radius)
-{
-    cout<<m_collnavdepth<<m_CO_NAV_DEPTH<<endl;
-    cout<<"m_NAV_DEPTH:"<<m_NAV_DEPTH<<endl;
-    double depth_dif = sqrt(pow(m_NAV_DEPTH-m_CO_NAV_DEPTH,2));
+// double CommunicationAngle_yhhuang::thetaCalculate(double radius)
+// {
+//     cout<<m_collnavdepth<<m_CO_NAV_DEPTH<<endl;
+//     cout<<"m_NAV_DEPTH:"<<m_NAV_DEPTH<<endl;
+//     double depth_dif = sqrt(pow(m_NAV_DEPTH-m_CO_NAV_DEPTH,2));
    
-    cout<<"depth_dif:"<<depth_dif<<endl; 
-    double theta    = acos((depth_dif+(m_surface_sound_speed/m_greater_depth))/radius);
+//     cout<<"depth_dif:"<<depth_dif<<endl; 
+//     double theta    = acos((depth_dif+(m_surface_sound_speed/m_greater_depth))/radius);
 
-    cout<<"theta:"<<theta<<endl;
+//     cout<<"theta:"<<theta<<endl;
 
-    return(theta);
-}
+//     return(theta);
+// }
 
 //---------------------------------------------------------
 // Procedure: Iterate()
@@ -140,31 +140,97 @@ bool CommunicationAngle_yhhuang::Iterate()
 {
   AppCastingMOOSApp::Iterate();
   
-  double thetaZero;
+  //double thetaZero=45*3.1415926/180;
+  double thetaZero=-0.504573;
   double theta;
+  double upper_bound=90*3.1415926/180;
+  double lower_bound=0;
   double Radius;
   double output_theta;
- if(m_NAV_DEPTH>m_CO_NAV_DEPTH)
+  double czZero;
+  double cz;
+  double costheta;
+ if(m_NAV_DEPTH>m_CO_NAV_DEPTH){
      m_greater_depth = m_NAV_DEPTH;
- else
+ 	 m_smaller_depth = m_CO_NAV_DEPTH;
+ }
+ else{
      m_greater_depth = m_CO_NAV_DEPTH;
+     m_smaller_depth = m_NAV_DEPTH;
+ }
 
-     double theta_out;
-     Radius = RCalculate(); 
-     theta  = thetaCalculate(Radius);
-     thetaZero = thetaZeroCalculate(theta,Radius);
-    // theta_out = theta/(3.1415926/180);
-   if(m_NAV_DEPTH>m_CO_NAV_DEPTH)
-       output_theta = theta;
-   else 
-       output_theta = thetaZero;
+ 	czZero   = m_surface_sound_speed+m_sound_speed_gradient*m_smaller_depth;
+ 	cz 		 = m_surface_sound_speed+m_sound_speed_gradient*m_greater_depth;
 
-     Notify("ELEV_ANGLE",output_theta);
-     cout<<"ELEV_ANGLE:"<<output_theta<<endl;
-     cout<<"theta0:"<<thetaZero<<endl;
-     cout<<"theta:"<<theta<<endl;
-     cout<<"Radius:"<<Radius<<endl; 
 
+	unsigned int a=0;
+	while(1){
+     sleep(1);	
+     	Radius = czZero/(m_sound_speed_gradient*cos(thetaZero));
+            cout<<"thetaZero="<<thetaZero<<endl;
+            cout<<"upper_bound="<<upper_bound<<endl;
+            cout<<"lower_bound="<<lower_bound<<endl;    
+        costheta = cos(thetaZero)*(cz)/(czZero);
+//        cout<<"costheta"<<costheta<<endl;
+        if(costheta>1){
+            thetaZero +=3.1415926/180;
+            cout<<"thetaZero="<<thetaZero<<endl;
+        }
+            
+        else{
+            
+     	theta  = acos(cos(thetaZero)*(cz)/(czZero));
+        if(theta==thetaZero)
+            theta = -theta;
+        cout<<"theta:"<<theta<<endl;
+     	double distance_sq = (2*pow(Radius,2)*(1-cos(thetaZero-theta)));
+     	double distance    = sqrt(distance_sq);
+     	//distance of two point of the estimated theta
+
+     	double x_dif_sq = pow((m_NAV_X-m_CO_NAV_X),2);
+     	double y_dif_sq = pow((m_NAV_Y-m_CO_NAV_Y),2);
+     	double z_dif_sq = pow((m_NAV_DEPTH-m_CO_NAV_DEPTH),2);
+         double total_distance = sqrt(x_dif_sq+y_dif_sq+z_dif_sq);
+        
+
+			double diff = total_distance-distance;
+            cout<<"total_distance="<<total_distance<<endl;
+            cout<<"distance="<<distance<<endl; 
+            cout<<"diff="<<diff<<endl;
+         if(sqrt(pow(total_distance-distance,2))<5){
+         	Notify("ELEV_ANGLE",thetaZero);
+         	cout<<"Get!"<<endl;
+         	break;
+         }
+         else if(thetaZero!=-thetaZero && thetaZero>0){
+             thetaZero = -thetaZero;
+//             cout<<"thetaZero="<<thetaZero<<endl;
+         }
+
+         else if((total_distance-distance)>5){
+            
+             thetaZero = -thetaZero;
+            upper_bound = thetaZero;
+            
+         	thetaZero = (lower_bound+thetaZero)/2;
+         	cout<<"thetaZero_down"<<endl;
+ //           cout<<"thetaZero now="<<thetaZero<<endl;
+ //           cout<<"upper_bound="<<upper_bound<<endl;
+//            cout<<"lower_bound="<<lower_bound<<endl;
+         }
+         else if((total_distance-distance)<-5){
+        
+             thetaZero = -thetaZero;
+            lower_bound = thetaZero;
+         	thetaZero = (upper_bound+thetaZero)/2;
+         	cout<<"thetaZero_up"<<endl;
+ 			        
+         }
+        }
+  			a++;   
+         // cout<<"thetaZero now is:"<<thetaZero<<endl;
+	}  
+cout<<"a="<<a<<endl;
   AppCastingMOOSApp::PostReport();
   return(true);
 }
