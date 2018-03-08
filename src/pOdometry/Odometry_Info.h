@@ -1,8 +1,8 @@
 /****************************************************************/
 /*   NAME: YHHuang                                             */
-/*   ORGN: MIT Cambridge MA                                     */
+/*   ORGN: MIT/NTU                                     */
 /*   FILE: Odometry_Info.h                                      */
-/*   DATE: Dec 29th 1963                                        */
+/*   DATE: MAR.8/2018                                        */
 /****************************************************************/
 
 #ifndef Odometry_INFO_HEADER

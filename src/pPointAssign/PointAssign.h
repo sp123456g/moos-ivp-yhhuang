@@ -1,8 +1,8 @@
 /************************************************************/
 /*    NAME: YHHUANG                                         */
-/*    ORGN: MIT                                             */
+/*    ORGN: MIT/NTU                                             */
 /*    FILE: PointAssign.h                                   */
-/*    DATE: December 29th, 1963                             */
+/*    DATE: MAR.8/2018                             */
 /************************************************************/
 
 #ifndef PointAssign_HEADER

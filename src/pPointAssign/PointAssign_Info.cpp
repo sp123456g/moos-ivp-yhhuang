@@ -1,8 +1,8 @@
 /****************************************************************/
 /*   NAME: YHHUANG                                             */
-/*   ORGN: MIT Cambridge MA                                     */
+/*   ORGN: MIT/NTU                                     */
 /*   FILE: PointAssign_Info.cpp                               */
-/*   DATE: Dec 29th 1963                                        */
+/*   DATE: MAR.8/2018                                        */
 /****************************************************************/
 
 #include <cstdlib>

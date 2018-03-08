@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME:                                               */
-/*    ORGN: MIT                                             */
+/*    NAME: YHHUANG                                      */
+/*    ORGN: MIT/NTU                                             */
 /*    FILE: CommunicationAngle_yhhuang.h                                          */
-/*    DATE: December 29th, 1963                             */
+/*    DATE: MAR.1/2018                             */
 /************************************************************/
 
 #ifndef CommunicationAngle_yhhuang_HEADER

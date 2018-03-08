@@ -1,8 +1,8 @@
 /****************************************************************/
-/*   NAME:                                              */
-/*   ORGN: MIT Cambridge MA                                     */
+/*   NAME: YHHUANG                                 */
+/*   ORGN: MIT/NTU                                     */
 /*   FILE: CommunicationAngle_yhhuang_Info.cpp                               */
-/*   DATE: Dec 29th 1963                                        */
+/*   DATE: MAR.1/2018                                        */
 /****************************************************************/
 
 #include <cstdlib>

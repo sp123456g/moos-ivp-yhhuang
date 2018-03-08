@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME:                                               */
-/*    ORGN: MIT                                             */
-/*    FILE: CommunicationAngle_yhhuang.cpp                                        */
-/*    DATE:                                                 */
+/*    NAME: YHHuang                                              */
+/*    ORGN: MIT/NTU                                             */
+/*    FILE: CommunicationAngle_yhhuang.cpp                   */
+/*    DATE: MAR.1/2018                                                */
 /************************************************************/
 
 #include <iterator>

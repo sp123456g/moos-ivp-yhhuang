@@ -1,8 +1,8 @@
 /****************************************************************/
 /*   NAME: YH_Huang                                             */
-/*   ORGN: MIT Cambridge MA                                     */
+/*   ORGN: MIT/NTU                                */
 /*   FILE: PrimeFactor_Info.h                                      */
-/*   DATE: Dec 29th 1963                                        */
+/*   DATE: FEB.21/2018                                        */
 /****************************************************************/
 
 #ifndef PrimeFactor_INFO_HEADER

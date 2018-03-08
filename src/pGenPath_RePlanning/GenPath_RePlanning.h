@@ -1,8 +1,8 @@
 /************************************************************/
 /*    NAME: YHHUANG                                              */
-/*    ORGN: MIT                                             */
+/*    ORGN: MIT/NTU                                             */
 /*    FILE: GenPath_RePlanning.h                                          */
-/*    DATE: December 29th, 1963                             */
+/*    DATE: MAR.8/2018                             */
 /************************************************************/
 
 #ifndef GenPath_RePlanning_HEADER
