@@ -31,6 +31,7 @@ done
 SNAME="shoreside"
 SPORT="9000"
 SLPORT="9200"
+
 nsplug meta_shoreside.moos targ_$SNAME.moos -f WARP=$TIME_WARP    \
     SHARE_LISTEN=$SLPORT  SPORT=$SPORT  SNAME=$SNAME
 

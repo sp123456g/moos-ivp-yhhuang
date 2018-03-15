@@ -182,12 +182,12 @@ ProcessConfig = pMarineViewer
 // left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
 // left_context[survey-point] = RETURN=false
 
-    left_context[view_both] = VIEW_POLYGON = format=radial,x=$(XPOS),y=$(YPOS),radius=10, pts=8, edge_size=1,label=mypoly
+//    left_context[view_both] = VIEW_POLYGON = format=radial,x=$(XPOS),y=$(YPOS),radius=10, pts=8, edge_size=1,label=mypoly
 
-    left_context[view_both] = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=hello
+//    left_context[view_both] = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=hello
     
-    left_context[view_both]  = RETURN_UPDATE = points =$(XPOS),$(YPOS)
-    left_context[view_both]  = RETURN       = true 
+//    left_context[view_both]  = RETURN_UPDATE = points =$(XPOS),$(YPOS)
+//    left_context[view_both]  = RETURN       = true 
   
   //right_context[return] = DEPLOY=true
   //right_context[return] = MOOS_MANUAL_OVERRIDE=false

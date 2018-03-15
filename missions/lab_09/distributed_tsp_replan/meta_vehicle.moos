@@ -1,8 +1,8 @@
 ServerHost = localhost
-ServerPort = $(SPORT)
+ServerPort = $(VPORT)
 
 // Community name IS the vehicle name
-Community  = $(SNAME)
+Community  = $(VNAME)
 
 #include plug_origin_warp.moos
   

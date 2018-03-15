@@ -8,7 +8,7 @@ ProcessConfig = pHelmIvP
 
   ok_skew      = any
   
-  Behaviors    = targ_$(SNAME).bhv  
+  Behaviors    = targ_$(VNAME).bhv  
   Verbose      = false
   Domain       = course:0:359:360
   Domain       = speed:0:5:26

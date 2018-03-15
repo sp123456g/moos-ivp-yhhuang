@@ -43,12 +43,12 @@ Behavior = BHV_Loiter
 Behavior=BHV_Waypoint
 {
   name       = waypt_return
-  pwt        = 100
+  pwt        = 150
   condition  = RETURN = true
   condition  = DEPLOY = true
-  perpetual  = true
+//  perpetual  = true
   updates    = RETURN_UPDATE
-  endflag    = RETURN = false
+//  endflag    = RETURN = false
   endflag    = DEPLOY = false
   endflag    = MISSION = complete
 	

@@ -9,11 +9,9 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB	 @ NewConsole = false
-  Run = pLogger	 @ NewConsole = false
-  Run = pXRelay	 @ NewConsole = true ~ pXRelay_PEARS
   Run = pXRelay	 @ NewConsole = true ~ pXRelay_APPLES
   Run = uXMS	 @ NewConsole = true
-  Run = pShare   @ NewConsole = true
+  Run = pShare   @ NewConsole = false
 }
 
 //------------------------------------------
@@ -35,18 +33,6 @@ ProcessConfig = pXRelay_APPLES
 
   INCOMING_VAR  = APPLES
   OUTGOING_VAR  = PEARS
-}
-
-//------------------------------------------
-// pXRelay_PEARS config block
-
-ProcessConfig = pXRelay_PEARS
-{
-  AppTick	= 1
-  CommsTick	= 1
-
-  INCOMING_VAR  = PEARS
-  OUTGOING_VAR  = APPLES
 }
 
 //------------------------------------------
@@ -76,6 +62,6 @@ ProcessConfig = pShare
     Community = 4    
 
     input  = route    = localhost:9200 
-    output = src_name = APPLES, route = localhost:9201
+    output = src_name = PEARS, route = localhost:9201
 }
 

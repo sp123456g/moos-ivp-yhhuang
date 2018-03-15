@@ -3,7 +3,7 @@
 
 ServerHost = localhost
 ServerPort = $(SPORT)
-Community  = $(SNAME)
+Community  = $(VNAME)
 
 #include plug_origin_warp.moos
   
@@ -24,7 +24,6 @@ Processconfig = ANTLER
 
 #include plug_pShare.moos
 #include plug_pHostInfo.moos
-#include plug_pLogger.moos
 #include plug_uTimerScript.moos
 #include plug_pPointAssign.moos
 //--------------------------------------------------
@@ -40,10 +39,26 @@ ProcessConfig = uFldShoreBroker
   QBRIDGE  = MOOS_MANUAL_OVERRIDE
   QBRIDGE  = REFUEL_NEEDED
   QBRIDGE  = SURVEY
-//  QBRIDGE  = RETURN
   BRIDGE   = src=RETURN_ALL, alias=RETURN
   BRIDGE   = src=RETURN_$V,  alias=RETURN
-  BRIDGE   = src=VISIT_POINT_$V, alias=VISIT_POINT
+  BRIDGE   = src=VISIT_POINT_$V, alias=VISIT_POINT 
+}
+//-------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 4
+  CommsTick     = 4
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  //SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
 }
 
 //--------------------------------------------------------

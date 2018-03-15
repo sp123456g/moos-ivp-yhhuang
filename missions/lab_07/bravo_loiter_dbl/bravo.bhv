@@ -27,7 +27,7 @@ Behavior = BHV_Loiter
    condition    = RETURN = false   
    condition    = LOITERING_REGION = west
    updates      = LOITER_UPDATES        // example
-   duration     = 180
+   duration     = 150
  duration_reset = RESET= west
    perpetual    = true
    endflag      = LOITERING_REGION = east
@@ -54,7 +54,7 @@ Behavior = BHV_Loiter
    condition    = RETURN = false   
    condition    = LOITERING_REGION = east
    updates      = LOITER_UPDATES        // example
-   duration     = 200
+   duration     = 150
 duration_reset  = RESET = east
    perpetual    = true
    endflag      = LOITERING_REGION = west
