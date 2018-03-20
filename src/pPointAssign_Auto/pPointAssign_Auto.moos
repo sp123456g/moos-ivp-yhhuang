@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pPointAssign_Auto config block
+
+ProcessConfig = pPointAssign_Auto
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

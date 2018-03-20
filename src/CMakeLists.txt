@@ -25,7 +25,9 @@ ADD_SUBDIRECTORY(pPointAssign)
 ADD_SUBDIRECTORY(pGenPath)
 ADD_SUBDIRECTORY(pGenPath_RePlanning)
 #ADD_SUBDIRECTORY(pSpectrogram)
+ADD_SUBDIRECTORY(pAISdecoder)
 ADD_SUBDIRECTORY(pCommunicationAngle_yhhuang)
+ADD_SUBDIRECTORY(pPointAssign_Auto)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################

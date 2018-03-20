@@ -357,13 +357,13 @@ void GenPath_RePlanning::registerVariables()
 bool GenPath_RePlanning::buildReport() 
 {
   m_msgs << "============================================ \n";
-  m_msgs << "m_input_index="<<m_input_index<<"\n";
-  m_msgs << "m_calculated_index="<<m_calculated_index<<"\n";
-  m_msgs <<"m_arrive="<<m_arrive<<"\n";
-  m_msgs <<"ReGenerate Buffer size:"<<m_ReGenerate_buffer.size()<<"\n";
-  m_msgs <<"m_ReGenerate="<<m_ReGenerate<<"\n";
-  m_msgs <<"input_buffer size:"<<m_input_buffer.size()<<"\n";
-  m_msgs <<"m_xyid_buff size:"<<m_xyid_buff.size()<<"\n";
+//  m_msgs << "m_input_index="<<m_input_index<<"\n";
+//  m_msgs << "m_calculated_index="<<m_calculated_index<<"\n";
+//  m_msgs <<"m_arrive="<<m_arrive<<"\n";
+  m_msgs <<"Number of point need to redo:"<<m_ReGenerate_buffer.size()<<"\n";
+//  m_msgs <<"m_ReGenerate="<<m_ReGenerate<<"\n";
+//  m_msgs <<"input_buffer size:"<<m_input_buffer.size()<<"\n";
+//  m_msgs <<"m_xyid_buff size:"<<m_xyid_buff.size()<<"\n";
   return(true);
 }
 

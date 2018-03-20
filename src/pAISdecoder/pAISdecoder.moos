@@ -1,0 +1,53 @@
+//Configuration file: YHHuang
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = prime
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		       @ NewConsole = false
+  Run = uTimerScript       @ NewConsole = false
+  Run = pLogger            @ NewConsole = false     
+  Run = pAISdecoder        @ NewConsole = true
+}
+
+//------------------------------------------
+
+ProcessConfig = uTimerScript
+{
+    AppTick   = 4
+    CommsTick = 4
+
+    event = var=AIS_DATA, val="!AIVDM,1,1,,A,15Cgah00008LOnt>1Cfs61VT00SU,0*3D"  , time=0.25
+    event = var=AIS_DATA, val="!AIVDM,1,1,,A,14eG;o@034o8sd<L9i:a;WF>062D,0*7D"  , time=0.5
+   // event = var=AIS_DATA, val=""  , time=0.75
+   // event = var=AIS_DATA, val=""  , time=1.00
+    
+    reset_max  = 10
+    reset_time = all-posted
+}
+
+ProcessConfig = pLogger
+{
+    AsyncLog = true 
+    WildCardLogging = true
+    WildCardOmitPattern = *_STATUS
+
+    LOG = AIS_DATA   @ 0
+    LOG = AIS_RESULT @ 0
+    LOG = ELEMENT    @ 0
+}
+
+ProcessConfig = pAISdecoder
+{
+    AppTick   = 4
+    CommsTick = 4
+
+
+
+}

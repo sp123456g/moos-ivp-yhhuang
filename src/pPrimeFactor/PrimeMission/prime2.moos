@@ -1,0 +1,108 @@
+//Configuration file: YHHuang
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = prime
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		       @ NewConsole = false
+  Run = uTimerScript       @ NewConsole = false
+  Run = pPrimeFactor       @ NewConsole  = true
+  Run = pPrimeFactorTester @ NewConsole  = true
+  Run = pLogger         @ NewConsole = false     
+}
+
+//------------------------------------------
+// uTimerScript
+ProcessConfig = pPrimeFactor
+{
+    AppTick   = 4
+    CommsTick = 4
+
+}
+
+ProcessConfig = pPrimeFactorTester
+{
+    AppTick     = 4
+    CommsTick   = 4
+}
+
+ProcessConfig = uTimerScript1
+{
+    AppTick   = 2
+    CommsTick = 2
+
+    event = var=NUM_VALUE, val="$(15)" , time=0.25
+    event = var=NUM_VALUE, val="$(9)"  , time=0.5
+    event = var=NUM_VALUE, val="$(7)"  , time=0.75
+    event = var=NUM_VALUE, val="$(5)"  , time=1.00
+    
+    reset_max  = 10
+    reset_time = all-posted
+}
+
+ProcessConfig = uTimerScript
+ {
+   AppTick   = 4
+   CommsTick = 4
+
+   event  = var=NUM_VALUE, val="112272535095293", time=0.25
+   event  = var=NUM_VALUE, val="112582705942171", time=0.50
+   event  = var=NUM_VALUE, val="115280095190773", time=0.75
+   event  = var=NUM_VALUE, val="115797848077099", time = 1.00
+   event  = var=NUM_VALUE, val="117450548693743", time=1.25
+   event  = var=NUM_VALUE, val="117463495419967", time = 1.50
+   event  = var=NUM_VALUE, val="118813069318813", time=1.75
+
+   event  = var=NUM_VALUE, val="125", time = 2.0
+   event  = var=NUM_VALUE, val="225", time = 2.25
+   event  = var=NUM_VALUE, val="325", time = 2.50
+
+   event  = var=NUM_VALUE, val="121642554638287", time=2.75
+   event  = var=NUM_VALUE, val="123939877913659", time=3.00
+   event  = var=NUM_VALUE, val="125673790649527", time=3.25
+   event  = var=NUM_VALUE, val="126794093929207", time=3.50
+   event  = var=NUM_VALUE, val="127691861505847", time=3.75
+   event  = var=NUM_VALUE, val="129263144299543", time=4.00
+
+   reset_max  = 0
+   reset_time = all-posted
+ }
+
+ProcessConfig = uTimerScript3
+ {
+   AppTick   = 4
+   CommsTick = 4
+
+   event  = var=NUM_VALUE, val="112272535095292", time=0.25
+   event  = var=NUM_VALUE, val="112582705942172", time=0.50
+   event  = var=NUM_VALUE, val="115280095190779", time=0.75
+   event  = var=NUM_VALUE, val="115797848077099", time=1.00
+   event  = var=NUM_VALUE, val="117450548693743", time=1.25
+   event  = var=NUM_VALUE, val="117463495419966", time=1.50
+   event  = var=NUM_VALUE, val="118813069318812", time=1.75
+   event  = var=NUM_VALUE, val="121642554638287", time=2.75
+   event  = var=NUM_VALUE, val="123939877913658", time=3.00
+   event  = var=NUM_VALUE, val="125673790649522", time=3.25
+   event  = var=NUM_VALUE, val="126794093929201", time=3.50
+   event  = var=NUM_VALUE, val="127691861505843", time=3.75
+   event  = var=NUM_VALUE, val="129263144299544", time=4.00
+
+   reset_max  = 0
+   reset_time = all-posted
+ }
+
+ProcessConfig = pLogger
+{
+    AsyncLog = true 
+    WildCardLogging = true
+    WildCardOmitPattern = *_STATUS
+
+    LOG = PRIME_RESULT @ 0
+    LOG = TIME_PRIME   @ 0
+}
