@@ -1,9 +1,9 @@
-ProcessConfig = pPointAssign
+ProcessConfig = pPointAssign_Auto
 {
-    AppTick   = 4
-    CommsTick = 4
+    AppTick   = 2
+    CommsTick = 2
 
     assign_by_region = true
-    VNAME1 = yhhuang@YHHuang-7572 
-    VNAME2 = lin@pc 
+//    VNAME1 = yhhuang@YHHuang-7572 
+//    VNAME2 = lin@pc 
 }

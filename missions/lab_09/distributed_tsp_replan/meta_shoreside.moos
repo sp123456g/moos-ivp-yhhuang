@@ -3,7 +3,7 @@
 
 ServerHost = localhost
 ServerPort = $(SPORT)
-Community  = $(VNAME)
+Community  = $(SNAME)
 
 #include plug_origin_warp.moos
   
@@ -19,7 +19,7 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uTimerScript    @ NewConsole = true
-  Run = pPointAssign    @ NewConsole = true
+  Run = pPointAssign_Auto    @ NewConsole = true
 }
 
 #include plug_pShare.moos

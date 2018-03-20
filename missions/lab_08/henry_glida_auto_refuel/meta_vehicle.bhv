@@ -4,11 +4,10 @@
 initialize   DEPLOY            = true
 initialize   RETURN            = false
 initialize   STATION_KEEP      = false
-initialize   SURVEY            = true
+initialize   LOITER            = true
 initialize   REFUEL_NEEDED     = false 
 initialize   REFUELING_START   = false
 initialize   REFUELING_END     = false
-initialize   GENPATH_REGENERATE= false
 //-----------------------------------------------
 
 set MODE = ACTIVE {
@@ -25,9 +24,9 @@ set MODE = RETURNING {
   RETURN = true
 } 
 
-set MODE = SURVEYING {
+set MODE = LOITERING {
   MODE   = ACTIVE
-  SURVEY = true
+  LOITER = true
 } 
 
 set MODE = BACK_TO_REFUEL {
@@ -36,27 +35,23 @@ set MODE = BACK_TO_REFUEL {
 }
 
 
-//-------------------------------------------
-Behavior = BHV_Waypoint
+//----------------------------------------------
+Behavior = BHV_Loiter
 {
-  name      = waypt_navigation
+  name      = loiter
   pwt       = 100
-  condition = MODE==SURVEYING
-  endflag   = GENPATH_REGENERATE = true
+  condition = MODE==LOITERING
 
-  updates   = UPDATES_VAR
-  
-  wptflag   = ARRIVE = true
-  wptflag   = TARGET_X = $[X];
-  wptflag   = TARGET_Y = $[Y];
+   post_suffix = A
+         speed = 1.3
+     clockwise = false
+        radius = 8.0
+     nm_radius = 15.0
+       polygon = radial::$(LOITER_POS), radius=20, pts=8, snap=1, label=$(VNAME)_LOITER
 
-  perpetual = true
-
-      speed = 1.3
-     radius = 3.0
-  nm_radius = 15.0
-     points = $(START_POS)
-       lead = 8
+  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+  visual_hints = edge_color=orange, vertex_color=white
+  visual_hints = edge_size=1, vertex_size=2
 }
 
 
@@ -121,18 +116,17 @@ Behavior = BHV_Timer
     endflag   = STATION_KEEP = false
     endflag   = REFUELING_END = true
     endflag   = REFUELING_START = false
-    endflag   = SURVEY = true
+    endflag   = LOITER = true
     perpetual = true
 }
-
-//----------------------------------------------
+//---------------------------------------------
 Behavior = BHV_Timer 
 {
-    name      = bhv_timer_refuel_need_calculation
-    condition = SURVEY= true
-    duration  = 500
-    duration_reset = REFUELING_START = true
-    endflag   = SURVEY = false
+    name      = bhv_timer_go_for_refuel
+    condition = LOITER = true
+    duration  = 200
+    duration_reset = REFUELING_END = true
     endflag   = REFUEL_NEEDED = true
+    endflag   = LOITER = false
     perpetual = true
 }

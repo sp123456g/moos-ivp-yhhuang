@@ -82,24 +82,19 @@ ProcessConfig = pMarineViewer
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
 
-  button_one = DEPLOY_BRAVO # DEPLOY_BRAVO=true
-  button_one = MOOS_MANUAL_OVERRIDE_BRAVO=false # RETURN_BRAVO=false
-  button_two = RETURN_BRAVO # RETURN_BRAVO=true
-
-  action  = MENU_KEY=deploy # DEPLOY_BRAVO = true # RETURN_BRAVO = false
-  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE_BRAVO=false
-  action  = RETURN_BRAVO=true
-  action  = UPDATES_RETURN_BRAVO=speed=1.4
-
-  button_three = DEPLOY_ALPHA # DEPLOY_ALPHA=true
+  button_three = DEPLOY_ALL
+  button_three = DEPLOY_ALPHA=true
+  button_three = DEPLOY_BRAVO=true
   button_three = MOOS_MANUAL_OVERRIDE_ALPHA=false # RETURN_ALPHA=false
-  button_four = RETURN_ALPHA # RETURN_ALPHA=true
+  button_three = MOOS_MANUAL_OVERRIDE_BRAVO=false # RETURN_BRAVO=false
+  button_four  = RETURN_ALL
+  button_four  = RETURN_ALPHA = true 
+  button_four  = RETURN_BRAVO = true
 
-  action  = MENU_KEY=deploy # DEPLOY_ALPHA = true # RETURN_ALPHA = false
-  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE_ALPHA=false
-  action  = RETURN_ALPHA=true
-  action  = UPDATES_RETURN_ALPHA=speed=1.4
-
+  action  = MENU_KEY=deploy_alpha # DEPLOY_ALPHA = true # RETURN_ALPHA = false
+  action  = MENU_KEY=return_alpha # RETURN_ALPHA = true
+  action  = MENU_KEY=deploy_bravo # DEPLOY_BRAVO = true # RETURN_BRAVO = false
+  action  = MENU_KEY=return_bravo # RETURN_BRAVO = true
 }
 
 //------------------------------------------
