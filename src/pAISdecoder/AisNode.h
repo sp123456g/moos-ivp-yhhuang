@@ -68,5 +68,5 @@ class AisNode
     protected:  //tool function use in class
 
         std::string CharToAscii(char input); //input is char 
-        std::vector<int> AsciiToBinVec(std::vector<std::string>);
+        std::vector<int> AsciiToBinVec(std::vector<std::string> input);
 };

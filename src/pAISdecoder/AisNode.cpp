@@ -9,7 +9,7 @@
 #include "AisNode.h"
 #include "MBUtils.h"
 #include <vector>
-
+#include <sstream>
 AisNode::AisNode()
 {
     m_original_inform   = "";
@@ -70,9 +70,9 @@ void AisNode::analysis()
      
       binary_str_buff.push_back(ascii_str);
 
-      m_main_bin_message = AsciiToBinVec(binary_str_buff); 
     }
 
+      m_main_bin_message = AsciiToBinVec(binary_str_buff); 
 };
 
 std::string AisNode::getPacketType() const            
@@ -273,7 +273,25 @@ std::string AisNode::CharToAscii(char input)
 };
 
 
-std::vector<int> AisNode::AsciiToBinVec(std::vector<std::string>)
+std::vector<int> AisNode::AsciiToBinVec(std::vector<std::string> input)
 {
+    std::vector<int> output;
     
+   for(int i=0;i<input.size();i++){
+    
+       for(int j=0;j<input[0].length();j++){
+           
+           std::stringstream ss;
+           std::string int_str;
+           int number;
+           
+           int_str = input[i].substr(j,1);
+           
+           ss<<int_str;
+           ss>>number;
+
+           output.push_back(number);  
+       }
+   }
+        return output;
 };
