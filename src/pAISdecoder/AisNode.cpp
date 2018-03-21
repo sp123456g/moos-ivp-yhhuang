@@ -10,6 +10,7 @@
 #include "MBUtils.h"
 #include <vector>
 #include <sstream>
+#include <iomanip>
 AisNode::AisNode()
 {
     m_original_inform   = "";
@@ -21,7 +22,8 @@ AisNode::AisNode()
     m_main_message      = "";
     
     m_parse_information.clear();
-    
+    m_main_bin_message.clear();
+
     m_user_id           = "";
     m_navigation_status = "";
     
@@ -50,12 +52,14 @@ void AisNode::analysis()
 
     m_parse_information = parseString(m_original_inform, ',');
 //AIS DATA is seperated by ','
-    m_parse_information[0] = m_packet_type;
-    m_parse_information[1] = m_number_of_sen;
-    m_parse_information[2] = m_sen_num;
-    m_parse_information[3] = m_seq_mess_id;
-    m_parse_information[4] = m_channel;
-    m_parse_information[5] = m_main_message;
+     m_packet_type   = m_parse_information[0]; 
+     m_number_of_sen = m_parse_information[1]; 
+     m_sen_num       = m_parse_information[2]; 
+     m_seq_mess_id   = m_parse_information[3]; 
+     m_channel       = m_parse_information[4]; 
+     m_main_message  = m_parse_information[5]; 
+
+
 
 //string to char array
     char *c_main_message= new char [m_main_message.length()+1];     
@@ -63,16 +67,20 @@ void AisNode::analysis()
 
         
     std::vector<std::string> binary_str_buff;
-    
-    for(int i=0;i<sizeof(c_main_message)/sizeof(c_main_message[0]);i++){
+ 
+    for(int i=0;i<strlen(c_main_message);i++){
+
+
 
       std::string ascii_str = CharToAscii(c_main_message[i]);
-     
-      binary_str_buff.push_back(ascii_str);
-
+        
+        if(ascii_str != "") 
+        binary_str_buff.push_back(ascii_str);
     }
 
-      m_main_bin_message = AsciiToBinVec(binary_str_buff); 
+      m_main_bin_message = AsciiToBinVec(binary_str_buff);
+
+     //test if the sentence is corrct
 };
 
 std::string AisNode::getPacketType() const            
@@ -111,18 +119,44 @@ std::string AisNode::getUserID() const
     return(m_user_id);
 };
 
-double AisNode::getSog()
+double AisNode::getSog()  //get speed over ground
 {
+    std::vector<int> binary;
 
 };
 
-double AisNode::getCog()
+double AisNode::getCog()  //get course of ground
 {
 
 };
 
 double AisNode::getLon()
 {
+    std::deque<int> binary;
+
+    for(int i=61;i<=88;i++){
+   
+       binary.push_front(m_main_bin_message[i]);
+    }
+
+
+    long double decimal = BinToDec(binary);
+    
+    for(int i=0;i<binary.size();i++){
+        std::cout<<"Element["<<i<<"]="<<binary[i]<<std::endl;
+    }
+    
+    long double output_min = decimal/10000;
+
+    std::string output_min_cout;
+    std::stringstream ss;
+    ss<<output_min;
+    ss>>output_min_cout;
+    std::cout<<"minute:"<<output_min_cout<<std::endl;
+
+    long double output = output_min/60;
+
+    std::cout<<"Lon:"<<std::setprecision(10)<<output<<std::endl;
     
 };
 
@@ -138,7 +172,7 @@ double AisNode::getTrueHeading()
 
 std::string AisNode::CharToAscii(char input)
 {
-    std::string output;
+    std::string output="";
     if(input=='0')
         output = "000000";
     else if(input=='1')
@@ -270,6 +304,7 @@ std::string AisNode::CharToAscii(char input)
     else if(input=='w')
         output = "111111";
 
+    return output;
 };
 
 
@@ -289,9 +324,19 @@ std::vector<int> AisNode::AsciiToBinVec(std::vector<std::string> input)
            
            ss<<int_str;
            ss>>number;
-
            output.push_back(number);  
        }
    }
-        return output;
+        return(output);
+};
+
+long double AisNode::BinToDec(std::deque<int> input)  // ex: 11110 input[0]=0 input[1]=1...
+{
+    int64_t sum=0;
+        
+    for(int i=0;i<input.size();i++){
+      
+        sum+=input[i]*pow(2,i);
+    }
+        return(sum);    
 };

@@ -24,7 +24,7 @@ ProcessConfig = uTimerScript
     CommsTick = 4
 
     event = var=AIS_DATA, val="!AIVDM,1,1,,A,15Cgah00008LOnt>1Cfs61VT00SU,0*3D"  , time=0.25
-    event = var=AIS_DATA, val="!AIVDM,1,1,,A,14eG;o@034o8sd<L9i:a;WF>062D,0*7D"  , time=0.5
+//    event = var=AIS_DATA, val="!AIVDM,1,1,,A,14eG;o@034o8sd<L9i:a;WF>062D,0*7D"  , time=0.5
    // event = var=AIS_DATA, val=""  , time=0.75
    // event = var=AIS_DATA, val=""  , time=1.00
     

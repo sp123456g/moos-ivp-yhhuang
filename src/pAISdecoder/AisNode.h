@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <math.h>
+#include <deque>
+#include <stdint.h>
 class AisNode
 {
 
@@ -69,4 +72,5 @@ class AisNode
 
         std::string CharToAscii(char input); //input is char 
         std::vector<int> AsciiToBinVec(std::vector<std::string> input);
+        long double BinToDec(std::deque<int> input);
 };
