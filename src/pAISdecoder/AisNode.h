@@ -30,7 +30,7 @@ class AisNode
         std::string m_seq_mess_id;           // sequence message id
         std::string m_channel;               // input channel
         std::string m_main_message;          // position and others
-        
+        std::string m_message_id;        
 
         std::vector<int> m_main_bin_message;
         std::vector<std::string> m_parse_information;
@@ -57,7 +57,7 @@ class AisNode
         std::string getSeqMessID() const;           
         std::string getChannel() const;               
         std::string getMainMessage() const; 
-
+        std::string getMessageID() const;
 
         std::string getNavigationStatus() const;
 

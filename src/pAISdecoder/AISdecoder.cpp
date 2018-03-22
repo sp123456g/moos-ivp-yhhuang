@@ -88,17 +88,20 @@ bool AISdecoder::Iterate()
   if(!m_input_buff.empty()){
   
     
-      string ais_result;
-
+      string  ais_result="";
       AisNode input_node = m_input_buff.front();
+        
       input_node.analysis();
+      string  ais_message_id = input_node.getMessageID();
+      cout<<ais_message_id<<endl; 
+      if(ais_message_id=="1" || ais_message_id=="2" || ais_message_id=="3"){
+     
+            input_node.getSog();
+             ais_result = input_node.getReport();
+             Notify("AIS_RESULT",ais_result);
+      }
 
-      ais_result = input_node.getReport();
-      
-      Notify("AIS_RESULT",ais_result);
-      
-      m_input_buff.pop_back();
-
+             m_input_buff.pop_back();
   }
   AppCastingMOOSApp::PostReport();
   return(true);

@@ -21,8 +21,8 @@ void showSynopsis()
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
   blk("  The pAISdecoder application is used for               ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  decoding the AIS data which is in NMEA sentence.               ");
+  blk("  The Output include Latitude, Longitude, CourseOverGround and TrueHeading");
   blk("                                                                ");
   blk("                                                                ");
 }
@@ -94,13 +94,17 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
-  blk("                                                                ");
+  blk("  AIS_DATA   ");
+  blk("     string_val is NMEA sentence,                               ");
+  blk("     ex:                                                        ");
+  blk("         !AIVDM,1,1,,A,33P;D3E00000PkHLD;TV17w60000,0*4A\n      ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
-  blk("                                                                ");
+  blk("   AIS_RESULT  ");
+  blk("     string_val include Latitude, Longitude, CourseOverGround and TrueHeading");
+  blk("     ex:");
+  blk("         ShipID=356248000,Longitude=118.0735433,Latitude=24.50249833,CourseOverGround=284,TrueHeading=51");
+  blk("---------------------------------------------------------------");
   exit(0);
 }
 

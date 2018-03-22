@@ -24,9 +24,12 @@ ProcessConfig = uTimerScript
     CommsTick = 4
 
     event = var=AIS_DATA, val="!AIVDM,1,1,,A,15Cgah00008LOnt>1Cfs61VT00SU,0*3D"  , time=1
-    event = var=AIS_DATA, val="!AIVDM,1,1,,A,14eG;o@034o8sd<L9i:a;WF>062D,0*7D"  , time=2
-   // event = var=AIS_DATA, val=""  , time=0.75
-   // event = var=AIS_DATA, val=""  , time=1.00
+    event = var=AIS_DATA, val="!AIVDM,1,1,,A,24eG;o@034o8sd<L9i:a;WF>062D,0*7D"  , time=2
+    event = var=AIS_DATA, val="!AIVDM,1,1,,A,33aFgs@P03PGP9VMaKtuT?w825Ip,0*50"  , time=3
+    event = var=AIS_DATA, val="!AIVDM,1,1,,A,13u?etPv2;0n:dDPwUM1U1Cb069D,0*23"  , time=4.00
+    event = var=AIS_DATA, val="!AIVDM,1,1,,A,400TcdiuiT7VDR>3nIfr6>i00000,0*78"  , time=5 
+    event = var=AIS_DATA, val="!AIVDO,1,1,,A,95M2oQ@41Tr4L4H@eRvQ;2h20000,0*0D"  , time=5 
+      event = var=AIS_DATA, val="!AIVDM,1,1,,A,16SWU<001Ba3N=nEKIooQ8982HEK,0*2B"  , time=0.5 
     
     reset_max  = 10
     reset_time = all-posted

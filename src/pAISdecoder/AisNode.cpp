@@ -59,28 +59,20 @@ void AisNode::analysis()
      m_channel       = m_parse_information[4]; 
      m_main_message  = m_parse_information[5]; 
 
-
-
-//string to char array
-    char *c_main_message= new char [m_main_message.length()+1];     
-    strcpy(c_main_message , m_main_message.c_str());
-
+     m_message_id    = m_main_message[0];
         
     std::vector<std::string> binary_str_buff;
  
-    for(int i=0;i<strlen(c_main_message);i++){
+    for(int i=0;i<m_main_message.length();i++){
 
 
-
-      std::string ascii_str = CharToAscii(c_main_message[i]);
+      std::string ascii_str = CharToAscii(m_main_message[i]);
         
         if(ascii_str != "") 
         binary_str_buff.push_back(ascii_str);
     }
 
       m_main_bin_message = AsciiToBinVec(binary_str_buff);
-
-     //test if the sentence is corrct
 };
 
 std::string AisNode::getPacketType() const            
@@ -114,6 +106,11 @@ std::string AisNode::getMainMessage() const
     return(m_main_message);
 };
 
+std::string AisNode::getMessageID() const
+{
+    return(m_message_id);
+};
+
 std::string AisNode::getUserID()
 {
     std::deque<int> binary;
@@ -124,12 +121,10 @@ std::string AisNode::getUserID()
     }
 
     long int decimal = UnsignBinToDec(binary);   
-    std::cout<<"UserID:"<<std::setprecision(10)<<decimal<<std::endl;
 
     std::stringstream ss;
         ss<<decimal;
         ss>>m_user_id; 
-        std::cout<<"m_user_id:"<<m_user_id<<std::endl;      
         return(m_user_id);
 };
 
@@ -144,8 +139,6 @@ double AisNode::getSog()  //get speed over ground
 
     double decimal = UnsignBinToDec(binary);   
            m_sog = decimal/10;    // result is 10 times of real speed
-
-    std::cout<<"Sog:"<<std::setprecision(10)<<m_sog<<std::endl;
 
     return(m_sog);
 };
@@ -162,7 +155,6 @@ double AisNode::getCog()  //get course of ground
     double decimal = UnsignBinToDec(binary);   
            m_cog = decimal/10;    //result is 10 times of real spedd
 
-    std::cout<<"Cog:"<<std::setprecision(10)<<m_cog<<std::endl;
 
     return(m_cog);
 };
@@ -179,7 +171,6 @@ double AisNode::getLon()
     double decimal = BinToDec(binary);   
            m_lon = decimal/600000;    //output is 1/10000 min, change to degree
 
-    std::cout<<"Lon:"<<std::setprecision(10)<<m_lon<<std::endl;
 
     return(m_lon);
     
@@ -197,7 +188,6 @@ double AisNode::getLat()
     double decimal = BinToDec(binary);   
            m_lat = decimal/600000;    //output is 1/10000 min, change to degree
 
-    std::cout<<"Lat:"<<std::setprecision(10)<<m_lat<<std::endl;
 
     return(m_lat);
 
@@ -216,7 +206,6 @@ double AisNode::getTrueHeading()
     double decimal = UnsignBinToDec(binary);   
     m_true_heading = decimal;    
 
-    std::cout<<"True Heading:"<<std::setprecision(10)<<m_true_heading<<std::endl;
 
     return(m_true_heading);
 
@@ -230,12 +219,10 @@ std::string AisNode::CharToAscii(char input)
         output = "000000";
     else if(input=='1')
         output = "000001";
-    else if(input=='1')
-        output = "000010";
     else if(input=='2')
-        output = "000011";
+        output = "000010";
     else if(input=='3')
-        output = "000100";
+        output = "000011";
     else if(input=='4')
         output = "000100";
     else if(input=='5')
@@ -421,10 +408,14 @@ std::string AisNode::getReport()
     getLon();
     getLat();
     getCog();
+    getSog();
     getTrueHeading(); 
-    ss<<"ShipID="<<m_user_id<<",Longitude="<<std::setprecision(10)<<m_lon<<",Latitude="<<std::setprecision(10)<<m_lat<<",CourseOverGround="<<m_cog<<",TrueHeading="<<m_true_heading;
+    ss<<"ShipID="<<m_user_id<<",Longitude="<<std::setprecision(10)<<m_lon<<",Latitude="<<std::setprecision(10)<<m_lat<<",CourseOverGround="<<m_cog<<",TrueHeading="<<m_true_heading<<",SpeedOverGround="<<m_sog;
 
     ss>>output;
+
+    if(m_main_bin_message.size()!=168)
+        output = "Wrong message type";
 
     return(output);
 };
