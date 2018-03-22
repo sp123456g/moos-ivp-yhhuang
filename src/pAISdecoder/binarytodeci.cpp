@@ -8,12 +8,24 @@ using namespace std;
 long int BinToDec(std::deque<int> input)  // ex: 11110 input[0]=0 input[1]=1...
 {
     long int sum=0;
-        
-    for(int i=0;i<input.size();i++){
+    if(input[input.size()-1]==1){
+         for(int i=0;i<input.size()-1;i++){
       
-        sum+=input[i]*pow(2,i);
+                sum+=input[i]*pow(2,i);
 
-        std::cout<<input[i]<<"*2^"<<i<<std::endl;
+                std::cout<<input[i]<<"*2^"<<i<<std::endl;
+         }
+         
+         sum+=-1*pow(2,input.size()-1);
+         
+    }
+    else{    
+         for(int i=0;i<input.size();i++){
+      
+                sum+=input[i]*pow(2,i);
+
+                std::cout<<input[i]<<"*2^"<<i<<std::endl;
+         }
     }
         return(sum);    
 };

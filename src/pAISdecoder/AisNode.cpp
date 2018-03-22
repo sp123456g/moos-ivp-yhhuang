@@ -135,28 +135,17 @@ double AisNode::getLon()
     std::deque<int> binary;
 
     for(int i=61;i<=88;i++){
-   
+  //index 61 to 88 is for Lon 
        binary.push_front(m_main_bin_message[i]);
     }
 
-
-    long double decimal = BinToDec(binary);
-    
-    for(int i=0;i<binary.size();i++){
-        std::cout<<"Element["<<i<<"]="<<binary[i]<<std::endl;
-    }
-    
-    long double output_min = decimal/10000;
+    double decimal = BinToDec(binary);   
+    double output = decimal/600000;    //output is 1/10000 min, change to degree
 
     std::string output_min_cout;
-    std::stringstream ss;
-    ss<<output_min;
-    ss>>output_min_cout;
-    std::cout<<"minute:"<<output_min_cout<<std::endl;
-
-    long double output = output_min/60;
-
     std::cout<<"Lon:"<<std::setprecision(10)<<output<<std::endl;
+
+    return(output);
     
 };
 
@@ -330,13 +319,21 @@ std::vector<int> AisNode::AsciiToBinVec(std::vector<std::string> input)
         return(output);
 };
 
-long double AisNode::BinToDec(std::deque<int> input)  // ex: 11110 input[0]=0 input[1]=1...
+double AisNode::BinToDec(std::deque<int> input)  // ex: 11110 input[0]=0 input[1]=1...
 {
     int64_t sum=0;
-        
-    for(int i=0;i<input.size();i++){
-      
-        sum+=input[i]*pow(2,i);
+
+    if(input[input.size()-1]==1){
+        //negative, largest number become to nagative
+         for(int i=0;i<input.size()-1;i++){
+                sum+=input[i]*pow(2,i);
+         }
+         sum+=-1*pow(2,input.size()-1);
+    }
+    else{ 
+        for(int i=0;i<input.size();i++){
+                 sum+=input[i]*pow(2,i);
+        }
     }
         return(sum);    
 };

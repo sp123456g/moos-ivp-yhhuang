@@ -72,5 +72,5 @@ class AisNode
 
         std::string CharToAscii(char input); //input is char 
         std::vector<int> AsciiToBinVec(std::vector<std::string> input);
-        long double BinToDec(std::deque<int> input);
+        double BinToDec(std::deque<int> input);
 };
