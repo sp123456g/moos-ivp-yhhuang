@@ -59,9 +59,9 @@ class AisNode
         std::string getMainMessage() const; 
 
 
-        std::string getUserID() const;
         std::string getNavigationStatus() const;
 
+        std::string getUserID();
         double getSog();
         double getCog();
         double getLon();
@@ -73,4 +73,5 @@ class AisNode
         std::string CharToAscii(char input); //input is char 
         std::vector<int> AsciiToBinVec(std::vector<std::string> input);
         double BinToDec(std::deque<int> input);
+        double UnsignBinToDec(std::deque<int> input);
 };

@@ -114,20 +114,68 @@ std::string AisNode::getMainMessage() const
     return(m_main_message);
 };
 
-std::string AisNode::getUserID() const
+std::string AisNode::getUserID()
 {
+    std::deque<int> binary;
+
+    for(int i=8;i<=37;i++){
+  //index 8 to 37 is for UserID 
+       binary.push_front(m_main_bin_message[i]);
+    }
+
+    double decimal = UnsignBinToDec(binary);   
+    std::cout<<"UserID:"<<std::setprecision(10)<<decimal<<std::endl;
+
+    std::stringstream ss;
+    std::string output; 
+
+        ss<<decimal;
+        ss>>output; 
+    
+       
+       m_user_id = output; 
+        return(output);
+
+    
+
+    
     return(m_user_id);
 };
 
 double AisNode::getSog()  //get speed over ground
 {
-    std::vector<int> binary;
+    std::deque<int> binary;
 
+    for(int i=50;i<=59;i++){
+  //index 50 to 59 is for sog 
+       binary.push_front(m_main_bin_message[i]);
+    }
+
+    double decimal = UnsignBinToDec(binary);   
+    double output = decimal/10;    // result is 10 times of real speed
+
+    std::cout<<"Sog:"<<std::setprecision(10)<<output<<std::endl;
+
+    m_sog = output;
+    return(output);
 };
 
 double AisNode::getCog()  //get course of ground
 {
+    std::deque<int> binary;
 
+    for(int i=116;i<=127;i++){
+  //index 116 to 127 is for Cog 
+       binary.push_front(m_main_bin_message[i]);
+    }
+
+    double decimal = UnsignBinToDec(binary);   
+    double output = decimal/10;    //result is 10 times of real spedd
+
+    std::cout<<"Cog:"<<std::setprecision(10)<<output<<std::endl;
+
+    m_cog = output;
+    return(output);
 };
 
 double AisNode::getLon()
@@ -142,20 +190,50 @@ double AisNode::getLon()
     double decimal = BinToDec(binary);   
     double output = decimal/600000;    //output is 1/10000 min, change to degree
 
-    std::string output_min_cout;
     std::cout<<"Lon:"<<std::setprecision(10)<<output<<std::endl;
 
+    m_lon = output;
     return(output);
     
 };
 
 double AisNode::getLat()
 {
+    std::deque<int> binary;
+
+    for(int i=89;i<=115;i++){
+  //index 89 to 115 is for Lat
+       binary.push_front(m_main_bin_message[i]);
+    }
+
+    double decimal = BinToDec(binary);   
+    double output = decimal/600000;    //output is 1/10000 min, change to degree
+
+    std::cout<<"Lat:"<<std::setprecision(10)<<output<<std::endl;
+
+    m_lat = output;
+    return(output);
+
 
 };
 
 double AisNode::getTrueHeading()
 {
+    std::deque<int> binary;
+
+    for(int i=128;i<=136;i++){
+  //index 128 to 136 is for true heading 
+       binary.push_front(m_main_bin_message[i]);
+    }
+
+    double decimal = UnsignBinToDec(binary);   
+    double output = decimal;    
+
+    std::cout<<"True Heading:"<<std::setprecision(10)<<output<<std::endl;
+
+    m_true_heading = output;
+    return(output);
+
 
 };
 
@@ -337,3 +415,14 @@ double AisNode::BinToDec(std::deque<int> input)  // ex: 11110 input[0]=0 input[1
     }
         return(sum);    
 };
+
+double AisNode::UnsignBinToDec(std::deque<int> input)  // ex: 11110 input[0]=0 input[1]=1...
+{
+    int64_t sum=0;
+
+        for(int i=0;i<input.size();i++){
+                 sum+=input[i]*pow(2,i);
+        }
+        return(sum);    
+};
+
