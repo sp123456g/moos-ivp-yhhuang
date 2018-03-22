@@ -88,15 +88,17 @@ bool AISdecoder::Iterate()
   if(!m_input_buff.empty()){
   
     
+      string ais_result;
+
       AisNode input_node = m_input_buff.front();
       input_node.analysis();
-      input_node.getLon();
-      input_node.getLat();
-      input_node.getSog();
-      input_node.getCog();
-      input_node.getTrueHeading();
-      input_node.getUserID();
-  
+
+      ais_result = input_node.getReport();
+      
+      Notify("AIS_RESULT",ais_result);
+      
+      m_input_buff.pop_back();
+
   }
   AppCastingMOOSApp::PostReport();
   return(true);

@@ -61,6 +61,7 @@ class AisNode
 
         std::string getNavigationStatus() const;
 
+        std::string getReport();
         std::string getUserID();
         double getSog();
         double getCog();

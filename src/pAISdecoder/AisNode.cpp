@@ -123,23 +123,14 @@ std::string AisNode::getUserID()
        binary.push_front(m_main_bin_message[i]);
     }
 
-    double decimal = UnsignBinToDec(binary);   
+    long int decimal = UnsignBinToDec(binary);   
     std::cout<<"UserID:"<<std::setprecision(10)<<decimal<<std::endl;
 
     std::stringstream ss;
-    std::string output; 
-
         ss<<decimal;
-        ss>>output; 
-    
-       
-       m_user_id = output; 
-        return(output);
-
-    
-
-    
-    return(m_user_id);
+        ss>>m_user_id; 
+        std::cout<<"m_user_id:"<<m_user_id<<std::endl;      
+        return(m_user_id);
 };
 
 double AisNode::getSog()  //get speed over ground
@@ -152,12 +143,11 @@ double AisNode::getSog()  //get speed over ground
     }
 
     double decimal = UnsignBinToDec(binary);   
-    double output = decimal/10;    // result is 10 times of real speed
+           m_sog = decimal/10;    // result is 10 times of real speed
 
-    std::cout<<"Sog:"<<std::setprecision(10)<<output<<std::endl;
+    std::cout<<"Sog:"<<std::setprecision(10)<<m_sog<<std::endl;
 
-    m_sog = output;
-    return(output);
+    return(m_sog);
 };
 
 double AisNode::getCog()  //get course of ground
@@ -170,12 +160,11 @@ double AisNode::getCog()  //get course of ground
     }
 
     double decimal = UnsignBinToDec(binary);   
-    double output = decimal/10;    //result is 10 times of real spedd
+           m_cog = decimal/10;    //result is 10 times of real spedd
 
-    std::cout<<"Cog:"<<std::setprecision(10)<<output<<std::endl;
+    std::cout<<"Cog:"<<std::setprecision(10)<<m_cog<<std::endl;
 
-    m_cog = output;
-    return(output);
+    return(m_cog);
 };
 
 double AisNode::getLon()
@@ -188,12 +177,11 @@ double AisNode::getLon()
     }
 
     double decimal = BinToDec(binary);   
-    double output = decimal/600000;    //output is 1/10000 min, change to degree
+           m_lon = decimal/600000;    //output is 1/10000 min, change to degree
 
-    std::cout<<"Lon:"<<std::setprecision(10)<<output<<std::endl;
+    std::cout<<"Lon:"<<std::setprecision(10)<<m_lon<<std::endl;
 
-    m_lon = output;
-    return(output);
+    return(m_lon);
     
 };
 
@@ -207,12 +195,11 @@ double AisNode::getLat()
     }
 
     double decimal = BinToDec(binary);   
-    double output = decimal/600000;    //output is 1/10000 min, change to degree
+           m_lat = decimal/600000;    //output is 1/10000 min, change to degree
 
-    std::cout<<"Lat:"<<std::setprecision(10)<<output<<std::endl;
+    std::cout<<"Lat:"<<std::setprecision(10)<<m_lat<<std::endl;
 
-    m_lat = output;
-    return(output);
+    return(m_lat);
 
 
 };
@@ -227,12 +214,11 @@ double AisNode::getTrueHeading()
     }
 
     double decimal = UnsignBinToDec(binary);   
-    double output = decimal;    
+    m_true_heading = decimal;    
 
-    std::cout<<"True Heading:"<<std::setprecision(10)<<output<<std::endl;
+    std::cout<<"True Heading:"<<std::setprecision(10)<<m_true_heading<<std::endl;
 
-    m_true_heading = output;
-    return(output);
+    return(m_true_heading);
 
 
 };
@@ -424,5 +410,22 @@ double AisNode::UnsignBinToDec(std::deque<int> input)  // ex: 11110 input[0]=0 i
                  sum+=input[i]*pow(2,i);
         }
         return(sum);    
+};
+
+std::string AisNode::getReport()
+{
+    std::stringstream ss;
+    std::string       output;
+   
+    getUserID();
+    getLon();
+    getLat();
+    getCog();
+    getTrueHeading(); 
+    ss<<"ShipID="<<m_user_id<<",Longitude="<<std::setprecision(10)<<m_lon<<",Latitude="<<std::setprecision(10)<<m_lat<<",CourseOverGround="<<m_cog<<",TrueHeading="<<m_true_heading;
+
+    ss>>output;
+
+    return(output);
 };
 
