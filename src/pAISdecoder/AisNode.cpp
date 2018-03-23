@@ -1,7 +1,7 @@
 /************************************************************/
 /*    NAME: YHHuang                                              */
 /*    ORGN: MIT                                             */
-/*    FILE: AISdecoder.h                                          */
+/*    FILE: AisNode.cpp                                          */
 /*    DATE: MAR 19th 2018                            */
 /************************************************************/
 
@@ -33,6 +33,7 @@ AisNode::AisNode()
     m_lat = 0;
     m_true_heading = 0;
 
+    m_wrong = false;
      
 };
 
@@ -133,13 +134,18 @@ double AisNode::getSog()  //get speed over ground
     std::deque<int> binary;
 
     for(int i=50;i<=59;i++){
-  //index 50 to 59 is for sog 
+//index 50 to 59 is for sog 
        binary.push_front(m_main_bin_message[i]);
     }
 
     double decimal = UnsignBinToDec(binary);   
            m_sog = decimal/10;    // result is 10 times of real speed
-
+      
+//Check if it's in range
+    if(decimal<0 || decimal>1022){
+        m_wrong = true;
+    }
+        
     return(m_sog);
 };
 
@@ -148,13 +154,20 @@ double AisNode::getCog()  //get course of ground
     std::deque<int> binary;
 
     for(int i=116;i<=127;i++){
-  //index 116 to 127 is for Cog 
+//index 116 to 127 is for Cog 
        binary.push_front(m_main_bin_message[i]);
     }
 
     double decimal = UnsignBinToDec(binary);   
            m_cog = decimal/10;    //result is 10 times of real spedd
 
+//check if it's in range 
+    if(decimal<0 || decimal>3600){
+        m_wrong = true;
+
+    }
+
+    
 
     return(m_cog);
 };
@@ -164,13 +177,16 @@ double AisNode::getLon()
     std::deque<int> binary;
 
     for(int i=61;i<=88;i++){
-  //index 61 to 88 is for Lon 
+//index 61 to 88 is for Lon 
        binary.push_front(m_main_bin_message[i]);
     }
 
     double decimal = BinToDec(binary);   
            m_lon = decimal/600000;    //output is 1/10000 min, change to degree
-
+//check if it's in range
+    if(abs(m_lon)>180){
+        m_wrong = true;
+    }
 
     return(m_lon);
     
@@ -187,6 +203,11 @@ double AisNode::getLat()
 
     double decimal = BinToDec(binary);   
            m_lat = decimal/600000;    //output is 1/10000 min, change to degree
+    
+    if(abs(m_lat)>90){
+        m_wrong = true;
+    }
+
 
 
     return(m_lat);
@@ -205,6 +226,11 @@ double AisNode::getTrueHeading()
 
     double decimal = UnsignBinToDec(binary);   
     m_true_heading = decimal;    
+  
+    if(m_true_heading<0 || m_true_heading>360 && m_true_heading!=511.0){
+        m_wrong = true;
+    }
+
 
 
     return(m_true_heading);
@@ -410,13 +436,12 @@ std::string AisNode::getReport()
     getCog();
     getSog();
     getTrueHeading(); 
-    ss<<"ShipID="<<m_user_id<<",Longitude="<<std::setprecision(10)<<m_lon<<",Latitude="<<std::setprecision(10)<<m_lat<<",CourseOverGround="<<m_cog<<",TrueHeading="<<m_true_heading<<",SpeedOverGround="<<m_sog;
+    ss<<"ShipID="<<m_user_id<<",Lon="<<std::setprecision(10)<<m_lon<<",Lat="<<std::setprecision(10)<<m_lat<<",Cog="<<m_cog<<",TrueHeading="<<m_true_heading<<",Sog="<<m_sog;
 
     ss>>output;
 
-    if(m_main_bin_message.size()!=168)
-        output = "Wrong message type";
+    if(m_wrong)
+        output = "Wrong_Message_Type";
 
     return(output);
 };
-

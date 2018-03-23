@@ -22,8 +22,16 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("  The pAISdecoder application is used for               ");
   blk("  decoding the AIS data which is in NMEA sentence.               ");
-  blk("  The Output include Latitude, Longitude, CourseOverGround and TrueHeading");
+  blk("  The Output include Latitude(Lat), Longitude(Lon), CourseOverGround(Cog), TrueHeading, SpeedOverGround(Sog)");
   blk("                                                                ");
+  blk("     Only output for type 1,2,3 message(Position message)\n     ");
+  blk("     Unit:                                                      ");
+  blk("         ShipID:      Maritime Mobile Service Identity (MMSI)   ");
+  blk("         Longitude:   Degree");
+  blk("         Latitude:    Degree");
+  blk("         Cog:         Degree");
+  blk("         TrueHeading: Degree");
+  blk("         Sog:         Knots");
   blk("                                                                ");
 }
 
@@ -95,15 +103,19 @@ void showInterfaceAndExit()
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
   blk("  AIS_DATA   ");
-  blk("     string_val is NMEA sentence,                               ");
-  blk("     ex:                                                        ");
+  blk("     string_val");
+  blk("     NMEA sentence,                               ");
+  blk("     Ex:                                                        ");
   blk("         !AIVDM,1,1,,A,33P;D3E00000PkHLD;TV17w60000,0*4A\n      ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("   AIS_RESULT  ");
-  blk("     string_val include Latitude, Longitude, CourseOverGround and TrueHeading");
-  blk("     ex:");
-  blk("         ShipID=356248000,Longitude=118.0735433,Latitude=24.50249833,CourseOverGround=284,TrueHeading=51");
+  blk("   AIS_RESULT                                                   ");
+  blk("     string_val                                                 "); 
+  blk("     Ex:"                                                        );
+  blk("        If input is normal NMEA sentence:");
+  blk("        AIS_RESULT=\"ShipID=235066381,Lon=0.111967,Lat=49.484617,Cog=154,TrueHeading=255,Sog=0\"\n");
+  blk("        If input message is wrong type:");
+  blk("        AIS_RESULT=\"Wrong_Message_Type\"\n");
   blk("---------------------------------------------------------------");
   exit(0);
 }

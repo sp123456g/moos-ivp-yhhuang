@@ -18,6 +18,9 @@ using namespace std;
 AISdecoder::AISdecoder()
 {
     m_input_buff.clear();
+    m_orin = "";
+    m_result="";
+    
 }
 
 //---------------------------------------------------------
@@ -42,6 +45,7 @@ bool AISdecoder::OnNewMail(MOOSMSG_LIST &NewMail)
     if(key == "AIS_DATA"){
         
         string origin = msg.GetString();
+         m_orin = origin;
         AisNode input;
         input.setOrin(origin);
 
@@ -93,12 +97,13 @@ bool AISdecoder::Iterate()
         
       input_node.analysis();
       string  ais_message_id = input_node.getMessageID();
-      cout<<ais_message_id<<endl; 
       if(ais_message_id=="1" || ais_message_id=="2" || ais_message_id=="3"){
      
             input_node.getSog();
              ais_result = input_node.getReport();
              Notify("AIS_RESULT",ais_result);
+
+             m_result = ais_result;
       }
 
              m_input_buff.pop_back();
@@ -165,9 +170,9 @@ bool AISdecoder::buildReport()
   m_msgs << "============================================ \n";
 
   ACTable actab(4);
-  actab << "Alpha | Bravo | Charlie | Delta";
   actab.addHeaderLines();
-  actab << "one" << "two" << "three" << "four";
+  m_msgs <<"InComing AIS Data:"<<m_orin<<"\n";
+  m_msgs <<"AIS position result:"<<m_result<<"\n";
   m_msgs << actab.getFormattedString();
 
   return(true);

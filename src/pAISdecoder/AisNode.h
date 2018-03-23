@@ -1,7 +1,7 @@
 /************************************************************/
 /*    NAME: YHHuang                                              */
 /*    ORGN: MIT                                             */
-/*    FILE: AISdecoder.h                                          */
+/*    FILE: AisNode.h                                          */
 /*    DATE: MAR 19th 2018                             */
 /************************************************************/
 
@@ -12,6 +12,7 @@
 #include <math.h>
 #include <deque>
 #include <stdint.h>
+#include <stdlib.h>
 class AisNode
 {
 
@@ -44,7 +45,8 @@ class AisNode
         double m_lon;                        // lontitude
         double m_lat;                        // latitude
         double m_true_heading;
-   
+        
+        bool m_wrong;
     public:
     
         void   setOrin(std::string input);

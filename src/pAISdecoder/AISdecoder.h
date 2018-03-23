@@ -34,6 +34,9 @@ class AISdecoder : public AppCastingMOOSApp
    std::deque<AisNode> m_input_buff; 
 
  private: // State variables
+
+   std::string m_orin;
+   std::string m_result;
 };
 
 #endif 
