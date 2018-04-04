@@ -1,5 +1,6 @@
 ServerHost = localhost
 ServerPort = $(VPORT)
+Simulator  = true
 
 // Community name IS the vehicle name
 Community  = $(VNAME)
@@ -24,16 +25,22 @@ Processconfig = ANTLER
   Run = uFldNodeBroker     @ NewConsole = false
   Run = uFldMessageHandler @ NewConsole = false
   Run = uFldHazardMgr      @ NewConsole = false
+  Run = uXMS               @ NewConsole = false
 }
   
+//------------------------------------------------------------
+Processconfig = uXMS
+{
+  var = DEPLOY, SURVEY, STATION, MOOS_MANUAL_OVERRIDE
+}
+
+
 #include plug_uFldNodeBroker.moos
 #include plug_pShare.moos
 #include plug_pHostInfo.moos
 #include plug_uFldMessageHandler.moos
 #include plug_uFldHazardMgr.moos
-
 #include plug_uSimMarine.moos
-
 #include plug_pHelmIvP.moos
 #include plug_pMarinePID.moos
 #include plug_pLogger.moos

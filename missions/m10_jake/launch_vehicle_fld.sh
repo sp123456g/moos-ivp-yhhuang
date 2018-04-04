@@ -4,7 +4,7 @@
 #-------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
-VNAME="archie"
+VNAME="puddy"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0
@@ -27,14 +27,13 @@ done
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
-START_POS1="0,0"  
+START_POS1="0,-30"  
 
-nsplug meta_vehicle.moos targ_$VNAME.moos -f WARP=$TIME_WARP  \
-   VNAME=$VNAME       START_POS=$START_POS1                  \
-   VPORT="9001"       SHARE_LISTEN="9301"                    \
-   VTYPE=UUV        
+nsplug meta_vehicle_fld.moos targ_$VNAME.moos -f WARP=$TIME_WARP  \
+   VNAME=$VNAME       VTYPE=KAYAK                                 \
+   VPORT="9001"       SHARE_LISTEN="9301"                         \
 
-nsplug meta_vehicle.bhv targ_$VNAME.bhv -f VNAME=$VNAME       \
+nsplug meta_vehicle.bhv targ_$VNAME.bhv -f VNAME=$VNAME           \
     START_POS=$START_POS1 
 
 if [ ${JUST_MAKE} = "yes" ] ; then
