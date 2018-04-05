@@ -4,7 +4,6 @@
 // Feb 10th, 2013
 
 #include "MOOS/libMOOS/App/MOOSApp.h"
-
 class ExampleApp : public CMOOSApp {
 
   bool OnNewMail (MOOSMSG_LIST & Mail) 

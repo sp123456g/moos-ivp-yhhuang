@@ -28,6 +28,7 @@ ADD_SUBDIRECTORY(pGenPath_RePlanning)
 ADD_SUBDIRECTORY(pAISdecoder)
 ADD_SUBDIRECTORY(pCommunicationAngle_yhhuang)
 ADD_SUBDIRECTORY(pPointAssign_Auto)
+ADD_SUBDIRECTORY(uFldHazardMgrX)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################
