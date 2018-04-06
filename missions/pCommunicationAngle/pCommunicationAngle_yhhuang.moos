@@ -1,0 +1,43 @@
+//Configuration file: YHHuang
+
+ServerHost = oceanai.mit.edu
+ServerPort = 9011
+Community  = Spermwhale
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		       @ NewConsole = false
+//  Run = pLogger         @ NewConsole = false     
+  Run = pCommunicationAngle_yhhuang  @ NewConsole = true
+}
+
+//------------------------------------------------
+// pCommunicationAngle_yhhuang config block
+
+ProcessConfig = pCommunicationAngle_yhhuang
+{
+   AppTick   = 2 
+   CommsTick = 2
+
+   collaborator = NEPTUNE
+   surface_sound_speed  = 1480
+   sound_speed_gradient = 0.016
+   water_depth          = 6000
+
+}
+
+
+ProcessConfig = pLogger
+{
+    AsyncLog = true 
+    WildCardLogging = true
+    WildCardOmitPattern = *_STATUS
+
+    LOG = ELEV_ANGLE @ 0
+    LOG = ANGLE_UP   @ 0
+    LOG = ANGLE_LOWDOWN @ 0 
+}
