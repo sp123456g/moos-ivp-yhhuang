@@ -103,7 +103,7 @@ ProcessConfig = pHelmIvP
   domain     = course:0:359:360
   domain     = speed:0:4:41
 
-    ivp_behavior_dir = /home/yhhuang/moos-ivp-yhhuang/lib
+    ivp_behavior_dir = /home/yhhuang/moos-ivp-yhhuang/trunk/lib
 }
 
 //------------------------------------------
