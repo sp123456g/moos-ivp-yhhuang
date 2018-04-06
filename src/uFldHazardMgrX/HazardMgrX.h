@@ -27,7 +27,7 @@
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYHazardSet.h"
 #include "XYPolygon.h"
-
+#include <deque>
 class HazardMgrX : public AppCastingMOOSApp
 {
  public:
@@ -71,8 +71,7 @@ class HazardMgrX : public AppCastingMOOSApp
 
    unsigned int m_sensor_report_reqs;
    unsigned int m_detection_reports;
-   std::string  m_detection_reports_str;
-
+   std::deque<std::string>  m_detection_reports_str_buff;
    unsigned int m_summary_reports;
 
    double m_swath_width_granted;
@@ -80,7 +79,7 @@ class HazardMgrX : public AppCastingMOOSApp
 
    XYHazardSet m_hazard_set;
    XYPolygon   m_search_region;
-   
+    std::string m_fordebug; 
    double      m_transit_path_width;
 };
 
