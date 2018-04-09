@@ -133,6 +133,7 @@ Behavior = BHV_Waypoint
     name      = waypt_communicate
     condition = MODE == COMMUNICATING
     endflag   = COMMUNICATE_NEEDED = false
+    endflag   = WAPOINTING = true
     perpetual = true
 
 
