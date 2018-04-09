@@ -46,7 +46,6 @@ Behavior = BHV_ConstantDepth
     basewidth = 2
   summitdelta = 10
 }
-
 //----------------------------------------------
 Behavior = BHV_StationKeep
 {
@@ -64,7 +63,6 @@ Behavior = BHV_StationKeep
         visual_hints = vertex_size=0, edge_color=gray50
 }
 
-
 //----------------------------------------------
 Behavior = BHV_Waypoint
 { 
@@ -81,10 +79,10 @@ Behavior = BHV_Waypoint
 
 
 #ifdef VNAME VNAME1
-	points = format=lawnmower,label=jakesearch,x=-40,y=-237.5,height=325,width=240,lane_width=40,rows=ns,startx=0,starty=0
+	points = format=lawnmower,label=jakesearch,x=-40,y=-237.5,height=325,width=240,lane_width=50,rows=ns,startx=0,starty=0
   visual_hints = vertex_color=yellow, edge_color=green
 #elseifdef VNAME VNAME2
-	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=255,lane_width=20,rows=north-south,degs=0
+	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=240,lane_width=50,rows=north-south,degs=0
   visual_hints = vertex_color=yellow, edge_color=gray25
 #endif
 
@@ -116,30 +114,37 @@ Behavior = BHV_Waypoint
      nm_radius = 8.0
         points = $(START_POS)
 }
-
+//----------------------------------------------
 Behavior = BHV_Timer
 {
     name = bhv_timer_go_for_communicate
     condition = WAPOINTING = true 
-    duration = 200 
+    duration = 500 
+    condition = SURVEY != COMPLETE
+    condition = STATION = false
     duration_reset = COMMUNICATE_END = true
     endflag        = COMMUNICATE_NEEDED = true 
     endflag        = WAPOINTING = false
     perpetual      = true
 }
-
+//----------------------------------------------
 Behavior = BHV_Waypoint 
 {
     name      = waypt_communicate
     condition = MODE == COMMUNICATING
     endflag   = COMMUNICATE_NEEDED = false
-    endflag   = WAPOINTING = true
+    endflag   = STATION = true
     perpetual = true
-
 
     speed = 1.3 
     radius = 2.0
     nm_radius = 8.0
     points = $(START_POS)
     lead = 8
+
+#ifdef VNAME VNAME1
+	points = 69.73,-225.36
+#elseifdef VNAME VNAME2
+	points = 146.65,-225.36
+#endif
 }
