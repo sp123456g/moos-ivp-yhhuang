@@ -5,9 +5,7 @@ initialize   RETURN  = false
 initialize   SURVEY  = false
 initialize   STATION = false
 initialize   COMMUNICATE_NEEDED = false
-initialize   COMMUNICATE_START  = false
-initialize   COMMUNICATE_END    = false
-initialize   WAPOINTING         = true
+initialize   WAPOINTING = true
 Set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
@@ -20,8 +18,19 @@ set MODE = STATION-KEEPING {
 set MODE = RETURNING {
   MODE = ACTIVE
   RETURN = true
-} SURVEYING
+} 
 
+set MODE = WAPOINT_SURVEYING{
+    MODE =ACTIVE
+    RETURN = false
+    WAPOINTING = true
+
+}
+set MODE = COMMUNICATING {
+
+    MODE = ACTIVE
+    COMMUNICATE_NEEDED = true
+}
 
 //----------------------------------------------
 Behavior = BHV_ConstantDepth
@@ -61,8 +70,7 @@ Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
   pwt       = 100
-  condition = MODE==SURVEYING
-  condition = WAPOINTING = true
+  condition = MODE==WAPOINT_SURVEYING
   endflag   = RETURN = true
   perpetual = true
 
@@ -76,9 +84,8 @@ Behavior = BHV_Waypoint
 	points = format=lawnmower,label=jakesearch,x=-40,y=-237.5,height=325,width=240,lane_width=40,rows=ns,startx=0,starty=0
   visual_hints = vertex_color=yellow, edge_color=green
 #elseifdef VNAME VNAME2
-//	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=255,lane_width=20,rows=north-south,degs=0
-	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=240,lane_width=40,rows=north-south,degs=0
-
+	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=255,lane_width=20,rows=north-south,degs=0
+  visual_hints = vertex_color=yellow, edge_color=gray25
 #endif
 
        endflag = NODE_MESSAGE = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
@@ -98,7 +105,6 @@ Behavior = BHV_Waypoint
   name       = waypt_return
   pwt        = 100
   condition  = MODE==RETURNING
-  condition  = WAPOINTING = true
   perpetual  = true
   endflag    = RETURN = false
   endflag    = DEPLOY = false
@@ -111,15 +117,21 @@ Behavior = BHV_Waypoint
         points = $(START_POS)
 }
 
-//---------------------------------------------
+Behavior = BHV_Timer
+{
+    name = bhv_timer_go_for_communicate
+    condition = WAPOINTING = true 
+    duration = 200 
+    duration_reset = COMMUNICATE_END = true
+    endflag        = COMMUNICATE_NEEDED = true 
+    endflag        = WAPOINTING = false
+    perpetual      = true
+}
+
 Behavior = BHV_Waypoint 
 {
     name      = waypt_communicate
-    pwt       = 100
-    condition = WAPOINTING = false
-    condition = COMMUNICATE_NEEDED = true;
-    endflag   = COMMUNICATE_END = true
-    endflag   = WAPOINTING = true
+    condition = MODE == COMMUNICATING
     endflag   = COMMUNICATE_NEEDED = false
     perpetual = true
 
@@ -127,25 +139,6 @@ Behavior = BHV_Waypoint
     speed = 1.3 
     radius = 2.0
     nm_radius = 8.0
-    lead = 8 
-    points = 69, -225
-#ifdef VNAME VNAME1
-	points =69.73,-225.36
-  visual_hints = vertex_color=yellow, edge_color=green
-#elseifdef VNAME VNAME2
-	points = 146.65,-225.36
-  visual_hints = vertex_color=yellow, edge_color=gray25
-#endif
-
-}
-//--------------------------------------------
-Behavior = BHV_Timer
-{
-        name = bhv_timer_go_for_communicate
-   condition = MODE == SURVEYING 
-    duration = 100 
-    duration_reset = COMMUNICATE_END = true
-    endflag        = COMMUNICATE_NEEDED = true 
-    endflag        = WAPOINTING = false
-    perpetual      = true
+    points = $(START_POS)
+    lead = 8
 }
