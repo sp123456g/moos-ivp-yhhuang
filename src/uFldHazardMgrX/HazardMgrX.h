@@ -57,6 +57,8 @@ class HazardMgrX : public AppCastingMOOSApp
    void postSensorConfigRequest();
    void postSensorInfoRequest();
    void postHazardSetReport();
+
+   void greedy_path(double, double);
    
  private: // Configuration variables
    double      m_swath_width_desired;
@@ -83,6 +85,9 @@ class HazardMgrX : public AppCastingMOOSApp
    std::deque<std::string>  m_output_buff;
    double m_swath_width_granted;
    double m_pd_granted;
+
+   double m_nav_x;
+   double m_nav_y;
     
    bool m_self_result; // if it's from own vehicle, not collaborator
    XYHazardSet m_hazard_set;

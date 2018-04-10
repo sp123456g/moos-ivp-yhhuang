@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include "MBUtils.h"
 #include "HazardMgrX.h"
+#include "XYPoint.h"
 #include "XYFormatUtilsHazard.h"
 #include "XYFormatUtilsPoly.h"
 #include "ACTable.h"
@@ -129,12 +130,103 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
         m_hit_communicate_point = true;
       }
     }
+    else if (key == "SURVEY"){
+      if( sval == "REDETECT") {
+        reportEvent(sval);
+        greedy_path(m_nav_x, m_nav_y);
+      }
+    }
+    else if (key == "NAV_X")
+      m_nav_x = dval;
+    else if (key == "NAV_Y")
+      m_nav_y = dval;
 
     else 
       reportRunWarning("Unhandled Mail: " + key);
   }
 	
    return(true);
+}
+
+void HazardMgrX::greedy_path(double start_x, double start_y) {
+  // -------------- string to XYPoint -----------------
+  // msg from m_history_detect_buff
+  //          example: x=14,y=3,label=35 | x=-34,y=-34,label=46
+  // XYPoint is save in m_xypoint_list
+  vector<XYPoint> m_xypoint_list;
+  deque<string>::iterator it;
+  if(!m_history_detect_buff.empty()) {
+    for(it=m_history_detect_buff.begin(); it!=m_history_detect_buff.end(); ++it)
+    {
+      string &visit_point = *it;
+      vector<string> contenor = parseString(visit_point, ',');  // split by ,
+      double x, y;
+      int param_cnt = 0;
+      for(int i = 0; i < contenor.size(); i++) {
+        string param = biteStringX(contenor[i], '=');
+        string value = contenor[i];
+        param = tolower(param);
+        if(param == "x") {
+          setDoubleOnString(x, value);
+          param_cnt++;
+        }
+        else if (param == "y") {
+          setDoubleOnString(y, value);
+          param_cnt++;
+        }
+        else if (param == "label") {
+          param_cnt++;
+          break;
+        }
+      }
+      if(param_cnt == 3) {
+        XYPoint new_point(x,y);
+        m_xypoint_list.push_back(new_point);
+      }
+    }
+  }
+
+  // --------------- greedy path ----------------
+  // 0. Set a starting point as previous point
+  // 1. Calculate distance between previous point and other point
+  // 2. Get the point that has mininum distance between previous point and set it as next point
+  // 3. set next point as previous point
+  // 4. go back to step 1.
+
+  XYPoint point_pre(start_x, start_y);
+  vector<XYPoint> path_list;
+  while(!m_xypoint_list.empty()){
+    vector<XYPoint>::iterator p;
+    vector<XYPoint>::iterator p_next;
+    double min_dis = 9999;
+    // find local mininum
+    for(p=m_xypoint_list.begin(); p!=m_xypoint_list.end(); ++p) {
+      XYPoint &point_now = *p;
+      double d = (pow((point_now.get_vx()-point_pre.get_vx()),2) + pow((point_now.get_vy()-point_pre.get_vy()),2));
+      d = sqrt(d);
+      if(d < min_dis) {
+        min_dis = d;
+        p_next = p;
+      }
+    }
+    path_list.push_back(*p_next);
+    point_pre = *p_next;
+    m_xypoint_list.erase(p_next);
+  }
+  m_xypoint_list = path_list;
+
+  stringstream ss;
+  ss << "points = ";
+  vector<XYPoint>::iterator iter;
+  for (iter=m_xypoint_list.begin(); iter!=m_xypoint_list.end(); ++iter) {
+    XYPoint &point_msg = *iter;
+    if(iter != m_xypoint_list.begin())
+      ss << ":";
+    ss << point_msg.get_vx() << "," << point_msg.get_vy();
+  }
+  // --------------- out put ss.str() -------------------
+  reportEvent(ss.str());
+  Notify("UPDATES_REDECT_PATH", ss.str());
 }
 
 //---------------------------------------------------------
@@ -161,10 +253,6 @@ bool HazardMgrX::Iterate()
     postSensorInfoRequest();
 
   if(m_hit_communicate_point) {
-    // stringstream ss;
-    // ss << "arrive idex/4: " << (m_wpt_index-1)/4  << "m_col_send_time" << m_col_send_time;
-    // reportEvent(ss.str());
-    //if(((m_wpt_index-1)/4) == m_col_send_time)
     if(m_need_station_keep)
       Notify("STATION", "true");
     m_need_station_keep = true;
@@ -243,6 +331,9 @@ void HazardMgrX::registerVariables()
   Register("COL_RESULT",0);
   Register("WPT_INDEX",0);
   Register("ARRIVE",0);
+  Register("SURVEY",0);
+  Register("NAV_X",0);
+  Register("NAV_Y",0);
 
 }
 
