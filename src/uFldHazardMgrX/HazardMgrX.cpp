@@ -353,14 +353,39 @@ void HazardMgrX::handleMailReportRequest()
    string msg_contents="\"";
    
    if(!m_detection_reports_str_buff.empty()){
-       
-       for(int i=0;i<m_detection_reports_str_buff.size();i++){    
         
-        if(!m_detection_reports_str_buff.empty()){
-          string elemet = m_detection_reports_str_buff.front();
+       while(!m_detection_reports_str_buff.empty()){
+        bool repetitive = false;
+        string input = m_detection_reports_str_buff.front();
+         if(!m_history_detect_buff.empty()){
+           for(int i=0;i<m_history_detect_buff.size();){
+               if( input == m_history_detect_buff[i]){
+                repetitive = true;
+                break;
+            }
+                else{
+                i++;
+                }
+           }
+         }
+
+           if(!repetitive){
+               m_output_buff.push_back(input);
+               m_history_detect_buff.push_back(input);
+           }
+               m_detection_reports_str_buff.pop_front();
+        
+        } 
+   }
+   if(!m_output_buff.empty()){
+       
+       for(int i=0;i<m_output_buff.size();i++){    
+        
+        if(!m_output_buff.empty()){
+          string elemet = m_output_buff.front();
               msg_contents += elemet;
-              m_detection_reports_str_buff.pop_front();
-            if(!m_detection_reports_str_buff.empty())
+              m_output_buff.pop_front();
+            if(!m_output_buff.empty())
              msg_contents+="#";
         }
         if(i>4)
@@ -381,7 +406,7 @@ void HazardMgrX::handleMailReportRequest()
         string summary_report = m_hazard_set.getSpec("final_report");
           //  Notify("HAZARDSET_REPORT", summary_report);
             Notify("HAZARDSET_REPORT", summary_report);
-                
+    
 }
 
 
@@ -432,6 +457,9 @@ bool HazardMgrX::buildReport()
   m_msgs << "      Hazardset Reports Posted: " << m_summary_reports << endl;
   m_msgs << "                   Report Name: " << m_report_name << endl;
   m_msgs << "                    Message in: " << m_message_in<<endl;
+  m_msgs << "History Buffer Size:"<<m_history_detect_buff.size()<<endl;
+  m_msgs << "Detection Buffer Size:"<<m_detection_reports_str_buff.size()<<endl;
+  m_msgs << "Output Buffer Size:"<<m_output_buff.size()<<endl;
   return(true);
 }
 
