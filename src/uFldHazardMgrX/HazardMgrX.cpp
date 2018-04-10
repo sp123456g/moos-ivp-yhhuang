@@ -22,6 +22,7 @@
 /*****************************************************************/
 
 #include <iterator>
+#include <stdlib.h>
 #include "MBUtils.h"
 #include "HazardMgrX.h"
 #include "XYFormatUtilsHazard.h"
@@ -43,6 +44,9 @@ HazardMgrX::HazardMgrX()
   m_sensor_config_set   = false;
   m_swath_width_granted = 0;
   m_pd_granted          = 0;
+  m_wpt_index           = 0;
+  m_need_state          = true;
+  m_hit_communicate_point = false;
 
   m_sensor_config_reqs = 0;
   m_sensor_config_acks = 0;
@@ -68,6 +72,7 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
+    double dval  = msg.GetDouble();
 
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
@@ -93,14 +98,15 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
 
     else if(key == "HAZARDSET_REQUEST") {
       handleMailReportRequest();
-        Notify("WAPOINTING","true");
-        Notify("STATION", "false");
+        //Notify("WAPOINTING","true");
+        //Notify("STATION", "false");
     }
 
     else if(key == "UHZ_MISSION_PARAMS") 
       handleMailMissionParams(sval);
     
     else if(key == "COL_RESULT"){
+      m_need_state = false;
      //  if(sval != "\""){
         vector<string> col_parse_buff = parseString(sval, '#');
             while(!col_parse_buff.empty()){
@@ -113,6 +119,21 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
             }
      //  }
     }
+
+    else if(key == "WPT_INDEX") 
+      m_wpt_index = dval;
+    else if (key == "ARRIVE") {
+      if(m_wpt_index%4 == 3) {
+        m_hit_communicate_point = true;
+        stringstream ss;
+        ss << "arrive idex: " << m_wpt_index;
+        reportEvent(ss.str());
+        // if(m_need_state)
+        //   Notify("STATION", "true");
+        // m_need_state = true;
+      }
+    }
+
     else 
       reportRunWarning("Unhandled Mail: " + key);
   }
@@ -142,6 +163,17 @@ bool HazardMgrX::Iterate()
 
   if(m_sensor_config_set)
     postSensorInfoRequest();
+
+  if(m_hit_communicate_point) {
+    if(m_need_state)
+      Notify("STATION", "true");
+    stringstream ss;
+    ss << m_need_state << "," << m_wpt_index;
+    reportEvent(ss.str());
+    handleMailSend2Other();
+    m_hit_communicate_point = false;
+    m_need_state = true;
+  }
 
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -212,6 +244,9 @@ void HazardMgrX::registerVariables()
   Register("UHZ_MISSION_PARAMS", 0);
   Register("HAZARDSET_REQUEST", 0);
   Register("COL_RESULT",0);
+  Register("WPT_INDEX",0);
+  Register("ARRIVE",0);
+
 }
 
 //---------------------------------------------------------
@@ -337,15 +372,27 @@ bool HazardMgrX::handleMailDetectionReport(string str)
 //---------------------------------------------------------
 // Procedure: handleMailReportRequest
 
-// modify by YHH for merging two vehicle report
 void HazardMgrX::handleMailReportRequest()
 {
   m_summary_reports++;
 
   m_hazard_set.findMinXPath(20);
   //unsigned int count    = m_hazard_set.findMinXPath(20);
-//  string summary_report_local = m_hazard_set.getSpec("final_report");
+  //  string summary_report_local = m_hazard_set.getSpec("final_report");
 
+  //handleMailSend2Other();
+   
+  //checking if the label is the same
+
+        string summary_report = m_hazard_set.getSpec("final_report");
+          //  Notify("HAZARDSET_REPORT", summary_report);
+            Notify("HAZARDSET_REPORT", summary_report);
+    
+}
+
+// modify by YHH for merging two vehicle report
+void HazardMgrX::handleMailSend2Other()
+{
 //sending report to another vehicle  
    string hostname=m_report_name;      
    string dest_name="all";     
@@ -400,13 +447,7 @@ void HazardMgrX::handleMailReportRequest()
 
             Notify("NODE_MESSAGE_LOCAL", msg);
        }
-   
-//checking if the label is the same
 
-        string summary_report = m_hazard_set.getSpec("final_report");
-          //  Notify("HAZARDSET_REPORT", summary_report);
-            Notify("HAZARDSET_REPORT", summary_report);
-    
 }
 
 
