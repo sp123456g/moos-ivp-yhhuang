@@ -1,0 +1,22 @@
+//--------------------------------------------------
+// uFldHazardMgr configuration block from plugin
+
+ProcessConfig = uFldHazardMgrX
+{
+  AppTick   = 2
+  CommsTick = 2
+
+
+#ifdef VNAME VNAME1
+  SHARE_MSG = true
+  swath_width = 50
+  
+#elseifdef VNAME VNAME2
+  SHARE_MSG = false
+  swath_width = 50
+#endif
+
+
+  sensor_pd   = 0.7
+  report_name = $(VNAME)
+}
