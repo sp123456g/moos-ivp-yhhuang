@@ -24,7 +24,7 @@ Processconfig = ANTLER
   Run = pHostInfo          @ NewConsole = false
   Run = uFldNodeBroker     @ NewConsole = false
   Run = uFldMessageHandler @ NewConsole = false
-  Run = uFldHazardMgrX      @ NewConsole = false
+  Run = uFldHazardMgrX      @ NewConsole = true
   Run = uXMS               @ NewConsole = false
 }
   

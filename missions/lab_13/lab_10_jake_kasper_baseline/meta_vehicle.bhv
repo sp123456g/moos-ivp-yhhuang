@@ -121,7 +121,6 @@ Behavior = BHV_Timer
     condition = WAPOINTING = true 
     duration = 500 
     condition = SURVEY != COMPLETE
-    condition = STATION = false
     duration_reset = COMMUNICATE_END = true
     endflag        = COMMUNICATE_NEEDED = true 
     endflag        = WAPOINTING = false
