@@ -71,16 +71,19 @@ class HazardMgrX : public AppCastingMOOSApp
 
    unsigned int m_sensor_report_reqs;
    unsigned int m_detection_reports;
-   std::deque<std::string>  m_detection_reports_str_buff;
    unsigned int m_summary_reports;
-
+   std::deque<std::string>  m_detection_reports_str_buff;
+   std::deque<std::string> m_history_detect_buff;
+   std::deque<std::string>  m_output_buff;
    double m_swath_width_granted;
    double m_pd_granted;
-
+    
+   bool m_self_result; // if it's from own vehicle, not collaborator
    XYHazardSet m_hazard_set;
    XYPolygon   m_search_region;
-    std::string m_fordebug; 
    double      m_transit_path_width;
+   std::string m_message_in;
+   
 };
 
 #endif 

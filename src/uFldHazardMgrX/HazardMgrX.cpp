@@ -52,6 +52,8 @@ HazardMgrX::HazardMgrX()
   m_summary_reports = 0;
 
   m_detection_reports_str_buff.clear();
+  m_history_detect_buff.clear();
+  m_self_result = true;
 }
 
 //---------------------------------------------------------
@@ -89,8 +91,11 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
         m_detection_reports_str_buff.push_back(buff_input);
     }
 
-    else if(key == "HAZARDSET_REQUEST") 
+    else if(key == "HAZARDSET_REQUEST") {
       handleMailReportRequest();
+        Notify("WAPOINTING","true");
+        Notify("STATION", "false");
+    }
 
     else if(key == "UHZ_MISSION_PARAMS") 
       handleMailMissionParams(sval);
@@ -98,11 +103,10 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "COL_RESULT"){
      //  if(sval != "\""){
         vector<string> col_parse_buff = parseString(sval, '#');
-        Notify("DEBUGONE",sval);
             while(!col_parse_buff.empty()){
-               m_fordebug = col_parse_buff.back();
-                Notify("DEBUGTWO",m_fordebug); 
-                    handleMailDetectionReport(m_fordebug);
+                string message_in = col_parse_buff.back();
+                    m_self_result = false;
+                    handleMailDetectionReport(message_in);
                     col_parse_buff.pop_back();
                     string summary_report = m_hazard_set.getSpec("final_report");
                 Notify("HAZARDSET_REPORT", summary_report);
@@ -317,11 +321,15 @@ bool HazardMgrX::handleMailDetectionReport(string str)
   event += ", y=" + doubleToString(new_hazard.getY(),1);
 
   reportEvent(event);
+    if(m_self_result){
+        string req = "vname=" + m_host_community + ",label=" + hazlabel;
 
-  string req = "vname=" + m_host_community + ",label=" + hazlabel;
-
-  Notify("UHZ_CLASSIFY_REQUEST", req);
-
+        Notify("UHZ_CLASSIFY_REQUEST", req);
+    }
+    else{
+    
+        m_self_result = true;    // change back to true
+    }
   return(true);
 }
 
@@ -343,18 +351,20 @@ void HazardMgrX::handleMailReportRequest()
    string dest_name="all";     
    string moos_varname="COL_RESULT";
    string msg_contents="\"";
-
+   
    if(!m_detection_reports_str_buff.empty()){
        
-       while(!m_detection_reports_str_buff.empty()){    
-    
-       
-         string elemet = m_detection_reports_str_buff.front();
-         Notify("ELEMENT",elemet);
-         msg_contents += elemet;
-         m_detection_reports_str_buff.pop_front();
-         if(!m_detection_reports_str_buff.empty())
-         msg_contents+="#";
+       for(int i=0;i<m_detection_reports_str_buff.size();i++){    
+        
+        if(!m_detection_reports_str_buff.empty()){
+          string elemet = m_detection_reports_str_buff.front();
+              msg_contents += elemet;
+              m_detection_reports_str_buff.pop_front();
+            if(!m_detection_reports_str_buff.empty())
+             msg_contents+="#";
+        }
+        if(i>4)
+            break;
        }
              msg_contents+="\"";
         string msg;
@@ -364,7 +374,8 @@ void HazardMgrX::handleMailReportRequest()
         msg += ",string_val="+ msg_contents; 
 
             Notify("NODE_MESSAGE_LOCAL", msg);
-   }
+       }
+   
 //checking if the label is the same
 
         string summary_report = m_hazard_set.getSpec("final_report");
@@ -420,7 +431,7 @@ bool HazardMgrX::buildReport()
   m_msgs << "   Hazardset Reports Requested: " << m_summary_reports << endl;
   m_msgs << "      Hazardset Reports Posted: " << m_summary_reports << endl;
   m_msgs << "                   Report Name: " << m_report_name << endl;
-  m_msgs << "dor debug:"<<m_fordebug<<endl;
+  m_msgs << "                    Message in: " << m_message_in<<endl;
   return(true);
 }
 
