@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pHazardPath config block
+
+ProcessConfig = pHazardPath
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
