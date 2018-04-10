@@ -27,9 +27,16 @@ class HazardPath : public AppCastingMOOSApp
 
  protected:
    void registerVariables();
-
+   void handleMailMissionParams(std::string);
+   void CalculateRegion(std::string);
  private: // Configuration variables
 
+   std::string m_path;
+   std::string m_region;
+   std::string m_height;
+   std::string m_width;
+   std::string m_output_one;
+   std::string m_output_two;
  private: // State variables
 };
 
