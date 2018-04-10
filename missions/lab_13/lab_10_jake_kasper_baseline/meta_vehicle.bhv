@@ -80,10 +80,10 @@ Behavior = BHV_Waypoint
   wptflag   = ARRIVE = true
 
 #ifdef VNAME VNAME1
-	points = format=lawnmower,label=jakesearch,x=-20,y=-237.5,height=325,width=260,lane_width=30,rows=east-west,startx=0,starty=0
+	points = format=lawnmower,label=jakesearch,x=-25,y=-237.5,height=330,width=265,lane_width=35,rows=east-west,startx=0,starty=0
   visual_hints = vertex_color=yellow, edge_color=green
 #elseifdef VNAME VNAME2
-	points = format=lawnmower,label=kaspersearch,x=270,y=-237.5,height=325,width=260,lane_width=30,rows=east-west,degs=0
+	points = format=lawnmower,label=kaspersearch,x=273,y=-237.5,height=330,width=265,lane_width=35,rows=east-west,degs=0
   visual_hints = vertex_color=yellow, edge_color=gray25
 #endif
 
