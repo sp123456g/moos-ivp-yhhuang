@@ -45,8 +45,8 @@ HazardMgrX::HazardMgrX()
   m_swath_width_granted = 0;
   m_pd_granted          = 0;
   m_wpt_index           = 0;
-  m_need_state          = true;
   m_hit_communicate_point = false;
+  m_col_send_time       = 0;
 
   m_sensor_config_reqs = 0;
   m_sensor_config_acks = 0;
@@ -106,7 +106,7 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
       handleMailMissionParams(sval);
     
     else if(key == "COL_RESULT"){
-      m_need_state = false;
+      m_col_send_time++;
      //  if(sval != "\""){
         vector<string> col_parse_buff = parseString(sval, '#');
             while(!col_parse_buff.empty()){
@@ -125,12 +125,6 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
     else if (key == "ARRIVE") {
       if(m_wpt_index%4 == 3) {
         m_hit_communicate_point = true;
-        stringstream ss;
-        ss << "arrive idex: " << m_wpt_index;
-        reportEvent(ss.str());
-        // if(m_need_state)
-        //   Notify("STATION", "true");
-        // m_need_state = true;
       }
     }
 
@@ -165,14 +159,13 @@ bool HazardMgrX::Iterate()
     postSensorInfoRequest();
 
   if(m_hit_communicate_point) {
-    if(m_need_state)
+    // stringstream ss;
+    // ss << "arrive idex/4: " << (m_wpt_index-1)/4  << "m_col_send_time" << m_col_send_time;
+    // reportEvent(ss.str());
+    if(((m_wpt_index-1)/4) == m_col_send_time)
       Notify("STATION", "true");
-    stringstream ss;
-    ss << m_need_state << "," << m_wpt_index;
-    reportEvent(ss.str());
     handleMailSend2Other();
     m_hit_communicate_point = false;
-    m_need_state = true;
   }
 
   AppCastingMOOSApp::PostReport();
@@ -355,7 +348,7 @@ bool HazardMgrX::handleMailDetectionReport(string str)
   event += ", x=" + doubleToString(new_hazard.getX(),1);
   event += ", y=" + doubleToString(new_hazard.getY(),1);
 
-  reportEvent(event);
+  //reportEvent(event);
     if(m_self_result){
         string req = "vname=" + m_host_community + ",label=" + hazlabel;
 

@@ -80,10 +80,10 @@ Behavior = BHV_Waypoint
   wptflag   = ARRIVE = true
 
 #ifdef VNAME VNAME1
-	points = format=lawnmower,label=jakesearch,x=-15,y=-237.5,height=325,width=240,lane_width=30,rows=east-west,startx=0,starty=0
+	points = format=lawnmower,label=jakesearch,x=-20,y=-237.5,height=325,width=260,lane_width=30,rows=east-west,startx=0,starty=0
   visual_hints = vertex_color=yellow, edge_color=green
 #elseifdef VNAME VNAME2
-	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=240,lane_width=30,rows=east-west,degs=0
+	points = format=lawnmower,label=kaspersearch,x=270,y=-237.5,height=325,width=260,lane_width=30,rows=east-west,degs=0
   visual_hints = vertex_color=yellow, edge_color=gray25
 #endif
 
@@ -115,41 +115,18 @@ Behavior = BHV_Waypoint
      nm_radius = 8.0
         points = $(START_POS)
 }
+
 //----------------------------------------------
 Behavior = BHV_Timer
 {
     name = bhv_timer_go_for_communicate
     condition = MODE==STATION-KEEPING
-    //condition = WAPOINT_SURVEYING = true 
+    //condition = SURVEY = true
+    updates      = TIMER_UPDATES        // example
     perpetual = true
     duration = 10
-    //duration_reset = TIME_RESET = true
-    updates      = TIMER_UPDATES        // example
 
-
+    duration_reset = TIMER_RESET = true
     endflag        = STATION = false
-    //endflag        = WAPOINTING = true
-    //endflag        = MODE=WAPOINT_SURVEYING
-    //perpetual      = true
+    endflag        = TIMER_RESET = true
 }
-//----------------------------------------------
-// Behavior = BHV_Waypoint 
-// {
-//     name      = waypt_communicate
-//     condition = MODE == COMMUNICATING
-//     endflag   = COMMUNICATE_NEEDED = false
-//     endflag   = STATION = true
-//     perpetual = true
-
-//     speed = 1.3 
-//     radius = 2.0
-//     nm_radius = 8.0
-//     points = $(START_POS)
-//     lead = 8
-
-// #ifdef VNAME VNAME1
-// 	points = 69.73,-225.36
-// #elseifdef VNAME VNAME2
-// 	points = 146.65,-225.36
-// #endif
-// }

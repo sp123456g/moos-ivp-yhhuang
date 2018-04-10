@@ -63,7 +63,7 @@ class HazardMgrX : public AppCastingMOOSApp
    double      m_pd_desired;
    std::string m_report_name;
    std::string m_col_result;
-   bool        m_need_state;
+   unsigned int m_col_send_time;
    bool        m_hit_communicate_point;
 
  private: // State variables
