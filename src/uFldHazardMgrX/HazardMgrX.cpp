@@ -46,7 +46,8 @@ HazardMgrX::HazardMgrX()
   m_pd_granted          = 0;
   m_wpt_index           = 0;
   m_hit_communicate_point = false;
-  m_col_send_time       = 0;
+  m_need_station_keep   = true;
+  //m_col_send_time       = 0;
 
   m_sensor_config_reqs = 0;
   m_sensor_config_acks = 0;
@@ -106,7 +107,8 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
       handleMailMissionParams(sval);
     
     else if(key == "COL_RESULT"){
-      m_col_send_time++;
+      //m_col_send_time++;
+      m_need_station_keep = false;
      //  if(sval != "\""){
         vector<string> col_parse_buff = parseString(sval, '#');
             while(!col_parse_buff.empty()){
@@ -162,8 +164,10 @@ bool HazardMgrX::Iterate()
     // stringstream ss;
     // ss << "arrive idex/4: " << (m_wpt_index-1)/4  << "m_col_send_time" << m_col_send_time;
     // reportEvent(ss.str());
-    if(((m_wpt_index-1)/4) == m_col_send_time)
+    //if(((m_wpt_index-1)/4) == m_col_send_time)
+    if(m_need_station_keep)
       Notify("STATION", "true");
+    m_need_station_keep = true;
     handleMailSend2Other();
     m_hit_communicate_point = false;
   }
@@ -494,6 +498,10 @@ bool HazardMgrX::buildReport()
   m_msgs << "History Buffer Size:"<<m_history_detect_buff.size()<<endl;
   m_msgs << "Detection Buffer Size:"<<m_detection_reports_str_buff.size()<<endl;
   m_msgs << "Output Buffer Size:"<<m_output_buff.size()<<endl;
+  m_msgs << "--------------------------------------------" << endl << endl;
+  m_msgs << "Need Station Kepp: " << m_need_station_keep << endl;
+  m_msgs << "Hit Communicate Point: " << m_hit_communicate_point << endl;
+
   return(true);
 }
 
