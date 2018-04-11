@@ -130,8 +130,15 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
       }
     }
     else if (key == "SURVEY") {
-      if(sval == "REDETECT")
+      if(sval == "REDETECT") {
         m_survey_redetect = true;
+        //------------------for configure request----------------  
+        string re_config;
+        stringstream ss_re;
+        ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
+        ss_re>>re_config;
+        Notify("UHZ_CONFIG_REQUEST",re_config);
+      }
     }
     else if (key == "UHZ_HAZARD_REPORT"){
         getHazardToOutput(sval);
