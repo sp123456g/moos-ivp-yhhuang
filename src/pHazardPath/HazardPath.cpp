@@ -141,7 +141,7 @@ vector<string> range_vector = parseString(region, ':');
     double middle_pnt2_x;
     double middle_pnt1_y;
     double middle_pnt2_y;
-    double middle_offset=20;
+    double middle_offset=10;
     
     vector<double> x_pnts;
     vector<double> y_pnts;
@@ -166,10 +166,11 @@ vector<string> range_vector = parseString(region, ':');
     height  = abs(y_pnts[0]-y_pnts[1]);
     width   = abs((x_pnts[1]-x_pnts[2])/2);  
     
-    middle_pnt1_x = x_pnts[1]+(width/2);
-    middle_pnt2_x = x_pnts[2]-(width/2);
+    middle_pnt1_x = x_pnts[1]+(width/2)-middle_offset;
+    middle_pnt2_x = x_pnts[2]-(width/2)+middle_offset;
 
-    middle_pnt1_y = (y_pnts[0]-height/2)+middle_offset;
+    //middle_pnt1_y = (y_pnts[0]-height/2)+middle_offset;
+    middle_pnt1_y = (y_pnts[0]-height/2);
     middle_pnt2_y = (y_pnts[0]-height/2); 
 
     // Output for appcasting    
