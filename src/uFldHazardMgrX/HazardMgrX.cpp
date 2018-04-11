@@ -50,7 +50,6 @@ HazardMgrX::HazardMgrX()
   m_need_station_keep   = true;
   m_survey_redetect     = false;
   //m_col_send_time       = 0;
-
   m_sensor_config_reqs = 0;
   m_sensor_config_acks = 0;
   m_sensor_report_reqs = 0;
@@ -134,26 +133,9 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
       if(sval == "REDETECT")
         m_survey_redetect = true;
     }
-    // else if (key == "SURVEY"){
-    //   if( sval == "REDETECT") {
-    //     reportEvent(sval);
-    //     string2XYPoint(m_history_detect_buff);
-    //     greedy_path(m_nav_x, m_nav_y);
-    //     Notify("UPDATES_REDECT_PATH", XYPoint2string());
-
-    //     //------------------for configure request----------------  
-    //     string re_config;
-    //     stringstream ss_re;
-    //     ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
-    //     ss_re>>re_config;
-    //     Notify("UHZ_CONFIG_REQUEST",re_config);
-    //   }
-    // }
-    // else if (key == "NAV_X")
-    //   m_nav_x = dval;
-    // else if (key == "NAV_Y")
-    //   m_nav_y = dval;
-
+    else if (key == "UHZ_HAZARD_REPORT"){
+        getHazardToOutput(sval);
+    }
     else 
       reportRunWarning("Unhandled Mail: " + key);
   }
@@ -361,8 +343,7 @@ void HazardMgrX::registerVariables()
   Register("WPT_INDEX",0);
   Register("ARRIVE",0);
   Register("SURVEY",0);
-  // Register("NAV_X",0);
-  // Register("NAV_Y",0);
+  Register("UHZ_HAZARD_REPORT",0);
 
 }
 
@@ -528,12 +509,14 @@ void HazardMgrX::handleMailSend2Other()
    string dest_name="all";     
    string moos_varname="COL_RESULT";
    string msg_contents="\"";
+   bool ishazard=true; 
    
    if(!m_detection_reports_str_buff.empty()){
         
        while(!m_detection_reports_str_buff.empty()){
         bool repetitive = false;
         string input = m_detection_reports_str_buff.front();
+    
          if(!m_history_detect_buff.empty()){
            for(int i=0;i<m_history_detect_buff.size();){
                if( input == m_history_detect_buff[i]){
@@ -546,12 +529,11 @@ void HazardMgrX::handleMailSend2Other()
            }
          }
 
-           if(!repetitive){
-              m_output_buff.push_back(input);
-              m_history_detect_buff.push_back(input);
+           if(!repetitive){        //not repetitive and it's hazard
+               
+               m_history_detect_buff.push_back(input);
            }
-               m_detection_reports_str_buff.pop_front();
-        
+                m_detection_reports_str_buff.pop_front();
         } 
    }
    if(!m_output_buff.empty()){
@@ -580,6 +562,21 @@ void HazardMgrX::handleMailSend2Other()
 
 }
 
+//---------------------------------------------------------
+
+void HazardMgrX::getHazardToOutput(string input){
+
+   
+   size_t type_index = input.find("type=");
+   string type;
+   if(type_index!=string::npos)
+    type = input.substr(type_index);
+
+   if(type == "type=hazard"){
+       string hazard = input.substr(0,type_index-1);
+    m_output_buff.push_back(hazard);
+   }
+}
 
 //---------------------------------------------------------
 // Procedure: handleMailMissionParams
@@ -634,7 +631,6 @@ bool HazardMgrX::buildReport()
   m_msgs << "--------------------------------------------" << endl << endl;
   m_msgs << "Need Station Kepp: " << m_need_station_keep << endl;
   m_msgs << "Hit Communicate Point: " << m_hit_communicate_point << endl;
-
   return(true);
 }
 

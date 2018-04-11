@@ -53,7 +53,8 @@ class HazardMgrX : public AppCastingMOOSApp
    void handleMailReportRequest();
    void handleMailMissionParams(std::string);
    void handleMailSend2Other();
-
+   void getHazardToOutput(std::string);
+ 
  protected: 
    void postSensorConfigRequest();
    void postSensorInfoRequest();
@@ -72,7 +73,6 @@ class HazardMgrX : public AppCastingMOOSApp
    //unsigned int m_col_send_time;
    bool        m_need_station_keep;
    bool        m_hit_communicate_point;
-
  private: // State variables
    bool   m_sensor_config_requested;
    bool   m_sensor_config_set;
