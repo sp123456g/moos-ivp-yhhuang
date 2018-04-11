@@ -119,7 +119,8 @@ vector<string> range_vector = parseString(region, ':');
     double middle_pnt2_x;
     double middle_pnt1_y;
     double middle_pnt2_y;
-
+    double middle_offset=20;
+    
     vector<double> x_pnts;
     vector<double> y_pnts;
    
@@ -141,13 +142,13 @@ vector<string> range_vector = parseString(region, ':');
 
 
     height  = abs(y_pnts[0]-y_pnts[1]);
-    width   = abs((x_pnts[1]-x_pnts[2])/2);  //set 50 to let two vehicle not be too close
+    width   = abs((x_pnts[1]-x_pnts[2])/2);  
     
     middle_pnt1_x = x_pnts[1]+(width/2);
-    middle_pnt2_x = middle_pnt1_x + width;
+    middle_pnt2_x = x_pnts[2]-(width/2);
 
-    middle_pnt1_y = y_pnts[0]-height/2;
-    middle_pnt2_y = middle_pnt1_y; 
+    middle_pnt1_y = (y_pnts[0]-height/2)+middle_offset;
+    middle_pnt2_y = (y_pnts[0]-height/2); 
 
     // Output for appcasting    
     stringstream ss_one,ss_two;
@@ -167,7 +168,7 @@ vector<string> range_vector = parseString(region, ':');
 
         ss_output_one<<"points=format=lawnmower,label=west_region,x=";
         ss_output_one<<middle_pnt1_x<<",y="<<middle_pnt1_y;
-        ss_output_one<<",height="<<height<<",width="<<width-50;
+        ss_output_one<<",height="<<height<<",width="<<width;
         ss_output_one<<",lane_width="<<lane_width;
         ss_output_one<<",rows=east-west,startx=0,starty=0";
         
@@ -175,7 +176,7 @@ vector<string> range_vector = parseString(region, ':');
         
         ss_output_two<<"points=format=lawnmower,label=west_region,x=";
         ss_output_two<<middle_pnt2_x<<",y="<<middle_pnt2_y;
-        ss_output_two<<",height="<<height<<",width="<<width-50;
+        ss_output_two<<",height="<<height<<",width="<<width;
         ss_output_two<<",lane_width="<<lane_width;
         ss_output_two<<",rows=east-west,startx=0,starty=0";
 

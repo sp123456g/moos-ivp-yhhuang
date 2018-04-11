@@ -94,7 +94,8 @@ class HazardMgrX : public AppCastingMOOSApp
    XYPolygon   m_search_region;
    double      m_transit_path_width;
    std::string m_message_in;
-   
+   std::string m_sec_detect_width;
+   std::string m_sec_pd; 
 };
 
 #endif 

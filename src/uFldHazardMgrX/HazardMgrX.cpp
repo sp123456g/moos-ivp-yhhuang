@@ -227,6 +227,13 @@ void HazardMgrX::greedy_path(double start_x, double start_y) {
   // --------------- out put ss.str() -------------------
   reportEvent(ss.str());
   Notify("UPDATES_REDECT_PATH", ss.str());
+
+//------------------for configure request----------------  
+  string re_config;
+  stringstream ss_re;
+  ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
+  ss_re>>re_config;
+  Notify("UHZ_CONFIG_REQUEST",re_config);
 }
 
 //---------------------------------------------------------
@@ -303,6 +310,14 @@ bool HazardMgrX::OnStartUp()
       if(poly.is_convex())
 	m_search_region = poly;
       handled = true;
+    }
+    else if(param == "second_width"){
+        m_sec_detect_width = value;
+      handled = true;
+    }
+    else if(param == "second_pd"){
+        m_sec_pd = value;
+        handled = true;
     }
 
     if(!handled)
