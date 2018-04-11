@@ -50,8 +50,8 @@ bool HazardPath::OnNewMail(MOOSMSG_LIST &NewMail)
     string sval = msg.GetString();
      if(key == "FOO") 
        cout << "great!";
-     //else if(key == "UHZ_MISSION_PARAMS")
-     // handleMailMissionParams(sval);
+     else if(key == "UHZ_MISSION_PARAMS")
+      handleMailMissionParams(sval);
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
    }
@@ -69,7 +69,7 @@ bool HazardPath::OnNewMail(MOOSMSG_LIST &NewMail)
 //                       penalty_max_time_rate=0.45,              
 //                       transit_path_width=25,                           
 //                       search_region = pts={-150,-75:-150,-50:40,-50:40,-75}
-
+//    goal: get the operating region and use Calculateregion function to handle it
 
 void HazardPath::handleMailMissionParams(string str)
 {
@@ -81,7 +81,15 @@ void HazardPath::handleMailMissionParams(string str)
     // This needs to be handled by the developer. Just a placeholder.
   }
 
-    m_path = svector[7];
+    m_path = svector[7];    //m_path: pts={.......}
+    
+    size_t found_bra_one, found_bra_two;
+           found_bra_one = m_path.find("{");
+           found_bra_two = m_path.find("}");
+    string region = m_path.substr(found_bra_one+1,found_bra_two-found_bra_one-1);
+   m_region = region;
+
+   CalculateRegion(region); 
 }
 
 //---------------------------------------------------------
@@ -91,11 +99,11 @@ bool HazardPath::OnConnectToServer()
    registerVariables();
    return(true);
 }
-
 //---------------------------------------------------------
-// Procedure: Iterate()
-//            happens AppTick times per second
-
+//CalculateRegion: Change region info to way-point update variable
+//1. Calculate height and width
+//2. Seperate the area to left and right
+//3. find the mid point of two area
 void HazardPath::CalculateRegion(string region){
 
 vector<string> range_vector = parseString(region, ':');
@@ -105,7 +113,7 @@ vector<string> range_vector = parseString(region, ':');
 //1  2
     double height;
     double width;
-    int    lane_width = 30;
+    double    lane_width = m_lane_width;
     double middle_pnt1_x;
     double middle_pnt2_x;
     double middle_pnt1_y;
@@ -151,38 +159,40 @@ vector<string> range_vector = parseString(region, ':');
 //points = format=lawnmower,label=jakesearch,x=-15,y=-237.5,height=325,width=240,lane_width=30,rows=east-west,startx=0,starty=0
 //WA_UPDATE_ONE for VNAME1, WA_UPDATE_TWO for VNAME2
 
-    string str_output_one;
-    string str_output_two;
-    stringstream ss_output_one;
-    stringstream ss_output_two;
+        string str_output_one;
+        string str_output_two;
+        stringstream ss_output_one;
+        stringstream ss_output_two;
 
-    ss_output_one<<"points=format=lawnmower,label=west_region,x=";
-    ss_output_one<<middle_pnt1_x<<",y="<<middle_pnt1_y;
-    ss_output_one<<",height="<<height<<",width="<<width-50;
-    ss_output_one<<",lane_width="<<lane_width;
-    ss_output_one<<",rows=east-west,startx=0,starty=0";
-    
-    ss_output_one>>str_output_one;
-    
-    ss_output_two<<"points=format=lawnmower,label=west_region,x=";
-    ss_output_two<<middle_pnt2_x<<",y="<<middle_pnt2_y;
-    ss_output_two<<",height="<<height<<",width="<<width-50;
-    ss_output_two<<",lane_width="<<lane_width;
-    ss_output_two<<",rows=east-west,startx=0,starty=0";
+        ss_output_one<<"points=format=lawnmower,label=west_region,x=";
+        ss_output_one<<middle_pnt1_x<<",y="<<middle_pnt1_y;
+        ss_output_one<<",height="<<height<<",width="<<width-50;
+        ss_output_one<<",lane_width="<<lane_width;
+        ss_output_one<<",rows=east-west,startx=0,starty=0";
+        
+        ss_output_one>>str_output_one;
+        
+        ss_output_two<<"points=format=lawnmower,label=west_region,x=";
+        ss_output_two<<middle_pnt2_x<<",y="<<middle_pnt2_y;
+        ss_output_two<<",height="<<height<<",width="<<width-50;
+        ss_output_two<<",lane_width="<<lane_width;
+        ss_output_two<<",rows=east-west,startx=0,starty=0";
 
-    ss_output_two>>str_output_two;
+        ss_output_two>>str_output_two;
 
-  //for debug if needed 
-  //  m_output_one = str_output_one;
-  //  m_output_two = str_output_two;
+        //for debug if needed 
+        //  m_output_one = str_output_one;
+        //  m_output_two = str_output_two;
 
-   Notify("WA_UPDATE_ONE",str_output_one);
-   Notify("WA_UPDATE_TWO",str_output_two); 
+            Notify("WA_UPDATE_ONE",str_output_one);
+            Notify("WA_UPDATE_TWO",str_output_two); 
 
     } 
 }
 
-
+//---------------------------------------------------------
+// Procedure: Iterate()
+//            happens AppTick times per second
 bool HazardPath::Iterate()
 {
   AppCastingMOOSApp::Iterate();
@@ -218,11 +228,18 @@ bool HazardPath::OnStartUp()
     else if(param == "bar") {
       handled = true;
     }
-    else if(param == "opregion"){
-        CalculateRegion(value);
-        m_region = value; 
-        handled  = true;
+    else if(param == "lane_width"){
+        stringstream ss;
+        ss<<value;
+        ss>>m_lane_width;
+        handled = true;
+    
     }
+  //  else if(param == "opregion"){
+    //    CalculateRegion(value);
+    //    m_region = value; 
+    //    handled  = true;
+  //  }
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -240,8 +257,7 @@ void HazardPath::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   // Register("FOOBAR", 0);
-     Register("",0);
-   //  Register("UHZ_MISSION_PARAMS",0);
+     Register("UHZ_MISSION_PARAMS",0);
      
 }
 
@@ -262,6 +278,8 @@ bool HazardPath::buildReport()
   m_msgs <<endl<< "Searching Height:"<<m_height<<endl;
   m_msgs << "Searching Width:" <<m_width<<endl;
   m_msgs << "Searching Region:"<<m_region<<endl;
+//  m_msgs << "PATH:"<<m_path<<endl;
+//  m_msgs << "m_path_to_region"<<m_path_to_region<<endl;
 //  m_msgs <<"WA_UPDATE_ONE:"<<m_output_one<<endl;  
 //  m_msgs << "WA_UPDATE_TWO:"<<m_output_two<<endl;
   return(true);

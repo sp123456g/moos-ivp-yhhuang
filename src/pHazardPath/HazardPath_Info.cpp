@@ -20,8 +20,8 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pHazardPath application is used for               ");
-  blk("                                                                ");
+  blk("  The pHazardPath application is used for getting               ");
+  blk("  the region message from shoreside and publish waypoint update ");
   blk("                                                                ");
   blk("                                                                ");
   blk("                                                                ");
@@ -96,11 +96,15 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
   blk("                 string_val=BAR                                 ");
-  blk("                                                                ");
+  blk("  UHZ_MISSION_PARAMS = penalty_missed_hazard=150,                ");
+  blk("  penalty_false_alarm=25,max_time=600,penalty_max_time_over=300,");
+  blk("  penalty_max_time_rate=0.5,                                    ");
+  blk("  search_region=pts={-150,-75:-150,-400:400,-400:400,-75}         ");
+  blk("");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
-  blk("                                                                ");
+  blk("     WA_UPDATE_ONE                                              ");
+  blk("     WA_UPDATE_TWO                                              ");
   exit(0);
 }
 

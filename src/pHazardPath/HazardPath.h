@@ -35,8 +35,8 @@ class HazardPath : public AppCastingMOOSApp
    std::string m_region;
    std::string m_height;
    std::string m_width;
-   std::string m_output_one;
-   std::string m_output_two;
+
+   double m_lane_width;
  private: // State variables
 };
 
