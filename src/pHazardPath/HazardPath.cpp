@@ -24,6 +24,7 @@ HazardPath::HazardPath()
 
 HazardPath::~HazardPath()
 {
+    m_lane_width = 30;
 }
 
 //---------------------------------------------------------
