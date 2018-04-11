@@ -1,0 +1,32 @@
+// gen_hazards --polygon=-100,-75:100,-200:300,-200:300,-75 --objects=5,hazard --objects=8,benign
+region = pts={-100,-75:100,-200:300,-200:300,-75}
+hazard = x=163,y=-151,label=39,type=hazard
+hazard = x=263,y=-148,label=18,type=hazard
+hazard = x=276,y=-80,label=57,type=hazard
+hazard = x=113,y=-97,label=5,type=hazard
+hazard = x=267,y=-109,label=48,type=hazard
+region = pts={-100,-75:100,-200:300,-200:300,-75}
+hazard = x=-14,y=-116,label=27,type=benign
+hazard = x=289,y=-129,label=45,type=benign
+hazard = x=163,y=-148,label=55,type=benign
+hazard = x=289,y=-99,label=81,type=benign
+hazard = x=152,y=-93,label=84,type=benign
+hazard = x=174,y=-105,label=56,type=benign
+hazard = x=194,y=-111,label=67,type=benign
+hazard = x=182,y=-111,label=93,type=benign
+// gen_hazards --polygon=-100,-75:-100,-200:300,-200:300,-75 --objects=5,hazard --objects=8,benign
+region = pts={-100,-75:-100,-200:300,-200:300,-75}
+hazard = x=-44,y=-185,label=76,type=hazard
+hazard = x=263,y=-122,label=11,type=hazard
+hazard = x=45,y=-101,label=13,type=hazard
+hazard = x=0,y=-167,label=45,type=hazard
+hazard = x=187,y=-174,label=25,type=hazard
+region = pts={-100,-75:-100,-200:300,-200:300,-75}
+hazard = x=-48,y=-99,label=53,type=benign
+hazard = x=209,y=-113,label=84,type=benign
+hazard = x=191,y=-116,label=70,type=benign
+hazard = x=-99,y=-199,label=24,type=benign
+hazard = x=239,y=-182,label=15,type=benign
+hazard = x=-50,y=-114,label=21,type=benign
+hazard = x=112,y=-114,label=31,type=benign
+hazard = x=259,y=-83,label=36,type=benign
