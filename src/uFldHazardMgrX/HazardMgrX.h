@@ -60,10 +60,6 @@ class HazardMgrX : public AppCastingMOOSApp
    void postSensorInfoRequest();
    void postHazardSetReport();
    void postHistoryDetectList();
-
-   // void string2XYPoint(std::deque<std::string>);
-   // void greedy_path(double, double);
-   // std::string XYPoint2string();
    
  private: // Configuration variables
    double      m_swath_width_desired;
