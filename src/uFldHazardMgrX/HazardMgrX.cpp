@@ -122,7 +122,6 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
             }
      //  }
     }
-
     else if(key == "WPT_INDEX") 
       m_wpt_index = dval;
     else if (key == "ARRIVE") {
@@ -133,7 +132,16 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
     else if (key == "SURVEY"){
       if( sval == "REDETECT") {
         reportEvent(sval);
+        string2XYPoint(m_history_detect_buff);
         greedy_path(m_nav_x, m_nav_y);
+        Notify("UPDATES_REDECT_PATH", XYPoint2string());
+        
+        //------------------for configure request----------------  
+        string re_config;
+        stringstream ss_re;
+        ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
+        ss_re>>re_config;
+        Notify("UHZ_CONFIG_REQUEST",re_config);
       }
     }
     else if (key == "NAV_X")
@@ -148,15 +156,15 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
    return(true);
 }
 
-void HazardMgrX::greedy_path(double start_x, double start_y) {
+void HazardMgrX::string2XYPoint(deque<string> m_string_list)
+{
   // -------------- string to XYPoint -----------------
-  // msg from m_history_detect_buff
+  // msg from m_string_list
   //          example: x=14,y=3,label=35 | x=-34,y=-34,label=46
   // XYPoint is save in m_xypoint_list
-  vector<XYPoint> m_xypoint_list;
   deque<string>::iterator it;
-  if(!m_history_detect_buff.empty()) {
-    for(it=m_history_detect_buff.begin(); it!=m_history_detect_buff.end(); ++it)
+  if(!m_string_list.empty()) {
+    for(it=m_string_list.begin(); it!=m_string_list.end(); ++it)
     {
       string &visit_point = *it;
       vector<string> contenor = parseString(visit_point, ',');  // split by ,
@@ -185,7 +193,9 @@ void HazardMgrX::greedy_path(double start_x, double start_y) {
       }
     }
   }
+}
 
+void HazardMgrX::greedy_path(double start_x, double start_y) {
   // --------------- greedy path ----------------
   // 0. Set a starting point as previous point
   // 1. Calculate distance between previous point and other point
@@ -215,6 +225,21 @@ void HazardMgrX::greedy_path(double start_x, double start_y) {
   }
   m_xypoint_list = path_list;
 
+  // // --------------- out put ss.str() -------------------
+  // string repo = XYPoint2string();
+  // reportEvent(repo);
+  // Notify("UPDATES_REDECT_PATH", repo);
+
+  // //------------------for configure request----------------  
+  // string re_config;
+  // stringstream ss_re;
+  // ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
+  // ss_re>>re_config;
+  // Notify("UHZ_CONFIG_REQUEST",re_config);
+}
+
+string HazardMgrX::XYPoint2string()
+{
   stringstream ss;
   ss << "points = ";
   vector<XYPoint>::iterator iter;
@@ -224,16 +249,7 @@ void HazardMgrX::greedy_path(double start_x, double start_y) {
       ss << ":";
     ss << point_msg.get_vx() << "," << point_msg.get_vy();
   }
-  // --------------- out put ss.str() -------------------
-  reportEvent(ss.str());
-  Notify("UPDATES_REDECT_PATH", ss.str());
-
-//------------------for configure request----------------  
-  string re_config;
-  stringstream ss_re;
-  ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
-  ss_re>>re_config;
-  Notify("UHZ_CONFIG_REQUEST",re_config);
+  return ss.str();
 }
 
 //---------------------------------------------------------
