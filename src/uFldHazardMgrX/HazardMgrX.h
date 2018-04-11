@@ -28,6 +28,7 @@
 #include "XYHazardSet.h"
 #include "XYPolygon.h"
 #include <deque>
+
 class HazardMgrX : public AppCastingMOOSApp
 {
  public:
@@ -57,10 +58,11 @@ class HazardMgrX : public AppCastingMOOSApp
    void postSensorConfigRequest();
    void postSensorInfoRequest();
    void postHazardSetReport();
+   void postHistoryDetectList();
 
-   void string2XYPoint(std::deque<std::string>);
-   void greedy_path(double, double);
-   std::string XYPoint2string();
+   // void string2XYPoint(std::deque<std::string>);
+   // void greedy_path(double, double);
+   // std::string XYPoint2string();
    
  private: // Configuration variables
    double      m_swath_width_desired;
@@ -74,6 +76,7 @@ class HazardMgrX : public AppCastingMOOSApp
  private: // State variables
    bool   m_sensor_config_requested;
    bool   m_sensor_config_set;
+   bool   m_survey_redetect;
 
    unsigned int m_sensor_config_reqs;
    unsigned int m_sensor_config_acks;

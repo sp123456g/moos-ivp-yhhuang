@@ -48,6 +48,7 @@ HazardMgrX::HazardMgrX()
   m_wpt_index           = 0;
   m_hit_communicate_point = false;
   m_need_station_keep   = true;
+  m_survey_redetect     = false;
   //m_col_send_time       = 0;
 
   m_sensor_config_reqs = 0;
@@ -129,25 +130,29 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
         m_hit_communicate_point = true;
       }
     }
-    else if (key == "SURVEY"){
-      if( sval == "REDETECT") {
-        reportEvent(sval);
-        string2XYPoint(m_history_detect_buff);
-        greedy_path(m_nav_x, m_nav_y);
-        Notify("UPDATES_REDECT_PATH", XYPoint2string());
-        
-        //------------------for configure request----------------  
-        string re_config;
-        stringstream ss_re;
-        ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
-        ss_re>>re_config;
-        Notify("UHZ_CONFIG_REQUEST",re_config);
-      }
+    else if (key == "SURVEY") {
+      if(sval == "REDETECT")
+        m_survey_redetect = true;
     }
-    else if (key == "NAV_X")
-      m_nav_x = dval;
-    else if (key == "NAV_Y")
-      m_nav_y = dval;
+    // else if (key == "SURVEY"){
+    //   if( sval == "REDETECT") {
+    //     reportEvent(sval);
+    //     string2XYPoint(m_history_detect_buff);
+    //     greedy_path(m_nav_x, m_nav_y);
+    //     Notify("UPDATES_REDECT_PATH", XYPoint2string());
+
+    //     //------------------for configure request----------------  
+    //     string re_config;
+    //     stringstream ss_re;
+    //     ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
+    //     ss_re>>re_config;
+    //     Notify("UHZ_CONFIG_REQUEST",re_config);
+    //   }
+    // }
+    // else if (key == "NAV_X")
+    //   m_nav_x = dval;
+    // else if (key == "NAV_Y")
+    //   m_nav_y = dval;
 
     else 
       reportRunWarning("Unhandled Mail: " + key);
@@ -156,101 +161,89 @@ bool HazardMgrX::OnNewMail(MOOSMSG_LIST &NewMail)
    return(true);
 }
 
-void HazardMgrX::string2XYPoint(deque<string> m_string_list)
-{
-  // -------------- string to XYPoint -----------------
-  // msg from m_string_list
-  //          example: x=14,y=3,label=35 | x=-34,y=-34,label=46
-  // XYPoint is save in m_xypoint_list
-  deque<string>::iterator it;
-  if(!m_string_list.empty()) {
-    for(it=m_string_list.begin(); it!=m_string_list.end(); ++it)
-    {
-      string &visit_point = *it;
-      vector<string> contenor = parseString(visit_point, ',');  // split by ,
-      double x, y;
-      int param_cnt = 0;
-      for(int i = 0; i < contenor.size(); i++) {
-        string param = biteStringX(contenor[i], '=');
-        string value = contenor[i];
-        param = tolower(param);
-        if(param == "x") {
-          setDoubleOnString(x, value);
-          param_cnt++;
-        }
-        else if (param == "y") {
-          setDoubleOnString(y, value);
-          param_cnt++;
-        }
-        else if (param == "label") {
-          param_cnt++;
-          break;
-        }
-      }
-      if(param_cnt == 3) {
-        XYPoint new_point(x,y);
-        m_xypoint_list.push_back(new_point);
-      }
-    }
-  }
-}
+// void HazardMgrX::string2XYPoint(deque<string> m_string_list)
+// {
+//   // -------------- string to XYPoint -----------------
+//   // msg from m_string_list
+//   //          example: x=14,y=3,label=35 | x=-34,y=-34,label=46
+//   // XYPoint is save in m_xypoint_list
+//   deque<string>::iterator it;
+//   if(!m_string_list.empty()) {
+//     for(it=m_string_list.begin(); it!=m_string_list.end(); ++it)
+//     {
+//       string &visit_point = *it;
+//       vector<string> contenor = parseString(visit_point, ',');  // split by ,
+//       double x, y;
+//       int param_cnt = 0;
+//       for(int i = 0; i < contenor.size(); i++) {
+//         string param = biteStringX(contenor[i], '=');
+//         string value = contenor[i];
+//         param = tolower(param);
+//         if(param == "x") {
+//           setDoubleOnString(x, value);
+//           param_cnt++;
+//         }
+//         else if (param == "y") {
+//           setDoubleOnString(y, value);
+//           param_cnt++;
+//         }
+//         else if (param == "label") {
+//           param_cnt++;
+//           break;
+//         }
+//       }
+//       if(param_cnt == 3) {
+//         XYPoint new_point(x,y);
+//         m_xypoint_list.push_back(new_point);
+//       }
+//     }
+//   }
+// }
 
-void HazardMgrX::greedy_path(double start_x, double start_y) {
-  // --------------- greedy path ----------------
-  // 0. Set a starting point as previous point
-  // 1. Calculate distance between previous point and other point
-  // 2. Get the point that has mininum distance between previous point and set it as next point
-  // 3. set next point as previous point
-  // 4. go back to step 1.
+// void HazardMgrX::greedy_path(double start_x, double start_y) {
+//   // --------------- greedy path ----------------
+//   // 0. Set a starting point as previous point
+//   // 1. Calculate distance between previous point and other point
+//   // 2. Get the point that has mininum distance between previous point and set it as next point
+//   // 3. set next point as previous point
+//   // 4. go back to step 1.
 
-  XYPoint point_pre(start_x, start_y);
-  vector<XYPoint> path_list;
-  while(!m_xypoint_list.empty()){
-    vector<XYPoint>::iterator p;
-    vector<XYPoint>::iterator p_next;
-    double min_dis = 9999;
-    // find local mininum
-    for(p=m_xypoint_list.begin(); p!=m_xypoint_list.end(); ++p) {
-      XYPoint &point_now = *p;
-      double d = (pow((point_now.get_vx()-point_pre.get_vx()),2) + pow((point_now.get_vy()-point_pre.get_vy()),2));
-      d = sqrt(d);
-      if(d < min_dis) {
-        min_dis = d;
-        p_next = p;
-      }
-    }
-    path_list.push_back(*p_next);
-    point_pre = *p_next;
-    m_xypoint_list.erase(p_next);
-  }
-  m_xypoint_list = path_list;
+//   XYPoint point_pre(start_x, start_y);
+//   vector<XYPoint> path_list;
+//   while(!m_xypoint_list.empty()){
+//     vector<XYPoint>::iterator p;
+//     vector<XYPoint>::iterator p_next;
+//     double min_dis = 9999;
+//     // find local mininum
+//     for(p=m_xypoint_list.begin(); p!=m_xypoint_list.end(); ++p) {
+//       XYPoint &point_now = *p;
+//       double d = (pow((point_now.get_vx()-point_pre.get_vx()),2) + pow((point_now.get_vy()-point_pre.get_vy()),2));
+//       d = sqrt(d);
+//       if(d < min_dis) {
+//         min_dis = d;
+//         p_next = p;
+//       }
+//     }
+//     path_list.push_back(*p_next);
+//     point_pre = *p_next;
+//     m_xypoint_list.erase(p_next);
+//   }
+//   m_xypoint_list = path_list;
+// }
 
-  // // --------------- out put ss.str() -------------------
-  // string repo = XYPoint2string();
-  // reportEvent(repo);
-  // Notify("UPDATES_REDECT_PATH", repo);
-
-  // //------------------for configure request----------------  
-  // string re_config;
-  // stringstream ss_re;
-  // ss_re<<"vname="<<m_host_community<<",width="<<m_sec_detect_width<<",pd="<<m_sec_pd;
-  // ss_re>>re_config;
-  // Notify("UHZ_CONFIG_REQUEST",re_config);
-}
-
-string HazardMgrX::XYPoint2string()
-{
-  stringstream ss;
-  ss << "points = ";
-  vector<XYPoint>::iterator iter;
-  for (iter=m_xypoint_list.begin(); iter!=m_xypoint_list.end(); ++iter) {
-    XYPoint &point_msg = *iter;
-    if(iter != m_xypoint_list.begin())
-      ss << ":";
-    ss << point_msg.get_vx() << "," << point_msg.get_vy();
-  }
-  return ss.str();
-}
+// string HazardMgrX::XYPoint2string()
+// {
+//   stringstream ss;
+//   ss << "points = ";
+//   vector<XYPoint>::iterator iter;
+//   for (iter=m_xypoint_list.begin(); iter!=m_xypoint_list.end(); ++iter) {
+//     XYPoint &point_msg = *iter;
+//     if(iter != m_xypoint_list.begin())
+//       ss << ":";
+//     ss << point_msg.get_vx() << "," << point_msg.get_vy();
+//   }
+//   return ss.str();
+// }
 
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
@@ -281,6 +274,11 @@ bool HazardMgrX::Iterate()
     m_need_station_keep = true;
     handleMailSend2Other();
     m_hit_communicate_point = false;
+  }
+
+  if(m_survey_redetect) {
+    postHistoryDetectList();
+    m_survey_redetect = false;
   }
 
   AppCastingMOOSApp::PostReport();
@@ -363,8 +361,8 @@ void HazardMgrX::registerVariables()
   Register("WPT_INDEX",0);
   Register("ARRIVE",0);
   Register("SURVEY",0);
-  Register("NAV_X",0);
-  Register("NAV_Y",0);
+  // Register("NAV_X",0);
+  // Register("NAV_Y",0);
 
 }
 
@@ -392,6 +390,19 @@ void HazardMgrX::postSensorInfoRequest()
 
   m_sensor_report_reqs++;
   Notify("UHZ_SENSOR_REQUEST", request);
+}
+
+void HazardMgrX::postHistoryDetectList()
+{
+  // send detect repo to Hazard Path
+  deque<string>::iterator it;
+  string repo;
+  for(it=m_history_detect_buff.begin(); it!=m_history_detect_buff.end(); ++it) {
+    string &detect_point = *it;
+    repo += "#" + detect_point;
+  }
+  reportEvent(repo);
+  Notify("HISTORY_DETEC_LIST", repo);
 }
 
 //---------------------------------------------------------
@@ -536,8 +547,8 @@ void HazardMgrX::handleMailSend2Other()
          }
 
            if(!repetitive){
-               m_output_buff.push_back(input);
-               m_history_detect_buff.push_back(input);
+              m_output_buff.push_back(input);
+              m_history_detect_buff.push_back(input);
            }
                m_detection_reports_str_buff.pop_front();
         

@@ -13,8 +13,8 @@ ADD_EXECUTABLE(pHazardPath ${SRC})
 
 TARGET_LINK_LIBRARIES(pHazardPath
    ${MOOS_LIBRARIES}
+   geometry
    apputil
    mbutil
    m
    pthread)
-

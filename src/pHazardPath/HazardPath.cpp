@@ -6,10 +6,11 @@
 /************************************************************/
 
 #include <iterator>
-#include "MBUtils.h"
-#include "ACTable.h"
-#include "HazardPath.h"
+#include <stdlib.h>
 #include <sstream>
+#include "MBUtils.h"
+#include "HazardPath.h"
+#include "ACTable.h"
 using namespace std;
 
 //---------------------------------------------------------
@@ -17,6 +18,7 @@ using namespace std;
 
 HazardPath::HazardPath()
 {
+  //m_xypoint_list.clear();
 }
 
 //---------------------------------------------------------
@@ -49,10 +51,17 @@ bool HazardPath::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
     string sval = msg.GetString();
+    double dval  = msg.GetDouble();
      if(key == "FOO") 
        cout << "great!";
      else if(key == "UHZ_MISSION_PARAMS")
       handleMailMissionParams(sval);
+     else if (key == "HISTORY_DETEC_LIST")
+      handleMailDetectList(sval);
+     else if (key == "NAV_X")
+      m_nav_x = dval;
+     else if (key == "NAV_Y")
+      m_nav_y = dval;
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
    }
@@ -93,6 +102,18 @@ void HazardPath::handleMailMissionParams(string str)
    CalculateRegion(region); 
 }
 
+void HazardPath::handleMailDetectList(string str)
+{
+  vector<string> contenor = parseString(str, '#');  // split by ,
+  for(int i = 0; i < contenor.size(); i++) {
+    m_history_detect_buff.push_back(contenor[i]);
+  }
+  string2XYPoint(m_history_detect_buff);
+  greedy_path(m_nav_x, m_nav_y);
+  Notify("UPDATES_REDECT_PATH", XYPoint2string());
+
+}
+
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 bool HazardPath::OnConnectToServer()
@@ -105,7 +126,8 @@ bool HazardPath::OnConnectToServer()
 //1. Calculate height and width
 //2. Seperate the area to left and right
 //3. find the mid point of two area
-void HazardPath::CalculateRegion(string region){
+void HazardPath::CalculateRegion(string region)
+{
 
 vector<string> range_vector = parseString(region, ':');
 //for range index:
@@ -192,6 +214,101 @@ vector<string> range_vector = parseString(region, ':');
     } 
 }
 
+// -------------- string2XYPoint -----------------
+// string to XYPoint
+// msg from string_list
+//          example: x=14,y=3,label=35 | x=-34,y=-34,label=46
+// XYPoint is save in class value m_xypoint_list
+void HazardPath::string2XYPoint(vector<string> string_list)
+{
+  vector<string>::iterator it;
+  if(!string_list.empty()) {
+    for(it=string_list.begin(); it!=string_list.end(); ++it)
+    {
+      string &visit_point = *it;
+      vector<string> contenor = parseString(visit_point, ',');  // split by ,
+      double x, y;
+      int param_cnt = 0;
+      for(int i = 0; i < contenor.size(); i++) {
+        string param = biteStringX(contenor[i], '=');
+        string value = contenor[i];
+        param = tolower(param);
+        if(param == "x") {
+          setDoubleOnString(x, value);
+          param_cnt++;
+        }
+        else if (param == "y") {
+          setDoubleOnString(y, value);
+          param_cnt++;
+        }
+        else if (param == "label") {
+          param_cnt++;
+          break;
+        }
+      }
+      if(param_cnt == 3) {
+        XYPoint new_point(x,y);
+        m_xypoint_list.push_back(new_point);
+      }
+    }
+  }
+}
+
+// --------------- greedy_path ----------------
+// 0. Set a starting point as previous point
+// 1. Calculate distance between previous point and other point
+// 2. Get the point that has mininum distance between previous point and set it as next point
+// 3. set next point as previous point
+// 4. go back to step 1.
+void HazardPath::greedy_path(double start_x, double start_y)
+{
+  XYPoint point_pre(start_x, start_y);
+  vector<XYPoint> path_list;
+  while(!m_xypoint_list.empty()){
+    vector<XYPoint>::iterator p;
+    vector<XYPoint>::iterator p_next;
+    double min_dis = 9999;
+    // find local mininum
+    for(p=m_xypoint_list.begin(); p!=m_xypoint_list.end(); ++p) {
+      XYPoint &point_now = *p;
+      double d = (pow((point_now.get_vx()-point_pre.get_vx()),2) + pow((point_now.get_vy()-point_pre.get_vy()),2));
+      d = sqrt(d);
+      if(d < min_dis) {
+        min_dis = d;
+        p_next = p;
+      }
+    }
+    path_list.push_back(*p_next);
+    point_pre = *p_next;
+    m_xypoint_list.erase(p_next);
+  }
+  m_xypoint_list = path_list;
+}
+
+void HazardPath::s_path (double start_x, double start_y)
+{
+  XYPoint point_pre(start_x, start_y);
+}
+
+// --------------- XYPoint2string ----------------
+// XYPoint to string
+// msg from XYPoint vector
+// return strin msg
+//          example: points = 14,3:34,-34:15,20:30,6
+string HazardPath::XYPoint2string()
+{
+  stringstream ss;
+  ss << "points = ";
+  vector<XYPoint>::iterator iter;
+  for (iter=m_xypoint_list.begin(); iter!=m_xypoint_list.end(); ++iter) {
+    XYPoint &point_msg = *iter;
+    if(iter != m_xypoint_list.begin())
+      ss << ":";
+    ss << point_msg.get_vx() << "," << point_msg.get_vy();
+  }
+  return ss.str();
+}
+
 //---------------------------------------------------------
 // Procedure: Iterate()
 //            happens AppTick times per second
@@ -259,7 +376,11 @@ void HazardPath::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   // Register("FOOBAR", 0);
-     Register("UHZ_MISSION_PARAMS",0);
+  Register("UHZ_MISSION_PARAMS",0);
+  //Register("SURVEY",0);
+  Register("HISTORY_DETEC_LIST",0);
+  Register("NAV_X",0);
+  Register("NAV_Y",0);
      
 }
 

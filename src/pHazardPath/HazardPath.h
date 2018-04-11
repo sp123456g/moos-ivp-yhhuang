@@ -5,10 +5,12 @@
 /*    DATE: December 29th, 1963                             */
 /************************************************************/
 
-#ifndef HazardPath_HEADER
-#define HazardPath_HEADER
+#ifndef HAZARD_PATH_HEADER
+#define HAZARD_PATH_HEADER
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+#include "XYPoint.h"
+#include <vector>
 
 class HazardPath : public AppCastingMOOSApp
 {
@@ -28,13 +30,25 @@ class HazardPath : public AppCastingMOOSApp
  protected:
    void registerVariables();
    void handleMailMissionParams(std::string);
+   void handleMailDetectList(std::string);
+
    void CalculateRegion(std::string);
+
+   void string2XYPoint(std::vector<std::string>);
+   void greedy_path(double, double);
+   void s_path(double, double);
+   std::string XYPoint2string();
+
  private: // Configuration variables
+   std::vector<XYPoint> m_xypoint_list;
+   std::vector<std::string> m_history_detect_buff;
 
    std::string m_path;
    std::string m_region;
    std::string m_height;
    std::string m_width;
+   double m_nav_x;
+   double m_nav_y;
 
    double m_lane_width;
  private: // State variables
