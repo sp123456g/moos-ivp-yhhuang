@@ -5,8 +5,11 @@ initialize   RETURN  = false
 initialize   SURVEY  = false
 initialize   STATION = false
 initialize   COMMUNICATE_NEEDED = false
+initialize   COMMUNICATE_END = false
+initialize   COMMUNICATE_START = true
 initialize   WAPOINTING = true
 initialize   REDETECT  = false
+
 Set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
@@ -98,7 +101,7 @@ Behavior = BHV_Waypoint
 #endif
 
 
-       endflag = NODE_MESSAGE = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=REDETECT
+       endflag =SURVEY=REDETECT
 
         repeat = 0
   visual_hints = nextpt_color=red, nextpt_lcolor=green
@@ -118,6 +121,7 @@ Behavior = BHV_Waypoint
   endflag   = NODE_MESSAGE_LOCAL = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
   endflag   = RETURN = true
   endflag   = REDETECT = false
+  endflag   = COMMUNICATE_NEEDED = true
 
   perpetual = true
 
@@ -148,9 +152,8 @@ Behavior = BHV_Waypoint
 //----------------------------------------------
 Behavior = BHV_Timer
 {
-    name = bhv_timer_go_for_communicate
+    name = bhv_state_for_communicate
     condition = MODE==STATION-KEEPING
-    //condition = SURVEY = true
     updates      = TIMER_UPDATES        // example
     perpetual = true
     duration = 10
@@ -158,4 +161,46 @@ Behavior = BHV_Timer
     duration_reset = TIMER_RESET = true
     endflag        = STATION = false
     endflag        = TIMER_RESET = true
+}
+
+//---------------------------------------------
+Behavior = BHV_Waypoint 
+{
+    name      = waypt_communicate
+    pwt       = 100
+    condition = COMMUNICATE_NEEDED = true
+    condition = REDETECT = false
+    //condition = MODE==WAPOINT_REDECTING //SURVEY=REDETECT
+    condition = SURVEY=REDETECT
+    endflag   = COMMUNICATE_END = true
+    endflag   = REDETECT = true
+    endflag   = COMMUNICATE_NEEDED = false
+    perpetual = true
+
+
+    speed = 1.3 
+    radius = 2.0
+    nm_radius = 8.0
+    lead = 8 
+    points = 69, -225
+#ifdef VNAME VNAME1
+  points =69.73,-225.36
+  visual_hints = vertex_color=yellow, edge_color=green
+#elseifdef VNAME VNAME2
+  points = 146.65,-225.36
+  visual_hints = vertex_color=yellow, edge_color=gray25
+#endif
+}
+
+//--------------------------------------------
+Behavior = BHV_Timer
+{
+    name = bhv_timer_go_for_communicate
+    condition = MODE==WAPOINT_REDECTING //SURVEY=REDETECT
+    condition = COMMUNICATE_NEEDED=false
+    duration = 100
+    duration_reset = COMMUNICATE_END = true
+    endflag        = COMMUNICATE_NEEDED = true 
+    endflag        = REDETECT = false
+    perpetual      = true
 }

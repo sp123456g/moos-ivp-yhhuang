@@ -278,6 +278,9 @@ void HazardPath::greedy_path(double start_x, double start_y)
         p_next = p;
       }
     }
+    XYPoint &point_next = *p_next;
+    point_next.set_vx(point_next.get_vx());
+    point_next.set_vy(point_next.get_vy());
     path_list.push_back(*p_next);
     point_pre = *p_next;
     m_xypoint_list.erase(p_next);
