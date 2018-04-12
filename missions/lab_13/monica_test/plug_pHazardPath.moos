@@ -7,5 +7,7 @@ ProcessConfig = pHazardPath_monica
   CommsTick = 2
 
 //  opregion = -150,-75:-150,-200:400,-200:400,-75
-    lane_width = 20;
+    lane_width = 20
+    second_lane_width = 20
+    y_offset = 10
 }

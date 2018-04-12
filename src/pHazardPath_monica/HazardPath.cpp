@@ -20,6 +20,8 @@ HazardPath::HazardPath()
 {
   //m_xypoint_list.clear();
   m_history_detect_size = -1;
+  m_middle_y_offset = 0.0;
+  m_second_lane_width = 20.0;
 }
 
 //---------------------------------------------------------
@@ -100,7 +102,7 @@ void HazardPath::handleMailMissionParams(string str)
     string region = m_path.substr(found_bra_one+1,found_bra_two-found_bra_one-1);
    m_region = region;
 
-   CalculateRegion(region, m_lane_width);
+   CalculateRegion(region, m_lane_width, 0.0);
 
     Notify("WA_UPDATE_ONE",m_s_path_one);
     Notify("WA_UPDATE_TWO",m_s_path_two);
@@ -118,7 +120,7 @@ void HazardPath::handleMailDetectList(string str)
   ss << m_history_detect_size;
   reportEvent(ss.str());
   if(m_history_detect_size > 10) {
-    CalculateRegion(m_region, 16.0); 
+    CalculateRegion(m_region, m_second_lane_width, m_middle_y_offset); 
     Notify("REDETECT_MODE", "s_path");
     Notify("UPDATES_REDECT_PATH_ONE", m_s_path_one);
     Notify("UPDATES_REDECT_PATH_TWO", m_s_path_two);
@@ -143,7 +145,7 @@ bool HazardPath::OnConnectToServer()
 //1. Calculate height and width
 //2. Seperate the area to left and right
 //3. find the mid point of two area
-void HazardPath::CalculateRegion(string region, double lane_width)
+void HazardPath::CalculateRegion(string region, double lane_width, double y_middle_offset)
 {
 
 vector<string> range_vector = parseString(region, ':');
@@ -187,8 +189,8 @@ vector<string> range_vector = parseString(region, ':');
     middle_pnt2_x = x_pnts[2]-(width/2)+middle_offset;
 
     //middle_pnt1_y = (y_pnts[0]-height/2)+middle_offset;
-    middle_pnt1_y = (y_pnts[0]-height/2);
-    middle_pnt2_y = (y_pnts[0]-height/2); 
+    middle_pnt1_y = (y_pnts[0]-height/2) + y_middle_offset;
+    middle_pnt2_y = (y_pnts[0]-height/2) + y_middle_offset; 
 
     // Output for appcasting    
     stringstream ss_one,ss_two;
@@ -401,6 +403,20 @@ bool HazardPath::OnStartUp()
         stringstream ss;
         ss<<value;
         ss>>m_lane_width;
+        handled = true;
+    
+    }
+    else if(param == "second_lane_width"){
+        stringstream ss;
+        ss<<value;
+        ss>>m_second_lane_width;
+        handled = true;
+    
+    }
+    else if(param == "y_offset"){
+        stringstream ss;
+        ss<<value;
+        ss>>m_middle_y_offset;
         handled = true;
     
     }

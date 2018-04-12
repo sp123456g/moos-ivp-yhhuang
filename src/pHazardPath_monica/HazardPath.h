@@ -32,7 +32,7 @@ class HazardPath : public AppCastingMOOSApp
    void handleMailMissionParams(std::string);
    void handleMailDetectList(std::string);
 
-   void CalculateRegion(std::string, double);
+   void CalculateRegion(std::string, double, double);
 
    void string2XYPoint(std::vector<std::string>);
    void greedy_path(double, double);
@@ -51,6 +51,8 @@ class HazardPath : public AppCastingMOOSApp
    std::string m_s_path_two;
    double m_nav_x;
    double m_nav_y;
+   double m_middle_y_offset;
+   double m_second_lane_width;
    int m_history_detect_size;
 
    double m_lane_width;

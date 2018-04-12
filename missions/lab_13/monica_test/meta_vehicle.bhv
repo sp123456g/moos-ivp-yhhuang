@@ -172,7 +172,7 @@ Behavior = BHV_Waypoint
   endflag    = HAZARDSET_REQUEST = true
 //  endflag    = NODE_MESSAGE_LOCAL = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
   
-  endflag    = ARRIVE = true
+  //endflag    = ARRIVE = true
 
          speed = 2.0
         radius = 2.0
