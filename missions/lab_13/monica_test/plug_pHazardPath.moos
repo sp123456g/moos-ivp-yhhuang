@@ -1,0 +1,11 @@
+//--------------------------------------------------
+// pHazardPath configuration block from plugin
+
+ProcessConfig = pHazardPath_monica
+{
+  AppTick   = 2
+  CommsTick = 2
+
+//  opregion = -150,-75:-150,-200:400,-200:400,-75
+    lane_width = 30;
+}

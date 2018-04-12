@@ -30,6 +30,8 @@ ADD_SUBDIRECTORY(pCommunicationAngle_yhhuang)
 ADD_SUBDIRECTORY(pPointAssign_Auto)
 ADD_SUBDIRECTORY(uFldHazardMgrX)
 ADD_SUBDIRECTORY(pHazardPath)
+ADD_SUBDIRECTORY(uFldHazardMgrX_monica)
+ADD_SUBDIRECTORY(pHazardPath_monica)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################
