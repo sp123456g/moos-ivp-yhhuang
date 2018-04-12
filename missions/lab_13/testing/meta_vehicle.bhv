@@ -198,7 +198,7 @@ Behavior = BHV_Timer
     name = bhv_timer_go_for_communicate
     condition = MODE==WAPOINT_REDECTING //SURVEY=REDETECT
     condition = COMMUNICATE_NEEDED=false
-    duration = 100
+    duration = 200
     duration_reset = COMMUNICATE_END = true
     endflag        = COMMUNICATE_NEEDED = true 
     endflag        = REDETECT = false

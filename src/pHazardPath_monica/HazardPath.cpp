@@ -118,7 +118,7 @@ void HazardPath::handleMailDetectList(string str)
   ss << m_history_detect_size;
   reportEvent(ss.str());
   if(m_history_detect_size > 10) {
-    CalculateRegion(m_region, 15.0); 
+    CalculateRegion(m_region, 16.0); 
     Notify("REDETECT_MODE", "s_path");
     Notify("UPDATES_REDECT_PATH_ONE", m_s_path_one);
     Notify("UPDATES_REDECT_PATH_TWO", m_s_path_two);

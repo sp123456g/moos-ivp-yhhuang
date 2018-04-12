@@ -7,5 +7,5 @@ ProcessConfig = pHazardPath
   CommsTick = 2
 
 //  opregion = -150,-75:-150,-200:400,-200:400,-75
-    lane_width = 30;
+    lane_width = 20;
 }
