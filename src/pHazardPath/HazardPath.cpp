@@ -19,6 +19,9 @@ using namespace std;
 HazardPath::HazardPath()
 {
   //m_xypoint_list.clear();
+  m_history_detect_size = -1;
+  m_middle_y_offset = 0.0;
+  m_second_lane_width = 20.0;
 }
 
 //---------------------------------------------------------
@@ -99,19 +102,35 @@ void HazardPath::handleMailMissionParams(string str)
     string region = m_path.substr(found_bra_one+1,found_bra_two-found_bra_one-1);
    m_region = region;
 
-   CalculateRegion(region); 
+   CalculateRegion(region, m_lane_width, 0.0);
+
+    Notify("WA_UPDATE_ONE",m_s_path_one);
+    Notify("WA_UPDATE_TWO",m_s_path_two);
 }
 
 void HazardPath::handleMailDetectList(string str)
 {
   vector<string> contenor = parseString(str, '#');  // split by ,
+  m_history_detect_size = contenor.size();
   for(int i = 0; i < contenor.size(); i++) {
     m_history_detect_buff.push_back(contenor[i]);
   }
   string2XYPoint(m_history_detect_buff);
-  greedy_path(m_nav_x, m_nav_y);
-  Notify("UPDATES_REDECT_PATH", XYPoint2string());
-
+  stringstream ss;
+  ss << m_history_detect_size;
+  reportEvent(ss.str());
+  if(m_history_detect_size > 10) {
+    CalculateRegion(m_region, m_second_lane_width, m_middle_y_offset); 
+    Notify("REDETECT_MODE", "s_path");
+    Notify("UPDATES_REDECT_PATH_ONE", m_s_path_one);
+    Notify("UPDATES_REDECT_PATH_TWO", m_s_path_two);
+  }
+  else {
+    greedy_path(m_nav_x, m_nav_y);
+    Notify("REDETECT_MODE", "greedy_path");
+    Notify("UPDATES_REDECT_PATH", XYPoint2string());
+    //Notify("UPDATES_REDECT_PATH_TWO", XYPoint2string());
+  }
 }
 
 //---------------------------------------------------------
@@ -126,7 +145,7 @@ bool HazardPath::OnConnectToServer()
 //1. Calculate height and width
 //2. Seperate the area to left and right
 //3. find the mid point of two area
-void HazardPath::CalculateRegion(string region)
+void HazardPath::CalculateRegion(string region, double lane_width, double y_middle_offset)
 {
 
 vector<string> range_vector = parseString(region, ':');
@@ -136,7 +155,7 @@ vector<string> range_vector = parseString(region, ':');
 //1  2
     double height;
     double width;
-    double    lane_width = m_lane_width;
+    //double lane_width = m_lane_width;
     double middle_pnt1_x;
     double middle_pnt2_x;
     double middle_pnt1_y;
@@ -170,8 +189,8 @@ vector<string> range_vector = parseString(region, ':');
     middle_pnt2_x = x_pnts[2]-(width/2)+middle_offset;
 
     //middle_pnt1_y = (y_pnts[0]-height/2)+middle_offset;
-    middle_pnt1_y = (y_pnts[0]-height/2);
-    middle_pnt2_y = (y_pnts[0]-height/2); 
+    middle_pnt1_y = (y_pnts[0]-height/2) + y_middle_offset;
+    middle_pnt2_y = (y_pnts[0]-height/2) + y_middle_offset; 
 
     // Output for appcasting    
     stringstream ss_one,ss_two;
@@ -209,11 +228,14 @@ vector<string> range_vector = parseString(region, ':');
         //  m_output_one = str_output_one;
         //  m_output_two = str_output_two;
 
-            Notify("WA_UPDATE_ONE",str_output_one);
-            Notify("WA_UPDATE_TWO",str_output_two); 
+        m_s_path_one = str_output_one;
+        m_s_path_two = str_output_two;
+            // Notify("WA_UPDATE_ONE",str_output_one);
+            // Notify("WA_UPDATE_TWO",str_output_two);
 
     } 
 }
+
 
 // -------------- string2XYPoint -----------------
 // string to XYPoint
@@ -289,9 +311,35 @@ void HazardPath::greedy_path(double start_x, double start_y)
   m_xypoint_list = path_list;
 }
 
-void HazardPath::s_path (double start_x, double start_y)
+void HazardPath::i_path (double start_x, double start_y)
 {
   XYPoint point_pre(start_x, start_y);
+  vector<XYPoint> path_list;
+  while(!m_xypoint_list.empty()){
+    vector<XYPoint>::iterator p;
+    vector<XYPoint>::iterator p_next;
+    double min_dis = 9999;
+    // find local mininum
+    for(p=m_xypoint_list.begin(); p!=m_xypoint_list.end(); ++p) {
+      XYPoint &point_now = *p;
+      double d = (pow((point_now.get_vx()-point_pre.get_vx()),2) + pow((point_now.get_vy()-point_pre.get_vy()),2));
+      d = sqrt(d);
+      if(d < min_dis) {
+        min_dis = d;
+        p_next = p;
+      }
+    }
+    XYPoint &point_next = *p_next;
+    point_pre = *p_next;
+    point_next.set_vx(point_next.get_vx()+20);
+    point_next.set_vy(point_next.get_vy());
+    path_list.push_back(*p_next);
+    point_next.set_vx(point_next.get_vx()-40);
+    point_next.set_vy(point_next.get_vy());
+    path_list.push_back(*p_next);
+    m_xypoint_list.erase(p_next);
+  }
+  m_xypoint_list = path_list;
 }
 
 // --------------- XYPoint2string ----------------
@@ -355,6 +403,20 @@ bool HazardPath::OnStartUp()
         stringstream ss;
         ss<<value;
         ss>>m_lane_width;
+        handled = true;
+    
+    }
+    else if(param == "second_lane_width"){
+        stringstream ss;
+        ss<<value;
+        ss>>m_second_lane_width;
+        handled = true;
+    
+    }
+    else if(param == "y_offset"){
+        stringstream ss;
+        ss<<value;
+        ss>>m_middle_y_offset;
         handled = true;
     
     }

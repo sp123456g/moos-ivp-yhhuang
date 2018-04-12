@@ -1,9 +1,0 @@
-//------------------------------------------------
-// uFldHazardMgr config block
-
-ProcessConfig = uFldHazardMgrX
-{
-   AppTick   = 4
-   CommsTick = 4
-}
-

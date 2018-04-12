@@ -1,6 +1,6 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                       pHazardPath
-# Author(s):                              yhhuang
+# The CMakeLists.txt for:              pHazardPath
+# Author(s):                           yhhuang
 #--------------------------------------------------------
 
 SET(SRC

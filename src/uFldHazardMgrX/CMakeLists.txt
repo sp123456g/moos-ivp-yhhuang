@@ -1,6 +1,6 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                       uFldHazardMgrX
-# Author(s):                              
+# The CMakeLists.txt for:           uFldHazardMgrX
+# Author(s):                        yhhuang
 #--------------------------------------------------------
 
 SET(SRC
