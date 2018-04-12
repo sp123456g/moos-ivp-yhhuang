@@ -118,7 +118,6 @@ Behavior = BHV_Waypoint
   pwt       = 100
   condition = MODE==WAPOINT_REDECTING
   condition = REDETECT_MODE=s_path
-  endflag   = NODE_MESSAGE_LOCAL = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
   endflag   = RETURN = true
   endflag   = REDETECT = false
   perpetual = true
@@ -149,11 +148,10 @@ Behavior = BHV_Waypoint
   condition = MODE==WAPOINT_REDECTING
   condition = REDETECT_MODE=greedy_path
   updates   = UPDATES_REDECT_PATH
-  endflag   = NODE_MESSAGE_LOCAL = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
   endflag   = RETURN = true
   endflag   = REDETECT = false
   endflag   = COMMUNICATE_NEEDED = true
-
+ 
   perpetual = true
 
          speed = 2.0
@@ -172,7 +170,9 @@ Behavior = BHV_Waypoint
   endflag    = RETURN = false
   endflag    = DEPLOY = false
   endflag    = HAZARDSET_REQUEST = true
-  endflag    = NODE_MESSAGE_LOCAL = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
+//  endflag    = NODE_MESSAGE_LOCAL = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
+  
+  endflag    = ARRIVE = true
 
          speed = 2.0
         radius = 2.0
