@@ -7,11 +7,11 @@ ProcessConfig = uFldHazardMgrX_monica
   CommsTick = 2
 
 #ifdef VNAME VNAME1
-  swath_width  = 30
+  swath_width  = 25
   second_width = 10
   second_pd    = 0.8
 #elseifdef VNAME VNAME2
-  swath_width  = 30
+  swath_width  = 25
   second_width = 10
   second_pd    = 0.8
 #endif
