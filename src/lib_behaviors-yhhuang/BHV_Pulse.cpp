@@ -136,8 +136,10 @@ IvPFunction* BHV_Pulse::onRunState()
      m_index =  getBufferDoubleVal("WPT_INDEX",ok1);
      m_osx   =  getBufferDoubleVal("NAV_X",ok2);
      m_osy   =  getBufferDoubleVal("NAV_Y",ok3);
-    if(!ok1)
+    if(!ok1){
+        if(m_index>0)
         postWMessage("No Waypoint index found!\n");
+    }
     else if(!ok2)
         postWMessage("No NAV_X\n");
     else if(!ok3)

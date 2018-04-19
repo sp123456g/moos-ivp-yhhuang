@@ -124,6 +124,9 @@ Behavior = BHV_Timer
 {
     name      = bhv_timer_go_for_refuel
     condition = LOITER = true
+    condition = STATION_KEEP = false 
+    duration_status = TIME_STATUS
+    duration_idle_decay = false
     duration  = 200
     duration_reset = REFUELING_END = true
     endflag   = REFUEL_NEEDED = true
