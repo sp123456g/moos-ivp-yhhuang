@@ -5,6 +5,7 @@
 TIME_WARP=1
 JUST_MAKE="no"
 HAZARD_FILE="hazards.txt"
+HOSTIP_FORCE="192.168.1.205"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0
@@ -26,7 +27,7 @@ done
 #-------------------------------------------------------
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
    VNAME="shoreside" SHARE_LISTEN=$SHORE_LISTEN
-
+   HOSTIP_FORCE=$HOSTIP_FORCE
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi

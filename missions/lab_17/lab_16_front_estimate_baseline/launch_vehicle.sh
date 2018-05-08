@@ -15,7 +15,8 @@ HEIGHT1=150
 WIDTH1=120
 LANE_WIDTH1=25
 DEGREES1=270
-
+SHORE_IP="192.168.1.205"
+SHORE_LISTEN="9300"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0
@@ -66,7 +67,8 @@ nsplug meta_vehicle.moos targ_$VNAME.moos -f WARP=$TIME_WARP  \
    VNAME=$VNAME      START_POS=$START_POS                    \
    VPORT="9001"       SHARE_LISTEN="9301"                      \
    VTYPE=kayak          COOL_FAC=$COOL_FAC  COOL_STEPS=$COOL_STEPS\
-   CONCURRENT=$CONCURRENT  ADAPTIVE=$ADAPTIVE
+   CONCURRENT=$CONCURRENT  ADAPTIVE=$ADAPTIVE\
+   SHORE_LISTEN=$SHORE_LISTEN    SHORE_IP=$SHORE_IP
 
 nsplug meta_vehicle.bhv targ_$VNAME.bhv -f VNAME=$VNAME      \
     START_POS=$START_POS SURVEY_X=$SURVEY_X SURVEY_Y=$SURVEY_Y \
