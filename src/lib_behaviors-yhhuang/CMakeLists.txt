@@ -69,7 +69,7 @@ TARGET_LINK_LIBRARIES(BHV_SearchFront
    ivpcore 
    bhvutil 
    mbutil
-   armadillo 
+   #   armadillo 
    geometry 
    ${SYSTEM_LIBS} )
 

@@ -10,9 +10,9 @@
 #include "MBUtils.h"
 #include "BuildUtils.h"
 #include "BHV_SearchFront.h"
-#include <armadillo>
+//#include <armadillo>
 using namespace std;
-using namespace arma;
+//using namespace arma;
 //---------------------------------------------------------------
 // Constructor
 
@@ -175,38 +175,38 @@ IvPFunction* BHV_SearchFront::onRunState()
 //        }
         
 //using curve fitting
-
-      postMessage("BUFF_SIZE",m_temp_dbl_buff.size());
-      if(m_temp_dbl_buff.size()>=m_avg_number){
-      
-          vec x = zeros<vec>(m_avg_number);
-          vec y = zeros<vec>(m_avg_number);
-          
-         for(int i=0;i<m_avg_number;i++){
-         
-            x(i) = i;
-            y(i) = m_temp_dbl_buff.front();
-            m_temp_dbl_buff.pop_front();
-         } 
-       postMessage("X_ONE",x(1));  
-         vec p = polyfit(x,y,1);
-
-         if(abs(p(0))>0.13){
-          m_arrive_time = getBufferCurrTime();
-          m_heading = getBufferDoubleVal("DESIRED_HEADING",ok2);
-         }   
-         m_curr_time = getBufferCurrTime();
-         
-    if(m_curr_time>=m_arrive_time+2 && m_curr_time<=m_arrive_time+180){  
-          ipf = Gen_Zaic_peak(m_heading+180);
-    }
-    else
-        ipf = Gen_Zaic_peak(0);
-             postMessage("CHANGE_HEADING","NOT_CHANGED");
-
-         postMessage("POLYFIT_PARA_ZERO",p(0));
-         postMessage("POLYFIT_PARA_ONE",p(1));
-      }
+//
+//      postMessage("BUFF_SIZE",m_temp_dbl_buff.size());
+//      if(m_temp_dbl_buff.size()>=m_avg_number){
+//      
+//          vec x = zeros<vec>(m_avg_number);
+//          vec y = zeros<vec>(m_avg_number);
+//          
+//         for(int i=0;i<m_avg_number;i++){
+//         
+//            x(i) = i;
+//            y(i) = m_temp_dbl_buff.front();
+//            m_temp_dbl_buff.pop_front();
+//         } 
+//       postMessage("X_ONE",x(1));  
+//         vec p = polyfit(x,y,1);
+//
+//         if(abs(p(0))>0.13){
+//          m_arrive_time = getBufferCurrTime();
+//          m_heading = getBufferDoubleVal("DESIRED_HEADING",ok2);
+//         }   
+//         m_curr_time = getBufferCurrTime();
+//         
+//    if(m_curr_time>=m_arrive_time+2 && m_curr_time<=m_arrive_time+180){  
+//          ipf = Gen_Zaic_peak(m_heading+180);
+//    }
+//    else
+//        ipf = Gen_Zaic_peak(0);
+//             postMessage("CHANGE_HEADING","NOT_CHANGED");
+//
+//         postMessage("POLYFIT_PARA_ZERO",p(0));
+//         postMessage("POLYFIT_PARA_ONE",p(1));
+//      }
   // Part N: Prior to returning the IvP function, apply the priority wt
   // Actual weight applied may be some value different than the configured
   // m_priority_wt, depending on the behavior author's insite.
