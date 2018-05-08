@@ -13,7 +13,6 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
    
   Run = MOOSDB             @ NewConsole = false
-  Run = uSimMarine         @ NewConsole = false
   Run = pLogger            @ NewConsole = false
   Run = pNodeReporter      @ NewConsole = false
   Run = pMarinePID         @ NewConsole = false
@@ -24,6 +23,7 @@ Processconfig = ANTLER
   Run = pHostInfo          @ NewConsole = false
   Run = uFldNodeBroker     @ NewConsole = false
   Run = uFldMessageHandler @ NewConsole = false
+  Run = iM200              @ NewConsole = false 
   Run = pFrontEstimate     @ NewConsole = false
   Run = pBasicContactMgr   @ NewConsole = false
 
@@ -36,7 +36,6 @@ Processconfig = ANTLER
 #include plug_pHostInfo.moos
 #include plug_uFldMessageHandler.moos
 
-#include plug_uSimMarine.moos
 #include plug_pHelmIvP.moos
 #include plug_pMarinePID.moos
 #include plug_pLogger.moos
@@ -44,3 +43,4 @@ Processconfig = ANTLER
 #include plug_uProcessWatch.moos
 
 #include plug_pBasicContactMgr.moos
+#include plug_iM200.moos
