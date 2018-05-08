@@ -15,8 +15,8 @@ LANE_WIDTH1=10
 LANE_WIDTH2=10
 DEGREES1=270
 DEGREES2=0
-SHORE_IP=18.111.23.209
-SHORE_LISTEN="9200"
+SHORE_IP=18.111.27.131
+SHORE_LISTEN="9300"
 
 TRAIL_RANGE="3"
 TRAIL_ANGLE="330"
@@ -26,7 +26,8 @@ VTEAM=""
 VNAME=""
 VMODEL="M300"
 
-START_POS="0,0,180"
+#START_POS="0,0,180"
+START_POS="0,0"
 RETURN_POS="5,0"
 LOITER_POS="x=100,y=-180"
 GRAB_POS=""
@@ -96,6 +97,13 @@ for ARGI; do
         VPORT="9012"
         SHARE_LISTEN="9312"
         echo "KIRK vehicle selected."
+    elif [ "${ARGI}" = "--money" -o "${ARGI}" = "-m" ] ; then
+        M200_IP=18.111.23.209 #money
+        VNAME="money"
+	VMODEL="M300"
+        VPORT="9012"
+        SHARE_LISTEN="9312"
+        echo "MONEY vehicle selected for simulation."
     elif [ "${ARGI}" = "--nostromo" -o "${ARGI}" = "-n" ] ; then
         VNAME="nostromo"
 	VMODEL="kayak"
@@ -190,7 +198,6 @@ nsplug meta_vehicle.moos targ_${VNAME}.moos -f \
     FRONT_SEAT_SHARE=$FRONT_SEAT_SHARE \
     SHORE_IP=$SHORE_IP           \
     M200_IP=$M200_IP             \
-    HOSTIP_FORCE="localhost"     \
     LOITER_POS=$LOITER_POS       \
     VARIATION=$VARIATION         \
     VMODEL=$VMODEL                \
