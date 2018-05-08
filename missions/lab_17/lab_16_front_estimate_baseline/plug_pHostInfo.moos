@@ -6,6 +6,6 @@ ProcessConfig = pHostInfo
   AppTick 	= 1
   CommsTick 	= 1
 
-  DEFAULT_HOSTIP = $(HOSTIP_FORCE)
+//  DEFAULT_HOSTIP=$(HOSTIP_FORCE)
 }
 

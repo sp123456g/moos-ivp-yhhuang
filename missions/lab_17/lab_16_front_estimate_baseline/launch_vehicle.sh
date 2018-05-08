@@ -1,7 +1,21 @@
 #!/bin/bash
 TIME_WARP=1
-
-SHORE_IP=192.168.1.205
+JUST_MAKE="no"
+COOL_FAC=50
+COOL_STEPS=1000
+CONCURRENT="true"
+ADAPTIVE="false"
+SURVEY_X=70
+SURVEY_Y=-100
+HEIGHT1=150
+HEIGHT2=150
+WIDTH1=120
+WIDTH2=120
+LANE_WIDTH1=10
+LANE_WIDTH2=10
+DEGREES1=270
+DEGREES2=0
+SHORE_IP=18.111.23.209
 SHORE_LISTEN="9200"
 
 TRAIL_RANGE="3"
@@ -183,8 +197,12 @@ nsplug meta_vehicle.moos targ_${VNAME}.moos -f \
     VTYPE="kayak"                \
     VTEAM="blue"                 \
     START_POS=$START_POS         \
-    $SIM                         
-
+    $SIM                        \
+    COOL_FAC=$COOL_FAC          \
+    COOL_STEPS=$COOL_STEPS      \
+    CONCURRENT=$CONCURRENT      \
+    ADAPTIVE=$ADAPTIVE           
+    
 echo "Assembling BHV file targ_${VNAME}.bhv"
 nsplug meta_vehicle.bhv targ_${VNAME}.bhv -f  \
         RETURN_POS=${RETURN_POS}    \
@@ -193,8 +211,15 @@ nsplug meta_vehicle.bhv targ_${VNAME}.bhv -f  \
         VTEAM=$VTEAM                \
         VNAME=$VNAME                \
         GRAB_POS=$GRAB_POS          \
-        UNTAG_POS=$UNTAG_POS
-
+        UNTAG_POS=$UNTAG_POS        \
+        SURVEY_X=$SURVEY_X          \
+        SURVEY_Y=$SURVEY_Y          \
+        HEIGHT=$HEIGHT1             \
+        WIDTH=$WIDTH1               \
+        LANE_WIDTH=$LANE_WIDTH1     \
+        DEGREES=$DEGREES1           \
+        START_POS=$START_POS
+        
 
 if [ ${JUST_BUILD} = "yes" ] ; then
     echo "Files assembled; vehicle not launched; exiting per request."
