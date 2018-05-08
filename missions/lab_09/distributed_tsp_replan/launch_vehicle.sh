@@ -45,7 +45,7 @@ done
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
 
-FULL_VNAME=$VNAME"@"$HOSTNAME
+FULL_VNAME=$VNAME
 WPT_COLOR="light_blue"
 
 # Generate a random start position in range x=[0,180], y=[0,-50]
