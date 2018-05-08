@@ -1,0 +1,46 @@
+1. testing for cooling (angle=0, concurrent=true, wavelength=212)
+
+cooling = 40
+
+error = 0.75
+score = 132
+===============
+cooling=50
+
+error = 0.4
+score = 245.8
+===============
+cooling=60
+
+error = 0.78
+score = 127
+===============
+cooling = 70
+
+error = 0.65
+score = 153
+===============
+cooling = 130
+
+error = 1.12 
+score = 89
+===============
+
+---------------------------------------
+2. using concurrent:
+
+cooling = 50
+
+error = 
+score = 
+---------------------------------------
+3. cooling=50 angle=225 concurrent = true
+
+error = 0.8
+score = 120
+===============
+angle = 270     (this one is good)
+
+error = 0.3
+score = 255
+--------------------------------------
