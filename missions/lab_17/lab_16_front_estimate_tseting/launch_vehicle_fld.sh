@@ -188,7 +188,7 @@ fi
 echo "Assembling MOOS file targ_${VNAME}.moos"
 
 
-nsplug meta_vehicle.moos targ_${VNAME}.moos -f \
+nsplug meta_fld_vehicle.moos targ_${VNAME}.moos -f \
     VNAME=$VNAME                 \
     VPORT=$VPORT                 \
     WARP=$TIME_WARP              \
