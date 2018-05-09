@@ -30,6 +30,7 @@ ADD_SUBDIRECTORY(pCommunicationAngle_yhhuang)
 ADD_SUBDIRECTORY(pPointAssign_Auto)
 ADD_SUBDIRECTORY(uFldHazardMgrX)
 ADD_SUBDIRECTORY(pHazardPath)
+ADD_SUBDIRECTORY(pFrontEstimateX)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################

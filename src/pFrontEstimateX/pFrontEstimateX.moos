@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pFrontEstimateX config block
+
+ProcessConfig = pFrontEstimateX
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

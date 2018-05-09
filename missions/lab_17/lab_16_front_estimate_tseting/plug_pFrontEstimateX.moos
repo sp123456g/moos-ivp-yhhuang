@@ -1,0 +1,6 @@
+ProcessConfig = pFrontEstimateX
+{
+  AppTick    = 4
+  CommsTick  = 4
+  report_name = $(VNAME) 
+}

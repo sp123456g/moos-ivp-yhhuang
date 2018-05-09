@@ -13,6 +13,7 @@
 #include "IvPBehavior.h"
 #include <deque>
 #include <ZAIC_PEAK.h>
+#include "XYPoint.h"
 class BHV_SearchFront : public IvPBehavior {
 public:
   BHV_SearchFront(IvPDomain);
@@ -27,12 +28,15 @@ public:
   void         onRunToIdleState();
   void         onIdleToRunState();
   IvPFunction* onRunState();
-  IvPFunction* Gen_Zaic_peak(double heading);
+  IvPFunction* buildFunctionWithZAIC();
 
 protected: // Local Utility functions
     
 protected: // Configuration parameters
-
+  double      m_arrival_radius;
+  double      m_desired_speed;
+  XYPoint     m_nextpt;
+  std::string m_ipf_type;
 protected: // State variables
   std::string m_report;
   std::string m_request;
@@ -44,6 +48,8 @@ protected: // State variables
   double      m_heading;
   double      m_curr_time;
   double      m_arrive_time;
+  double      m_osx;
+  double      m_osy;
   int m_index;
 };
 
