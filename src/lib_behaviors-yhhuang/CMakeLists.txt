@@ -14,7 +14,7 @@ else (${WIN32})
       m )
 endif (${WIN32})
 
-
+SET(CMAKE_CXX_FLAGS "-std=c++0x")
 MACRO(ADD_BHV BHV_NAME)
   ADD_LIBRARY(${BHV_NAME} SHARED ${BHV_NAME}.cpp)
   TARGET_LINK_LIBRARIES(${BHV_NAME} 

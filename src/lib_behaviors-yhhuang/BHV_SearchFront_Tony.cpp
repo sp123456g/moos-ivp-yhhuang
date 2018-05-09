@@ -27,6 +27,9 @@ BHV_SearchFront_Tony::BHV_SearchFront_Tony(IvPDomain domain) :
   // Provide a default behavior name
   IvPBehavior::setParam("name", "search_front");
 
+  //V1 Wave doesn't move and follow the wave
+  //------------------------------------
+  /*
   m_omega = 0;
   m_desire_speed = 0;
   m_osx = 0;
@@ -40,6 +43,42 @@ BHV_SearchFront_Tony::BHV_SearchFront_Tony(IvPDomain domain) :
   m_temperature_record_update = true;
   m_vehicle_go_down = true;
   m_vehicle_go_more = true;
+  */
+  //------------------------------------
+
+  //V2 Wave moving
+  //------------------------------------  
+  /*
+  m_omega = 0;
+  m_desire_speed = 0;
+  m_osx = 0;
+  m_osy = 0;
+  m_nextx = 0;
+  m_nexty = 0;
+  m_arrival_radius = 5;
+  m_first_round_index = 0;
+  //initial first round
+  m_first_round_points[0].set_vertex(-40, -50);
+  m_first_round_points[1].set_vertex(-80, -75);
+  m_first_round_points[2].set_vertex(-40, -185);
+  m_first_round_points[3].set_vertex(165, -185);
+  m_first_round_points[4].set_vertex(170, 5);
+  m_first_round_points[5].set_vertex(110, 10);
+  m_first_round_points[6].set_vertex(-40, -50);
+  */
+  //------------------------------------  
+
+
+  //V3 Wave moving, ship vertial moving
+  //------------------------------------
+  m_omega = 0;
+  m_desire_speed = 0;
+  m_osx = 0;
+  m_osy = 0;
+  m_nextx = 0;
+  m_nexty = 0;
+  m_arrival_radius = 5;
+  //------------------------------------  
 
 
   // Declare the behavior decision space
@@ -160,6 +199,9 @@ void BHV_SearchFront_Tony::onRunToIdleState()
 //-----------------------------------------------------------------
 void BHV_SearchFront_Tony::giveNextPoint()
 {
+  //V1 Wave doesn't move and follow the wave
+  //------------------------------------
+  /*
   postMessage("TEMP_DIS",m_temperature_record - m_temperature_now);
   double move = 10;
   if(fabs(m_temperature_record - m_temperature_now) > m_temperature_thresold)
@@ -179,6 +221,81 @@ void BHV_SearchFront_Tony::giveNextPoint()
     m_nexty -= move;
   else
     m_nexty += move;
+    */
+  //------------------------------------
+
+  //V2 Wave moving
+  //------------------------------------
+  //first round to find two points
+  /*
+  if(m_first_round_index<7)
+  {
+    m_nextx = m_first_round_points[m_first_round_index].x();
+    m_nexty = m_first_round_points[m_first_round_index].y(); 
+    m_first_round_index += 1;
+  }
+  else if(m_first_round_index == 7)
+  {
+    m_first_round_index += 1;
+    //find the start point
+    double tmp_max=-50, tmp_min=100;
+    double index_max, index_min;
+    double mid_x, mid_y;
+    for(int i = 0 ; i< m_temp_dbl_buff.size()/2;i++){
+        if(m_temp_dbl_buff[i][2] > tmp_max){
+          tmp_max = m_temp_dbl_buff[i][2];
+          index_max = i;
+        }
+        else if(m_temp_dbl_buff[i][2] < tmp_min){
+          tmp_min = m_temp_dbl_buff[i][2];
+          index_min = i;
+        }
+        else if(tmp_max -tmp_min >=8)
+          break;
+        else;
+    }
+    mid_x = m_temp_dbl_buff[index_max][0]+m_temp_dbl_buff[index_min][0];
+    mid_x /= 2;
+    mid_y = m_temp_dbl_buff[index_max][1]+m_temp_dbl_buff[index_min][1];
+    mid_y /= 2;    
+    m_wave_start_point.set_vertex(mid_x, mid_y);
+    m_wave_start_point.set_label("start_point");
+    m_wave_start_point.set_vertex_size(3);
+    postMessage("VIEW_POINT", m_wave_start_point.get_spec());
+
+    //find the end point
+    tmp_max=-50, tmp_min=100;
+    for(int i = m_temp_dbl_buff.size()/2 ; i< m_temp_dbl_buff.size();i++){
+        if(m_temp_dbl_buff[i][2] > tmp_max){
+          tmp_max = m_temp_dbl_buff[i][2];
+          index_max = i;
+        }
+        else if(m_temp_dbl_buff[i][2] < tmp_min){
+          tmp_min = m_temp_dbl_buff[i][2];
+          index_min = i;
+        }
+        else if(tmp_max -tmp_min >=8)
+          break;
+        else;
+    }
+    mid_x = m_temp_dbl_buff[index_max][0]+m_temp_dbl_buff[index_min][0];
+    mid_x /= 2;
+    mid_y = m_temp_dbl_buff[index_max][1]+m_temp_dbl_buff[index_min][1];
+    mid_y /= 2;    
+    m_wave_end_point.set_vertex(mid_x, mid_y);
+    m_wave_end_point.set_label("end_point");
+    m_wave_end_point.set_vertex_size(3);
+    postMessage("VIEW_POINT", m_wave_end_point.get_spec());
+    
+   
+  }
+  //Second round in rectangle
+  else;
+  */
+  //-------------------------------------  
+
+
+  
 }
 
 //---------------------------------------------------------------
@@ -189,6 +306,14 @@ IvPFunction* BHV_SearchFront_Tony::onRunState()
 {
   // Part 1: Build the IvP function
   IvPFunction *ipf = 0;
+  bool ok3, ok4;
+  m_osx = getBufferDoubleVal("NAV_X", ok3);
+  m_osy = getBufferDoubleVal("NAV_Y", ok4);
+  if(!ok3 || !ok4) {
+    postWMessage("No ownship X/Y info in info_buffer.");
+    return(0);
+  }
+
   bool ok , ok2;
         m_time1 = getBufferCurrTime();
         postMessage("UCTD_SENSOR_REQUEST","CHANGE");
@@ -209,23 +334,35 @@ IvPFunction* BHV_SearchFront_Tony::onRunState()
         ss<<temperature_str;
         ss>>temperature_dbl;
         postMessage("TEMPERATURE_DBL",temperature_dbl);
-        m_temp_dbl_buff.push_back(temperature_dbl);
+        //X, Y, Temperature
+        array<double, 3> data = {m_osx, m_osy, temperature_dbl};
+        m_temp_dbl_buff.push_back(data);
 
-        if(m_temperature_record_update){
-          m_temperature_record = temperature_dbl;
-          m_temperature_record_update = false;
-        }
+        //V1 Wave doesn't move and follow the wave
+        //------------------------------------
+        /*
         m_temperature_now = temperature_dbl;
+        */
+        //------------------------------------
 
       }
 
-  bool ok3, ok4;
-  m_osx = getBufferDoubleVal("NAV_X", ok3);
-  m_osy = getBufferDoubleVal("NAV_Y", ok4);
-  if(!ok3 || !ok4) {
-    postWMessage("No ownship X/Y info in info_buffer.");
-    return(0);
+
+  //V1 Wave doesn't move and follow the wave
+  //------------------------------------
+  /*
+  if(m_temperature_record_update){
+    m_temperature_record = m_temperature_now;
+    m_temperature_record_update = false;
   }
+  */
+  //------------------------------------
+
+  //V2 Wave moving
+  //------------------------------------
+  
+  //------------------------------------
+
 
   double dist = sqrt((m_nextx-m_osx)*(m_nextx-m_osx) + (m_nexty-m_osy)*(m_nexty-m_osy) );
   if(dist <= m_arrival_radius) {

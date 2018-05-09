@@ -10,6 +10,7 @@
 
 #include <sstream>
 #include <string>
+#include <array>
 #include "IvPBehavior.h"
 #include <deque>
 #include <ZAIC_PEAK.h>
@@ -41,7 +42,7 @@ protected: // State variables
   std::string m_report;
   std::string m_request;
   std::string m_index_str;
-  std::deque<double> m_temp_dbl_buff;
+  std::deque< array<double, 3> > m_temp_dbl_buff;
   double      m_time0;
   double      m_time1;
   double      m_avg_number;
@@ -49,6 +50,9 @@ protected: // State variables
   double      m_curr_time;
   double      m_arrive_time;
 
+  //V1 Wave doesn't move and follow the wave
+  //------------------------------------
+  /*
   double      m_omega; // sin wave omega
   double      m_desire_speed; 
   double      m_osx;
@@ -63,7 +67,25 @@ protected: // State variables
   bool        m_temperature_record_update;
   bool        m_vehicle_go_down;
   bool        m_vehicle_go_more;
+  */
+  //------------------------------------
 
+  //V2 Wave moving, ship move around the region
+  //------------------------------------
+  /*
+  double      m_omega; // sin wave omega
+  double      m_desire_speed; 
+  double      m_osx;
+  double      m_osy;
+  double      m_nextx;
+  double      m_nexty;
+  double      m_arrival_radius; 
+  XYPoint     m_first_round_points[7];
+  int         m_first_round_index;
+  XYPoint     m_wave_start_point;
+  XYPoint     m_wave_end_point;  
+  */
+  //-------------------------------------
 
   int m_index;
 
