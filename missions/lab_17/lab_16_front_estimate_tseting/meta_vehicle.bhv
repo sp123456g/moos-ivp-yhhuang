@@ -27,39 +27,6 @@ set MODE = SURVEYING {
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
-{ 
-  name         = waypt_survey
-  pwt          = 100
-  condition    = MODE==SURVEYING
-  perpetual    = true
-  updates      = SURVEY_UPDATES
-  activeflag   = SURVEY_UNDERWAY = true
-  inactiveflag = SURVEY_UNDERWAY = false
-  endflag      = RETURN = true
-
-         speed = 2   // meters per second
-        radius = 5.0
-   slip_radius = 15.0
-          lead = 8
-	  lead_damper=1
-	points = format=lawnmower, label=archie_survey, x=$(SURVEY_X), y=$(SURVEY_Y), width=$(WIDTH), height=$(HEIGHT),lane_width=$(LANE_WIDTH), rows=north-south, degs=$(DEGREES)
-
-       repeat = 0
-  visual_hints = nextpt_color=red, nextpt_lcolor=green
-  visual_hints = vertex_color=yellow, edge_color=gray25
-  visual_hints = vertex_size=1, edge_size=1
-
-//#ifdef VNAME VNAME1
-//    points = -8,-195
-//#elseifdef VNAME VNAME2
-//    points = -50.11,-159.74
-//#endif
- 
-
-}
-
-//----------------------------------------------
-Behavior = BHV_Waypoint
 {
   name       = waypt_return
   pwt        = 100
@@ -115,12 +82,15 @@ Behavior = BHV_AvoidCollision
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }
 //-------------------------------------------------
-Behavior = BHV_SearchFront
+Behavior = BHV_SearchFront_Tony
 {
-    name = searchfront_$(VNAME)
+    name = search_$(VNAME)
     pwt = 100
     vname = $(VNAME)
     activeflag   = SURVEY_UNDERWAY = true
     inactiveflag = SURVEY_UNDERWAY = false
     average_number = 30;
+
+    speed = 2
+    omega = 3
 }
