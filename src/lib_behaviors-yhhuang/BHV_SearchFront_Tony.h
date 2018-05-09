@@ -87,6 +87,28 @@ protected: // State variables
   */
   //-------------------------------------
 
+  //V3 Wave moving, ship vertial moving
+  //------------------------------------
+  
+  double      m_omega; // sin wave omega
+  double      m_desire_speed; 
+  double      m_osx;
+  double      m_osy;
+  double      m_nextx;
+  double      m_nexty;
+  double      m_arrival_radius; 
+  XYPoint     m_first_round_points[7];
+  int         m_first_round_index;
+  bool        m_temperature_is_change[5];
+  double      m_local_tmp_max;
+  double      m_local_tmp_min;
+  int         m_round2_line;
+  bool        m_turn_direction;
+  bool        m_local_max_min_need_initial;
+  double      m_fix_pos;
+  double      m_move_max;
+  double      m_move_min;
+
   int m_index;
 
 };

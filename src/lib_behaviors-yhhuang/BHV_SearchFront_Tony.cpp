@@ -77,7 +77,22 @@ BHV_SearchFront_Tony::BHV_SearchFront_Tony(IvPDomain domain) :
   m_osy = 0;
   m_nextx = 0;
   m_nexty = 0;
-  m_arrival_radius = 5;
+  m_arrival_radius = 10;
+  m_first_round_index = 0;
+  m_first_round_points[0].set_vertex(0, -40);
+  m_first_round_points[1].set_vertex(0, -140);
+  m_first_round_points[2].set_vertex(100, -140);
+  m_first_round_points[3].set_vertex(100, -40);
+  m_first_round_points[4].set_vertex(0, -40);
+  m_temperature_is_change[0] = m_temperature_is_change[1] = false;
+  m_temperature_is_change[2] = m_temperature_is_change[3] = false;
+  m_local_tmp_max = -10;
+  m_local_tmp_min =  50;
+  m_round2_line = 0;
+  m_turn_direction = true;
+  m_local_max_min_need_initial = false;
+  m_fix_pos = 0;
+  m_move_max = m_move_min = 0;
   //------------------------------------  
 
 
@@ -289,13 +304,119 @@ void BHV_SearchFront_Tony::giveNextPoint()
     
    
   }
-  //Second round in rectangle
   else;
   */
   //-------------------------------------  
 
+  //V3 Wave moving, ship vertial moving
+  //------------------------------------
+  double th = 6.0;
+  if(m_first_round_index<5){
+    if((m_local_tmp_max -m_local_tmp_min) >= th){
+      m_temperature_is_change[m_first_round_index-2] = true;
+    }
+    m_local_tmp_max = -10;
+    m_local_tmp_min =  50;   
+    m_nextx = m_first_round_points[m_first_round_index].x();
+    m_nexty = m_first_round_points[m_first_round_index].y(); 
+    m_first_round_index += 1;
+  }
+  else if(m_first_round_index == 5)
+  {
+    m_first_round_index +=1;
+    m_local_max_min_need_initial = true;
+    for(int i=0;i<4;i++){
+      if(m_temperature_is_change[i] == true){
+        postMessage("LINE", i);
+        m_round2_line = i;
+        switch(m_round2_line){
+          case 0:
+            m_fix_pos = 0;
+            m_move_max = -20;
+            m_move_min = -180;
+            m_nextx = m_fix_pos;
+            m_nexty = -40;
+            break;
+          case 1:
+            m_fix_pos = -140;
+            m_move_max = 160;
+            m_move_min = -50;
+            m_nextx = 0;
+            m_nexty = m_fix_pos;
+            break;
+          case 2:
+            m_fix_pos = 100;
+            m_move_max = 0;
+            m_move_min = -180;
+            m_nextx = m_fix_pos;
+            m_nexty = -40;
+            break;
+          case 3:
+            m_fix_pos = -40;
+            m_move_max = 160;
+            m_move_min = -20;
+            m_nextx = 0;
+            m_nexty = m_fix_pos ;          
+            break;
+        }
 
-  
+        break;
+      }
+    }
+  }
+  else{
+    double move = 10;
+    postMessage("OS_X", m_osx);
+    if(m_local_max_min_need_initial){
+      m_local_max_min_need_initial = false;
+      m_local_tmp_max = -10;
+      m_local_tmp_min =  50; 
+    }
+    //Vertical
+    if(m_round2_line%2 == 0){
+      
+      m_nextx = m_fix_pos;
+      if(m_turn_direction){//Go Down
+        m_nexty -= move;
+      }
+      else{
+        m_nexty += move;
+      }
+      //Check out ot range
+      if(m_nexty >= m_move_max-move || m_nexty <= m_move_min+move){
+        m_turn_direction = !m_turn_direction;
+        m_local_max_min_need_initial = true;        
+      }
+      else if(((m_local_tmp_max-m_local_tmp_min)>th)){
+        m_turn_direction = !m_turn_direction;
+        m_local_max_min_need_initial = true;
+      }
+      else;
+    }
+    //Horizontal
+    else if(m_round2_line%2 == 1){
+      m_nexty = m_fix_pos;
+      if(m_turn_direction){//Go Right
+        m_nextx += move;
+      }
+      else{
+        m_nextx -= move;
+      }
+            //Check out ot range
+      if(m_nextx >= m_move_max-move || m_nextx <= m_move_min+move){
+        m_turn_direction = !m_turn_direction;
+        m_local_max_min_need_initial = true;       
+      }
+      else if(((m_local_tmp_max-m_local_tmp_min)>th)){
+        m_turn_direction = !m_turn_direction;
+        m_local_max_min_need_initial = true;
+      }
+      else;
+    }
+    else;
+    postMessage("NEXT_Y", m_nexty);
+    postMessage("TURN_DIRECTION", m_turn_direction);
+  }
 }
 
 //---------------------------------------------------------------
@@ -345,6 +466,16 @@ IvPFunction* BHV_SearchFront_Tony::onRunState()
         */
         //------------------------------------
 
+
+        //V3 Wave moving, ship vertial moving
+        //------------------------------------
+        if(temperature_dbl > m_local_tmp_max)
+          m_local_tmp_max = temperature_dbl;
+        else if(temperature_dbl < m_local_tmp_min)
+          m_local_tmp_min = temperature_dbl;
+        else;
+        //------------------------------------
+
       }
 
 
@@ -358,10 +489,6 @@ IvPFunction* BHV_SearchFront_Tony::onRunState()
   */
   //------------------------------------
 
-  //V2 Wave moving
-  //------------------------------------
-  
-  //------------------------------------
 
 
   double dist = sqrt((m_nextx-m_osx)*(m_nextx-m_osx) + (m_nexty-m_osy)*(m_nexty-m_osy) );
