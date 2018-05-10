@@ -74,16 +74,16 @@ TARGET_LINK_LIBRARIES(BHV_SearchFront
    ${SYSTEM_LIBS} )
 
 
-ADD_LIBRARY(BHV_SearchFront_Tony SHARED 
-   BHV_SearchFront_Tony.cpp AOF_SimpleWaypoint)
-TARGET_LINK_LIBRARIES(BHV_SearchFront_Tony
-   helmivp
-   behaviors 
-   ivpbuild 
-   logic 
-   ivpcore 
-   bhvutil 
-   mbutil
-   #   armadillo 
-   geometry 
-   ${SYSTEM_LIBS} )
+#ADD_LIBRARY(BHV_SearchFront_Tony SHARED 
+#   BHV_SearchFront_Tony.cpp AOF_SimpleWaypoint)
+#TARGET_LINK_LIBRARIES(BHV_SearchFront_Tony
+#   helmivp
+#   behaviors 
+#   ivpbuild 
+#   logic 
+#   ivpcore 
+#   bhvutil 
+#   mbutil
+#   #   armadillo 
+#   geometry 
+#   ${SYSTEM_LIBS} )

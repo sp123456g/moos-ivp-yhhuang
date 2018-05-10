@@ -33,6 +33,9 @@ LOITER_POS="x=100,y=-180"
 GRAB_POS=""
 UNTAG_POS=""
 
+#find behavior path
+export IVP_BEHAVIOR_DIRS=../../../lib
+
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------

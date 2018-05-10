@@ -15,7 +15,7 @@ LANE_WIDTH1=10
 LANE_WIDTH2=10
 DEGREES1=270
 DEGREES2=0
-SHORE_IP=18.189.29.222
+SHORE_IP=18.189.109.148
 SHORE_LISTEN="9300"
 
 TRAIL_RANGE="3"
@@ -33,6 +33,8 @@ LOITER_POS="x=100,y=-180"
 GRAB_POS=""
 UNTAG_POS=""
 
+#find behavior path
+export IVP_BEHAVIOR_DIRS=../../../lib
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------

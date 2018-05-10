@@ -25,8 +25,9 @@ class FrontEstimateX : public AppCastingMOOSApp
    bool GenCommReport(std::string report);
  protected: // Standard AppCastingMOOSApp function to overload 
    bool buildReport();
-   bool        m_need_share; 
-   int         m_input_index; 
+   bool        m_recieve; 
+   int         m_input_index;
+   int         m_sending_start_index; 
    std::string m_report_name;
    std::string m_output_report;
    std::deque<std::string> m_input_buff; 

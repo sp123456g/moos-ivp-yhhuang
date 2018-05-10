@@ -36,7 +36,14 @@ BHV_SearchFront::BHV_SearchFront(IvPDomain domain) :
   m_report = "";
   m_desired_speed  = 0;
   m_arrival_radius = 10;
+  m_point_index    = 0;
+  m_middle_x       = 0;
+  m_middle_y       = 0;
+  m_circle_radius  = 20;
+  m_osx            = 0;
+  m_osy            = 0;
   m_ipf_type       = "zaic";
+  m_generate_point = true; 
 }
 
 //---------------------------------------------------------------
@@ -54,12 +61,22 @@ bool BHV_SearchFront::setParam(string param, string val)
     // Set local member variables here
     return(true);
   }
-  if((param == "ptx")  && (isNumber(val))) {
-    m_nextpt.set_vx(double_val);
+  if((param == "middle_ptx")  && (double_val > 0) && (isNumber(val))) {
+    m_middle_x = double_val;
+    m_nextpt.set_vx(m_middle_x);
     return(true);
   }
-  else if((param == "pty") && (isNumber(val))) {
-    m_nextpt.set_vy(double_val);
+  else if((param == "middle_pty") && (isNumber(val))) {
+    m_middle_y = double_val;
+    return(true);
+  }
+  else if((param == "circle_radius") && (double_val > 0) && (isNumber(val))) {
+    m_circle_radius = double_val;
+    m_nextpt.set_vy(m_middle_y + m_circle_radius);
+    return(true);
+  }
+  else if(param == "direction"){
+    m_direction = val;
     return(true);
   }
   else if(param == "vname"){
@@ -82,13 +99,30 @@ bool BHV_SearchFront::setParam(string param, string val)
     m_arrival_radius = double_val;
    return(true); 
   }
-  else if (param == "bar") {
+//  else if((param == "omega") && (double_val > 0) && (isNumber(val))){
+//    m_omega = double_val;
+//  }
+//  else if (param == "bar") {
     // return(setBooleanOnString(m_my_bool, val));
-  }
+//  }
 
   // If not handled above, then just return false;
   return(false);
 }
+// Procedure: postViewPoint
+
+void BHV_SearchFront::postViewPoint(bool viewable) 
+{
+  m_nextpt.set_label(m_us_name + "'s next waypoint");
+  
+  string point_spec;
+  if(viewable)
+    point_spec = m_nextpt.get_spec("active=true");
+  else
+    point_spec = m_nextpt.get_spec("active=false");
+  postMessage("VIEW_POINT", point_spec);
+}
+
 
 //---------------------------------------------------------------
 // Procedure: onSetParamComplete()
@@ -151,6 +185,25 @@ void BHV_SearchFront::onRunToIdleState()
 {
 }
 
+void BHV_SearchFront::GenCirclePoint()
+{
+   double pi = 3.1415926;
+   double angle_interval = pi/18;
+   
+   if(m_direction == "cclock"){ 
+    for(double i=angle_interval;i<=2*pi;i+=angle_interval){
+      m_next_pntx.push_back(m_middle_x - m_circle_radius*sin(i));
+      m_next_pnty.push_back(m_middle_y + m_circle_radius*cos(i));
+    }
+   }
+   else if(m_direction == "clock"){ 
+    for(double i=angle_interval;i<=2*pi;i+=angle_interval){
+      m_next_pntx.push_back(m_middle_x + m_circle_radius*sin(i));
+      m_next_pnty.push_back(m_middle_y + m_circle_radius*cos(i));
+    }
+   } 
+
+}
 //---------------------------------------------------------------
 // Procedure: onRunState()
 //   Purpose: Invoked each iteration when run conditions have been met.
@@ -191,7 +244,14 @@ IvPFunction* BHV_SearchFront::onRunState()
     postWMessage("No ownship X/Y info in info_buffer.");
     return(0);
   }
-  // Part 2: Determine if the vehicle has reached the destination 
+
+
+  if(m_generate_point){
+    GenCirclePoint();
+    m_generate_point = false;
+  }
+
+   // Part 2: Determine if the vehicle has reached the destination 
   // point and if so, declare completion.
 #ifdef WIN32
   double dist = _hypot((m_nextpt.x()-m_osx), (m_nextpt.y()-m_osy));
@@ -199,10 +259,22 @@ IvPFunction* BHV_SearchFront::onRunState()
   double dist = hypot((m_nextpt.x()-m_osx), (m_nextpt.y()-m_osy));
 #endif
   if(dist <= m_arrival_radius) {
-    setComplete();
-    return(0);
+    if(!m_next_pnty.empty() && !m_next_pntx.empty()){
+      m_nextpt.set_vx(m_next_pntx.front()); 
+      m_nextpt.set_vy(m_next_pnty.front());
+      m_next_pntx.pop_front();
+      m_next_pnty.pop_front();
+      m_point_index +=1;
+    }
+    else if(m_point_index!=0){ 
+        setComplete();
+        postViewPoint(false);
+        return(0);
+    }
   }
-// Part 4: Build the IvP function with either the ZAIC tool 
+
+  postViewPoint(true);
+// Part 4: Build the IvP function with either the ZAIC coupler 
   // or the Reflector tool.
     ipf = buildFunctionWithZAIC();
   if(ipf == 0) 
@@ -269,28 +341,7 @@ IvPFunction* BHV_SearchFront::onRunState()
 
   return(ipf);
 }
-//IvPFunction* BHV_SearchFront::Gen_Zaic_peak(double heading){
-//    //step1 Generate domain, but there is a m_domain can use
-//    //step2 build zaic_peak tool ,course is heading
-//    ZAIC_PEAK crs_zaic(m_domain,"course");
-//    //step3 set up the zaic_peak
-//    crs_zaic.setSummit(heading);  //current heading+angle you want, because the heading here is the absolute value
-//    crs_zaic.setPeakWidth(0);
-//    crs_zaic.setBaseWidth(180.0);
-//    crs_zaic.setSummitDelta(0);
-//    crs_zaic.setValueWrap(true);
-//    //make warning if the course zaic have problems
-//    if(crs_zaic.stateOK()==false){
-//        string warnings = "Course ZAIC problems" + crs_zaic.getWarnings();
-//        postWMessage(warnings);
-//        return(0);    
-//    }
-//    //step4 Extract the ipf function
-//    IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
-//    
-//    return(crs_ipf);
-//};
-//
+
 IvPFunction *BHV_SearchFront::buildFunctionWithZAIC() 
 {
   ZAIC_PEAK spd_zaic(m_domain, "speed");
@@ -325,5 +376,3 @@ IvPFunction *BHV_SearchFront::buildFunctionWithZAIC()
 
   return(ivp_function);
 }
-
-

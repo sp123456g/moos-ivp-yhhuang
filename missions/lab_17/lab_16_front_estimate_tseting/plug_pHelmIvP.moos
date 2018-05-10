@@ -17,6 +17,4 @@ ProcessConfig = pHelmIvP
   Domain       = depth:0:10:101
 #endif
   
-  ivp_behavior_dir = /home/yhhuang/moos-ivp-yhhuang/trunk/lib
-
 }

@@ -81,11 +81,11 @@ ProcessConfig = uFldShoreBroker
 //  qbridge = STATION_KEEP
   qbridge  = MOOS_MANUAL_OVERRIDE
 
-  bridge = src=RETURN_ALL, alias=RETURN
-  bridge = src=RETURN_$V, alias=RETURN
-  bridge= src=UP_LOITER_$N,alias=UP_LOITER
-  bridge= src=UCTD_MSMNT_REPORT_$V,alias=UCTD_MSMNT_REPORT
-  bridge   = src=APPCAST_REQ 
+  bridge   = src=RETURN_ALL, alias=RETURN
+  bridge   = src=RETURN_$V, alias=RETURN
+  bridge   = src=UP_LOITER_$N,alias=UP_LOITER
+  bridge   = src=UCTD_MSMNT_REPORT_$V,alias=UCTD_MSMNT_REPORT
+  bridge   = src=APPCAST_REQ
 }
 
 //--------------------------------------------------

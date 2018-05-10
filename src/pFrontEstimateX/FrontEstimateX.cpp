@@ -18,10 +18,11 @@ using namespace std;
 FrontEstimateX::FrontEstimateX()
 {
     m_input_index   = 0;
+    m_sending_start_index = 0;
     m_report_name   = "";
     m_output_report = "";
     m_input_buff.clear();
-    m_need_share = true;
+    m_recieve = false;
 }
 
 //---------------------------------------------------------
@@ -61,8 +62,9 @@ bool FrontEstimateX::OnNewMail(MOOSMSG_LIST &NewMail)
             m_input_index +=1;
         }
         else if(key == "COL_RESULT"){
-        m_col_msg_buff.push_back(msg.GetString()); 
-     }
+          m_col_msg_buff.push_back(msg.GetString());
+          m_recieve = true; 
+        }
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
      } 
@@ -120,19 +122,36 @@ bool FrontEstimateX::GenCommReport(std::string report){
 
 bool FrontEstimateX::Iterate()
 {
-     
-    
   AppCastingMOOSApp::Iterate();
-//Build and share report 
-  while(!m_input_buff.empty()){ 
-  GenCommReport(m_input_buff.front());
-  m_input_buff.pop_front();
-  }
+//Build and share report
 
-  if(m_need_share){
+  
+  if(!m_input_buff.empty()){
+      bool ele_less_than_ten = false; 
+      int  start_index; 
+      for(int i=m_sending_start_index;i<m_sending_start_index+10;i++){ 
+        
+        if(i>=m_input_buff.size()){
+         start_index = i;
+         ele_less_than_ten = true;
+            break;
+        }
+        GenCommReport(m_input_buff[i]);
+      }
+        if(m_recieve){
+       
+          if(ele_less_than_ten)
+              m_sending_start_index = start_index;
+          else
+              m_sending_start_index +=10;
+          
+          m_recieve = false;
+        }
+
+  }
       ShareCommReport();  
-  }
-
+  
+// Handle the report from other vehicle
    while(!m_col_msg_buff.empty()){
 
        vector<string> str_vector = parseString(m_col_msg_buff.front(),'#');
@@ -141,10 +160,7 @@ bool FrontEstimateX::Iterate()
        for(int i=0;i<str_vector.size();i++){
            Notify("UCTD_MSMNT_REPORT",str_vector[i]);
        }
-        
-   
    } 
-// Handle the report from other vehicle
 
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -218,7 +234,7 @@ bool FrontEstimateX::buildReport()
   actab.addHeaderLines();
   actab << "one" << "two" << "three" << "four";
   m_msgs << actab.getFormattedString();
-
+  m_msgs <<"m_sending_start_index="<<m_sending_start_index<<endl;
   return(true);
 }
 

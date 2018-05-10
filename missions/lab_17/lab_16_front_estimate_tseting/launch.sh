@@ -18,6 +18,11 @@ LANE_WIDTH1=10
 LANE_WIDTH2=10
 DEGREES1=270
 DEGREES2=0
+
+#find behavior path
+export IVP_BEHAVIOR_DIRS=../../../lib
+
+
 for ARGI; do
     #help:
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then 
