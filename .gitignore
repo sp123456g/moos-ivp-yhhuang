@@ -1,0 +1,15 @@
+*.vscode
+
+# file
+*.moos++
+*.LastOpenedMOOSLogDirectory
+*targ_*
+*.alog
+*.log
+*._moos
+*.xlog
+*.blog
+*.ylog
+MOOS*/
+build/
+bin/
