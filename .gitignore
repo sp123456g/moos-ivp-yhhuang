@@ -13,3 +13,5 @@
 MOOS*/
 build/
 bin/
+lib/
+LOG*/
