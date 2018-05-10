@@ -50,9 +50,6 @@ protected: // State variables
   double      m_curr_time;
   double      m_arrive_time;
 
-  //V1 Wave doesn't move and follow the wave
-  //------------------------------------
-  /*
   double      m_omega; // sin wave omega
   double      m_desire_speed; 
   double      m_osx;
@@ -60,6 +57,10 @@ protected: // State variables
   double      m_nextx;
   double      m_nexty;
   double      m_arrival_radius; 
+
+  //V1 Wave doesn't move and follow the wave
+  //------------------------------------
+  /*
   double      m_temperature_record; 
   double      m_temperature_now;
   double      m_temperature_thresold;
@@ -73,13 +74,7 @@ protected: // State variables
   //V2 Wave moving, ship move around the region
   //------------------------------------
   /*
-  double      m_omega; // sin wave omega
-  double      m_desire_speed; 
-  double      m_osx;
-  double      m_osy;
-  double      m_nextx;
-  double      m_nexty;
-  double      m_arrival_radius; 
+
   XYPoint     m_first_round_points[7];
   int         m_first_round_index;
   XYPoint     m_wave_start_point;
@@ -89,14 +84,7 @@ protected: // State variables
 
   //V3 Wave moving, ship vertial moving
   //------------------------------------
-  
-  double      m_omega; // sin wave omega
-  double      m_desire_speed; 
-  double      m_osx;
-  double      m_osy;
-  double      m_nextx;
-  double      m_nexty;
-  double      m_arrival_radius; 
+  /*
   XYPoint     m_first_round_points[7];
   int         m_first_round_index;
   bool        m_temperature_is_change[5];
@@ -108,6 +96,18 @@ protected: // State variables
   double      m_fix_pos;
   double      m_move_max;
   double      m_move_min;
+  */
+  //------------------------------------
+
+
+  //V4, two veh squre with clock and couter-clock
+  //------------------------------------
+  XYPoint     m_first_round_points[4];
+  int         m_first_round_index;
+  bool        m_clockwise;
+  //------------------------------------
+
+
 
   int m_index;
 

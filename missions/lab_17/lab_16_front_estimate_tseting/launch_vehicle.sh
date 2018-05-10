@@ -15,7 +15,7 @@ LANE_WIDTH1=10
 LANE_WIDTH2=10
 DEGREES1=270
 DEGREES2=0
-SHORE_IP=18.189.109.148
+SHORE_IP="192.168.1.205"
 SHORE_LISTEN="9300"
 
 TRAIL_RANGE="3"
@@ -32,6 +32,9 @@ RETURN_POS="5,0"
 LOITER_POS="x=100,y=-180"
 GRAB_POS=""
 UNTAG_POS=""
+#------------
+CLOCKWISE=1
+#------------
 
 #find behavior path
 export IVP_BEHAVIOR_DIRS=../../../lib
@@ -134,6 +137,14 @@ for ARGI; do
         START_POS_Y="${ARGI#--start-y=*}"
     elif [ "${ARGI:0:10}" = "--start-a=" ] ; then
         START_POS_A="${ARGI#--start-a=*}"
+    #----------------------------------------
+    elif [ "${ARGI}" = "--couter_clockwise" -o "${ARGI}" = "-ccw" ] ; then
+        CLOCKWISE=0
+        echo "couter clockwise."
+    elif [ "${ARGI}" = "--clockwise" -o "${ARGI}" = "-cw" ] ; then
+        CLOCKWISE=1
+        echo "clockwise."
+    #----------------------------------------
     else
         echo "Undefined argument:" $ARGI
         echo "Please use -h for help."
@@ -227,7 +238,8 @@ nsplug meta_vehicle.bhv targ_${VNAME}.bhv -f  \
         WIDTH=$WIDTH1               \
         LANE_WIDTH=$LANE_WIDTH1     \
         DEGREES=$DEGREES1           \
-        START_POS=$START_POS
+        START_POS=$START_POS        \
+        CLOCKWISE=$CLOCKWISE
         
 
 if [ ${JUST_BUILD} = "yes" ] ; then

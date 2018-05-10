@@ -26,17 +26,17 @@ BHV_SearchFront_Tony::BHV_SearchFront_Tony(IvPDomain domain) :
 {
   // Provide a default behavior name
   IvPBehavior::setParam("name", "search_front");
-
-  //V1 Wave doesn't move and follow the wave
-  //------------------------------------
-  /*
-  m_omega = 0;
   m_desire_speed = 0;
   m_osx = 0;
   m_osy = 0;
-  m_nextx = -70;
-  m_nexty = -30;
-  m_arrival_radius = 5;
+  m_nextx = 0;
+  m_nexty = 0;
+  m_arrival_radius = 10;
+
+  //V1 Wave doesn't move and follow the wave
+  //nextpt should set -70, -30
+  //------------------------------------
+  /*
   m_temperature_record = 0;
   m_temperature_now   = 0;
   m_temperature_thresold = 6.0;
@@ -49,13 +49,6 @@ BHV_SearchFront_Tony::BHV_SearchFront_Tony(IvPDomain domain) :
   //V2 Wave moving
   //------------------------------------  
   /*
-  m_omega = 0;
-  m_desire_speed = 0;
-  m_osx = 0;
-  m_osy = 0;
-  m_nextx = 0;
-  m_nexty = 0;
-  m_arrival_radius = 5;
   m_first_round_index = 0;
   //initial first round
   m_first_round_points[0].set_vertex(-40, -50);
@@ -71,13 +64,7 @@ BHV_SearchFront_Tony::BHV_SearchFront_Tony(IvPDomain domain) :
 
   //V3 Wave moving, ship vertial moving
   //------------------------------------
-  m_omega = 0;
-  m_desire_speed = 0;
-  m_osx = 0;
-  m_osy = 0;
-  m_nextx = 0;
-  m_nexty = 0;
-  m_arrival_radius = 10;
+  /*
   m_first_round_index = 0;
   m_first_round_points[0].set_vertex(0, -40);
   m_first_round_points[1].set_vertex(0, -140);
@@ -93,7 +80,18 @@ BHV_SearchFront_Tony::BHV_SearchFront_Tony(IvPDomain domain) :
   m_local_max_min_need_initial = false;
   m_fix_pos = 0;
   m_move_max = m_move_min = 0;
+  */
   //------------------------------------  
+
+  //V4, two veh squre with clock and couter-clock
+  //------------------------------------
+  m_first_round_index = 0;
+  m_first_round_points[0].set_vertex(0, -60);
+  m_first_round_points[1].set_vertex(0, -160);
+  m_first_round_points[2].set_vertex(140, -160);
+  m_first_round_points[3].set_vertex(140, -60);
+  m_clockwise = true;
+  //------------------------------------
 
 
   // Declare the behavior decision space
@@ -132,11 +130,15 @@ bool BHV_SearchFront_Tony::setParam(string param, string val)
     
     return(true);
   }
-  else if(param == "omega"){
-    m_omega = double_val;
-    
+  //V4, two veh squre with clock and couter-clock
+  //------------------------------------
+  else if(param == "clockwise"){
+    m_clockwise = double_val;
+    if(!m_clockwise)
+      m_first_round_index=3;
     return(true);
   }
+  //------------------------------------
   else if(param == "speed"){
     m_desire_speed = double_val;
     
@@ -310,6 +312,7 @@ void BHV_SearchFront_Tony::giveNextPoint()
 
   //V3 Wave moving, ship vertial moving
   //------------------------------------
+  /*
   double th = 6.0;
   if(m_first_round_index<5){
     if((m_local_tmp_max -m_local_tmp_min) >= th){
@@ -417,6 +420,34 @@ void BHV_SearchFront_Tony::giveNextPoint()
     postMessage("NEXT_Y", m_nexty);
     postMessage("TURN_DIRECTION", m_turn_direction);
   }
+  */
+
+  //V4, two veh squre with clock and couter-clock
+  //------------------------------------
+  if(m_clockwise){
+    if(m_first_round_index==4){
+      m_first_round_index = 0;
+    }
+    if(m_first_round_index<4){
+      m_nextx = m_first_round_points[m_first_round_index].x();
+      m_nexty = m_first_round_points[m_first_round_index].y(); 
+    }
+    else;
+    m_first_round_index += 1;  
+  }
+  else{
+    if(m_first_round_index==-1){
+      m_first_round_index = 3;
+    }
+    if(m_first_round_index>=0){
+      m_nextx = m_first_round_points[m_first_round_index].x();
+      m_nexty = m_first_round_points[m_first_round_index].y(); 
+    }
+    else;
+    m_first_round_index -= 1;  
+  }
+  //------------------------------------
+
 }
 
 //---------------------------------------------------------------
@@ -469,11 +500,13 @@ IvPFunction* BHV_SearchFront_Tony::onRunState()
 
         //V3 Wave moving, ship vertial moving
         //------------------------------------
+        /*
         if(temperature_dbl > m_local_tmp_max)
           m_local_tmp_max = temperature_dbl;
         else if(temperature_dbl < m_local_tmp_min)
           m_local_tmp_min = temperature_dbl;
         else;
+        */
         //------------------------------------
 
       }

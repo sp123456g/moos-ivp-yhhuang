@@ -92,5 +92,5 @@ Behavior = BHV_SearchFront_Tony
     average_number = 30;
 
     speed = 2
-    omega = 3
+    clockwise = $(CLOCKWISE) // 1 for clockwise, 0 for couter-clockwise
 }
