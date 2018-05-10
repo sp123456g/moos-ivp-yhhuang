@@ -15,7 +15,7 @@ LANE_WIDTH1=10
 LANE_WIDTH2=10
 DEGREES1=270
 DEGREES2=0
-SHORE_IP="192.168.1.252"
+SHORE_IP="192.168.1.205"
 SHORE_LISTEN="9300"
 
 TRAIL_RANGE="3"
@@ -106,8 +106,8 @@ for ARGI; do
         M200_IP=18.111.23.209 #money
         VNAME="money"
 	VMODEL="M300"
-        VPORT="9012"
-        SHARE_LISTEN="9312"
+        VPORT="9013"
+        SHARE_LISTEN="9313"
         echo "MONEY vehicle selected for simulation."
     elif [ "${ARGI}" = "--nostromo" -o "${ARGI}" = "-n" ] ; then
         VNAME="nostromo"

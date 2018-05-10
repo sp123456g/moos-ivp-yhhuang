@@ -9,7 +9,9 @@ initialize   SURVEY  = true
 initialize   AVOID   = true
 initialize   SURVEY_UNDERWAY = false
 initialize   OPREGION = true
-
+initialize   SQUARE   = false 
+initialize   CIRCLE   = true 
+initialize   FRONT_SEARCH = false
 set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
@@ -23,6 +25,22 @@ set MODE = SURVEYING {
   MODE = ACTIVE
   SURVEY = true
   RETURN = false
+  SQUARE = false
+}
+
+set MODE = SQUARING{
+  SQUARE = true
+  RETURN = false  
+}
+
+set MODE = FRONT_SEARCHING{
+    FRONT_SEARCH = true 
+    RETURN       = false
+}
+
+set MODE = ROUND_SURVEY{
+    CIRCLE = true
+    RETURN = false
 }
 
 //----------------------------------------------
@@ -85,6 +103,7 @@ Behavior = BHV_AvoidCollision
 Behavior = BHV_SearchFront_Tony
 {
     name = search_$(VNAME)
+    condition = MODE == SQUARING
     pwt = 100
     vname = $(VNAME)
     activeflag   = SURVEY_UNDERWAY = true
@@ -93,4 +112,29 @@ Behavior = BHV_SearchFront_Tony
 
     speed = 2
     clockwise = $(CLOCKWISE) // 1 for clockwise, 0 for couter-clockwise
+}
+
+Behavior = BHV_SearchFront 
+{
+    name = circlesearch_$(VNAME)
+    pwt  = 100
+    condition = MODE == ROUND_SURVEY 
+    activeflag   = SURVEY_UNDERWAY = true
+    inactiveflag = SURVEY_UNDERWAY = false
+    endflag = SQUARE = true
+    endflag = CIRCLE = false
+    radius = 5
+    speed  = 2 
+
+    middle_ptx    = 41
+    vname         = $(VNAME)
+    average_number= 30
+    middle_pty    = -92
+    circle_radius = 100
+
+#ifdef CLOCKWISE  1
+    direction     = clock
+#elseifdef CLOCKWISE 0
+    direction     = cclock
+#endif
 }

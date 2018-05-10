@@ -191,13 +191,13 @@ void BHV_SearchFront::GenCirclePoint()
    double angle_interval = pi/18;
    
    if(m_direction == "cclock"){ 
-    for(double i=angle_interval;i<=2*pi;i+=angle_interval){
+    for(double i=angle_interval;i<=pi;i+=angle_interval){
       m_next_pntx.push_back(m_middle_x - m_circle_radius*sin(i));
       m_next_pnty.push_back(m_middle_y + m_circle_radius*cos(i));
     }
    }
    else if(m_direction == "clock"){ 
-    for(double i=angle_interval;i<=2*pi;i+=angle_interval){
+    for(double i=angle_interval;i<=pi;i+=angle_interval){
       m_next_pntx.push_back(m_middle_x + m_circle_radius*sin(i));
       m_next_pnty.push_back(m_middle_y + m_circle_radius*cos(i));
     }
@@ -260,13 +260,16 @@ IvPFunction* BHV_SearchFront::onRunState()
 #endif
   if(dist <= m_arrival_radius) {
     if(!m_next_pnty.empty() && !m_next_pntx.empty()){
+ 
       m_nextpt.set_vx(m_next_pntx.front()); 
       m_nextpt.set_vy(m_next_pnty.front());
       m_next_pntx.pop_front();
       m_next_pnty.pop_front();
       m_point_index +=1;
+
+
     }
-    else if(m_point_index!=0){ 
+    else if(m_point_index !=0){ 
         setComplete();
         postViewPoint(false);
         return(0);
