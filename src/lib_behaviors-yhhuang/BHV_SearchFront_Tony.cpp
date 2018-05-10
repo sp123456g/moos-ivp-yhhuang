@@ -87,9 +87,9 @@ BHV_SearchFront_Tony::BHV_SearchFront_Tony(IvPDomain domain) :
   //------------------------------------
   m_first_round_index = 0;
   m_first_round_points[0].set_vertex(0, -60);
-  m_first_round_points[1].set_vertex(0, -160);
-  m_first_round_points[2].set_vertex(140, -160);
-  m_first_round_points[3].set_vertex(140, -60);
+  m_first_round_points[1].set_vertex(0, -140);
+  m_first_round_points[2].set_vertex(120, -140);
+  m_first_round_points[3].set_vertex(120, -60);
   m_clockwise = true;
   //------------------------------------
 
