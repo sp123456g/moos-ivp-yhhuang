@@ -1,7 +1,7 @@
 /************************************************************/
 /*    NAME: yhh                                              */
 /*    ORGN: MIT                                             */
-/*    FILE: BHV_SearchFront.cpp                                    */
+/*    FILE: BHV_SearchFront_yhh.cpp                                    */
 /*    DATE:                                                 */
 /************************************************************/
 
@@ -13,7 +13,7 @@
 #include "BuildUtils.h"
 #include "OF_Coupler.h"
 #include "OF_Reflector.h"
-#include "BHV_SearchFront.h"
+#include "BHV_SearchFront_yhh.h"
 #include <math.h>
 //#include <armadillo>
 using namespace std;
@@ -21,7 +21,7 @@ using namespace std;
 //---------------------------------------------------------------
 // Constructor
 
-BHV_SearchFront::BHV_SearchFront(IvPDomain domain) :
+BHV_SearchFront_yhh::BHV_SearchFront_yhh(IvPDomain domain) :
   IvPBehavior(domain)
 {
   // Provide a default behavior name
@@ -56,7 +56,8 @@ BHV_SearchFront::BHV_SearchFront(IvPDomain domain) :
   m_osy            = 0;
   m_middle_x       = 0;
   m_middle_y       = 0;
-  m_circle_radius  = 20;
+  m_width          = 0;
+  m_length         = 0;
   m_threshold      = 2;
 
   m_index          = 0;
@@ -68,7 +69,7 @@ BHV_SearchFront::BHV_SearchFront(IvPDomain domain) :
 //---------------------------------------------------------------
 // Procedure: setParam()
 
-bool BHV_SearchFront::setParam(string param, string val)
+bool BHV_SearchFront_yhh::setParam(string param, string val)
 {
   // Convert the parameter to lower case for more general matching
   param = tolower(param);
@@ -80,20 +81,23 @@ bool BHV_SearchFront::setParam(string param, string val)
     // Set local member variables here
     return(true);
   }
-  if((param == "middle_ptx")  && (double_val > 0) && (isNumber(val))) {
+  if((param == "middle_ptx")  && (isNumber(val))) {
     m_middle_x = double_val;
-    m_nextpt.set_vx(m_middle_x);
     return(true);
   }
   else if((param == "middle_pty") && (isNumber(val))) {
     m_middle_y = double_val;
     return(true);
   }
-  else if((param == "circle_radius") && (double_val > 0) && (isNumber(val))) {
-    m_circle_radius = double_val;
-    m_nextpt.set_vy(m_middle_y + m_circle_radius);
+  else if((param == "width") && (double_val > 0) && (isNumber(val))) {
+    m_width = double_val;
     return(true);
   }
+  else if((param == "length") && (double_val > 0) && (isNumber(val))) {
+    m_length = double_val;
+    return(true);
+  }
+
   else if(param == "direction"){
     m_direction = val;
     return(true);
@@ -127,7 +131,7 @@ bool BHV_SearchFront::setParam(string param, string val)
 }
 // Procedure: postViewPoint
 
-void BHV_SearchFront::postViewPoint(bool viewable) 
+void BHV_SearchFront_yhh::postViewPoint(bool viewable) 
 {
   m_nextpt.set_label(m_us_name + "'s next waypoint");
   
@@ -146,7 +150,7 @@ void BHV_SearchFront::postViewPoint(bool viewable)
 //            Good place to ensure all required params have are set.
 //            Or any inter-param relationships like a<b.
 
-void BHV_SearchFront::onSetParamComplete()
+void BHV_SearchFront_yhh::onSetParamComplete()
 {
 }
 
@@ -155,7 +159,7 @@ void BHV_SearchFront::onSetParamComplete()
 //   Purpose: Invoked once upon helm start, even if this behavior
 //            is a template and not spawned at startup
 
-void BHV_SearchFront::onHelmStart()
+void BHV_SearchFront_yhh::onHelmStart()
 {
     m_time0 = getBufferCurrTime(); 
         postMessage("TIME_ZERO",m_time0);
@@ -165,14 +169,14 @@ void BHV_SearchFront::onHelmStart()
 // Procedure: onIdleState()
 //   Purpose: Invoked on each helm iteration if conditions not met.
 
-void BHV_SearchFront::onIdleState()
+void BHV_SearchFront_yhh::onIdleState()
 {
 }
 
 //---------------------------------------------------------------
 // Procedure: onCompleteState()
 
-void BHV_SearchFront::onCompleteState()
+void BHV_SearchFront_yhh::onCompleteState()
 {
 }
 
@@ -180,7 +184,7 @@ void BHV_SearchFront::onCompleteState()
 // Procedure: postConfigStatus()
 //   Purpose: Invoked each time a param is dynamically changed
 
-void BHV_SearchFront::postConfigStatus()
+void BHV_SearchFront_yhh::postConfigStatus()
 {
 }
 
@@ -188,7 +192,7 @@ void BHV_SearchFront::postConfigStatus()
 // Procedure: onIdleToRunState()
 //   Purpose: Invoked once upon each transition from idle to run state
 
-void BHV_SearchFront::onIdleToRunState()
+void BHV_SearchFront_yhh::onIdleToRunState()
 {
     
 }
@@ -197,34 +201,46 @@ void BHV_SearchFront::onIdleToRunState()
 // Procedure: onRunToIdleState()
 //   Purpose: Invoked once upon each transition from run to idle state
 
-void BHV_SearchFront::onRunToIdleState()
+void BHV_SearchFront_yhh::onRunToIdleState()
 {
 }
 
-void BHV_SearchFront::GenCirclePoint()
+void BHV_SearchFront_yhh::GenCirclePoint()
 {
-   double pi = 3.1415926;
-   double angle_interval = pi/18;
-   
    if(m_direction == "cclock"){ 
-    for(double i=angle_interval;i<=pi;i+=angle_interval){
-      m_next_pntx.push_back(m_middle_x - m_circle_radius*sin(i));
-      m_next_pnty.push_back(m_middle_y + m_circle_radius*cos(i));
-    }
+//x
+     m_next_pntx.push_back(m_middle_x - m_width/2);
+     m_next_pntx.push_back(m_middle_x - m_width/2);
+     m_next_pntx.push_back(m_middle_x + m_width/2);
+     m_next_pntx.push_back(m_middle_x + m_width/2);
+//y     
+     m_next_pnty.push_back(m_middle_y + m_length/2); 
+     m_next_pnty.push_back(m_middle_y - m_length/2); 
+     m_next_pnty.push_back(m_middle_y - m_length/2); 
+     m_next_pnty.push_back(m_middle_y + m_length/2); 
    }
    else if(m_direction == "clock"){ 
-    for(double i=angle_interval;i<=pi;i+=angle_interval){
-      m_next_pntx.push_back(m_middle_x + m_circle_radius*sin(i));
-      m_next_pnty.push_back(m_middle_y + m_circle_radius*cos(i));
-    }
-   } 
+//x
+     m_next_pntx.push_back(m_middle_x + m_width/2);
+     m_next_pntx.push_back(m_middle_x + m_width/2);
+     m_next_pntx.push_back(m_middle_x - m_width/2);
+     m_next_pntx.push_back(m_middle_x - m_width/2);
+//y     
+     m_next_pnty.push_back(m_middle_y + m_length/2); 
+     m_next_pnty.push_back(m_middle_y - m_length/2); 
+     m_next_pnty.push_back(m_middle_y - m_length/2); 
+     m_next_pnty.push_back(m_middle_y + m_length/2); 
+    
+   
+   
+   }
 
 }
 //---------------------------------------------------------------
 // Procedure: onRunState()
 //   Purpose: Invoked each iteration when run conditions have been met.
 
-IvPFunction* BHV_SearchFront::onRunState()
+IvPFunction* BHV_SearchFront_yhh::onRunState()
 {
   // Part 1: Build the IvP function
   IvPFunction *ipf = 0;
@@ -398,7 +414,7 @@ IvPFunction* BHV_SearchFront::onRunState()
   return(ipf);
 }
 
-IvPFunction *BHV_SearchFront::buildFunctionWithZAIC() 
+IvPFunction *BHV_SearchFront_yhh::buildFunctionWithZAIC() 
 {
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(m_desired_speed);

@@ -69,7 +69,6 @@ TARGET_LINK_LIBRARIES(BHV_SearchFront
    ivpcore 
    bhvutil 
    mbutil
-   #   armadillo 
    geometry 
    ${SYSTEM_LIBS} )
 
@@ -84,6 +83,18 @@ TARGET_LINK_LIBRARIES(BHV_SearchFront_Tony
    ivpcore 
    bhvutil 
    mbutil
-   #   armadillo 
+   geometry 
+   ${SYSTEM_LIBS} )
+
+ADD_LIBRARY(BHV_SearchFront_yhh SHARED 
+   BHV_SearchFront_yhh.cpp AOF_SimpleWaypoint)
+TARGET_LINK_LIBRARIES(BHV_SearchFront_yhh
+   helmivp
+   behaviors 
+   ivpbuild 
+   logic 
+   ivpcore 
+   bhvutil 
+   mbutil
    geometry 
    ${SYSTEM_LIBS} )

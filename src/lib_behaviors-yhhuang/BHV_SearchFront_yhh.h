@@ -1,12 +1,12 @@
 /************************************************************/
 /*    NAME: yhh                                              */
 /*    ORGN: MIT                                             */
-/*    FILE: BHV_SearchFront.h                                      */
+/*    FILE: BHV_SearchFront_yhh.h                                      */
 /*    DATE:                                                 */
 /************************************************************/
 
-#ifndef SearchFront_HEADER
-#define SearchFront_HEADER
+#ifndef SearchFront_yhh_HEADER
+#define SearchFront_yhh_HEADER
 
 #include <sstream>
 #include <string>
@@ -15,10 +15,10 @@
 #include <deque>
 #include <ZAIC_PEAK.h>
 #include "XYPoint.h"
-class BHV_SearchFront : public IvPBehavior {
+class BHV_SearchFront_yhh : public IvPBehavior {
 public:
-  BHV_SearchFront(IvPDomain);
-  ~BHV_SearchFront() {};
+  BHV_SearchFront_yhh(IvPDomain);
+  ~BHV_SearchFront_yhh() {};
   
   bool         setParam(std::string, std::string);
   void         onSetParamComplete();
@@ -59,8 +59,9 @@ protected: // State variables
   double      m_osy;
   double      m_middle_x;
   double      m_middle_y;
-  double      m_circle_radius;
   double      m_threshold;
+  double      m_width;
+  double      m_length;
 
   int  m_index;
   int  m_point_index;
@@ -72,6 +73,6 @@ protected: // State variables
 
 extern "C" {
   IVP_EXPORT_FUNCTION IvPBehavior * createBehavior(std::string name, IvPDomain domain) 
-  {return new BHV_SearchFront(domain);}
+  {return new BHV_SearchFront_yhh(domain);}
 }
 #endif
