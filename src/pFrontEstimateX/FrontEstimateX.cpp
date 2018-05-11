@@ -158,6 +158,11 @@ bool FrontEstimateX::Iterate()
        m_col_msg_buff.pop_front();
        
        for(int i=0;i<str_vector.size();i++){
+           size_t found_vname = str_vector[i].find("vname=");
+           size_t found_comm  = str_vector[i].find(",");
+           str_vector[i].erase(found_vname+6,found_comm-found_vname-6);
+           str_vector[i].insert(found_vname+6,m_report_name);
+          // Notify("UCTD_MSMNT_REPORT",str_vector[i]);
            Notify("UCTD_MSMNT_REPORT",str_vector[i]);
        }
    } 
@@ -198,7 +203,6 @@ bool FrontEstimateX::OnStartUp()
         m_report_name = value;
       handled = true;
     }
-
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
