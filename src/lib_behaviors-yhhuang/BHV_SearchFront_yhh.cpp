@@ -207,49 +207,162 @@ void BHV_SearchFront_yhh::onRunToIdleState()
 {
 }
 
-void BHV_SearchFront_yhh::GenCirclePoint()
+//-------------------------------------------------------------
+//Generate Rectangle point in step 1 
+void BHV_SearchFront_yhh::GenRecPoint()
 {
    if(m_direction == "cclock"){ 
+    
+       m_pntx_one   = m_middle_x - m_width/2;
+       m_pntx_two   = m_middle_x - m_width/2;
+       m_pntx_three = m_middle_x + m_width/2;
+       m_pntx_four  = m_middle_x + m_width/2;
+       
+       m_pnty_one    = m_middle_y + m_length/2;
+       m_pnty_two    = m_middle_y - m_length/2;
+       m_pnty_three  = m_middle_y - m_length/2;
+       m_pnty_four   = m_middle_y + m_length/2;
 //x
-     m_next_pntx.push_back(m_middle_x - m_width/2);
-     m_next_pntx.push_back(m_middle_x - m_width/2);
-     m_next_pntx.push_back(m_middle_x + m_width/2);
-     m_next_pntx.push_back(m_middle_x + m_width/2);
+     m_next_pntx.push_back(m_pntx_one);
+     m_next_pntx.push_back(m_pntx_two);
+     m_next_pntx.push_back(m_pntx_three);
+     m_next_pntx.push_back(m_pntx_four);
 //y     
-     m_next_pnty.push_back(m_middle_y + m_length/2); 
-     m_next_pnty.push_back(m_middle_y - m_length/2); 
-     m_next_pnty.push_back(m_middle_y - m_length/2); 
-     m_next_pnty.push_back(m_middle_y + m_length/2); 
+     m_next_pnty.push_back(m_pnty_one); 
+     m_next_pnty.push_back(m_pnty_two); 
+     m_next_pnty.push_back(m_pnty_three); 
+     m_next_pnty.push_back(m_pnty_four); 
    }
    else if(m_direction == "clock"){ 
+
+       m_pntx_one   = m_middle_x + m_width/2;
+       m_pntx_two   = m_middle_x + m_width/2;
+       m_pntx_three = m_middle_x - m_width/2;
+       m_pntx_four  = m_middle_x - m_width/2;
+       
+       m_pnty_one    = m_middle_y + m_length/2;
+       m_pnty_two    = m_middle_y - m_length/2;
+       m_pnty_three  = m_middle_y - m_length/2;
+       m_pnty_four   = m_middle_y + m_length/2;
 //x
-     m_next_pntx.push_back(m_middle_x + m_width/2);
-     m_next_pntx.push_back(m_middle_x + m_width/2);
-     m_next_pntx.push_back(m_middle_x - m_width/2);
-     m_next_pntx.push_back(m_middle_x - m_width/2);
+     m_next_pntx.push_back(m_pntx_one);
+     m_next_pntx.push_back(m_pntx_two);
+     m_next_pntx.push_back(m_pntx_three);
+     m_next_pntx.push_back(m_pntx_four);
 //y     
-     m_next_pnty.push_back(m_middle_y + m_length/2); 
-     m_next_pnty.push_back(m_middle_y - m_length/2); 
-     m_next_pnty.push_back(m_middle_y - m_length/2); 
-     m_next_pnty.push_back(m_middle_y + m_length/2); 
+     m_next_pnty.push_back(m_pnty_one); 
+     m_next_pnty.push_back(m_pnty_two); 
+     m_next_pnty.push_back(m_pnty_three); 
+     m_next_pnty.push_back(m_pnty_four); 
    }
 
 }
 //---------------------------------------------------------------
-// Procedure: onRunState()
-//   Purpose: Invoked each iteration when run conditions have been met.
-
-void BHV_SearchFront_yhh::GenSinPoint(){
+// Generate Sine wave in step 2 (after find out two point)
+void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
+{
 
 
     for(int i=0;i<m_diff_point_buff.size();i++){
     
-        m_diff_point_buff[i][1];
-        m_next_pntx.push_back(m_diff_point_buff[i][0]);
-        m_next_pnty.push_back(m_diff_point_buff[i][1]);
+        m_next_pntx.push_back(input[i][0]);
+        m_next_pnty.push_back(input[i][1]);
     }
 
 }
+//--------------------------------------------------------------
+//Average the diff point if it's measured almost in the same time 
+vector<array<double,2>> BHV_SearchFront_yhh::CheckDiffPoint()
+{
+    int index_threshold = 5;
+    int i=0;
+    vector<array<double,2>> output;
+  
+    while(i<m_diff_point_buff.size()){
+     
+        int    avg_num = 0;
+        double total_x = 0;
+        double total_y = 0;
+
+      while(1){ 
+       if(i+1 < m_diff_point_buff.size()){
+        if(m_diff_point_buff[i+1][3]-m_diff_point_buff[i][3] < index_threshold){     
+          total_x += m_diff_point_buff[i][0];
+          total_y += m_diff_point_buff[i][1];
+          avg_num += 1;
+          i++;
+        }
+        else {
+          total_x += m_diff_point_buff[i][0];
+          total_y += m_diff_point_buff[i][1];
+          avg_num += 1;
+          i++;
+          break;
+        }        
+       }
+       else{
+        total_x += m_diff_point_buff[i][0];
+        total_y += m_diff_point_buff[i][1];
+        avg_num += 1;
+        i++;
+        break;
+       }
+      }
+         double avg_x = total_x/avg_num;
+         double avg_y = total_y/avg_num;
+
+         array<double,2> avg_pnt;
+         avg_pnt[0] = avg_x;
+         avg_pnt[1] = avg_y;
+         output.push_back(avg_pnt); 
+    }
+
+    return(output);
+    
+}
+
+vector<array<double,2>> BHV_SearchFront_yhh::GenTwoPoint(vector<array<double,2>> input)
+{
+    vector<array<double,2>> output;
+    array<double,2> point_one, point_two;
+//if no diff points found, last point ~ first point
+    if(input.empty()){
+        point_one[0] = m_pntx_four;
+        point_one[1] = m_pnty_four;
+
+        point_two[0] = m_pntx_one;
+        point_two[1] = m_pnty_one;
+    }
+//if one pnts found,        
+    else if(input.size() == 1){
+    
+        point_one[0] = m_pntx_four;
+        point_one[1] = m_pnty_four;
+
+        point_two[0] = m_pntx_one;
+        point_two[1] = m_pnty_one;
+
+    }
+//if two pnts found, output two points        
+    else if(input.size() == 2){
+        point_one = input[1];
+        point_two = input[0];
+    }
+//if more than two pnts, output first and the last one
+    else{
+
+        point_one = input[input.size()-1];
+        point_two = input[0];
+    }
+
+        output.push_back(point_one);
+        output.push_back(point_two);
+
+    return(output);
+}
+//--------------------------------------------------------------------
+// Procedure: onRunState()
+//   Purpose: Invoked each iteration when run conditions have been met.
 
 IvPFunction* BHV_SearchFront_yhh::onRunState()
 {
@@ -322,7 +435,7 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
            //postMessage("STARTING_POINT",);
          }
          //m_temp_dbl_buff.pop_front();
-         m_checking_start_index+=10;
+         m_checking_start_index+=check_interval;
        }
 
        // Part 1: Get vehicle position from InfoBuffer and post a 
@@ -336,7 +449,8 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
 
 
   if(m_generate_point){
-    GenCirclePoint();
+//First round searching
+    GenRecPoint();
     m_generate_point = false;
   }
 
@@ -349,7 +463,7 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
 #endif
   if(dist <= m_arrival_radius) {
     if(!m_next_pnty.empty() && !m_next_pntx.empty()){
- 
+//Behavior waypoint giving 
       m_nextpt.set_vx(m_next_pntx.front()); 
       m_nextpt.set_vy(m_next_pnty.front());
       m_next_pntx.pop_front();
@@ -357,7 +471,38 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
       m_point_index +=1;
     }
     else if(m_point_index != 0 && m_generate_point_sin){
-        GenSinPoint(); 
+// Second round searching        
+        vector<array<double,2>> second_round_pnts;
+        second_round_pnts = CheckDiffPoint();
+        second_round_pnts = GenTwoPoint(second_round_pnts);
+
+        //view point 
+        if(!second_round_pnts.empty()){
+          for(int i=0;i<second_round_pnts.size();i++){
+           
+              XYPoint point;
+              
+              point.set_vx(second_round_pnts[i][0]);
+              point.set_vy(second_round_pnts[i][1]);
+
+              string label;
+              stringstream ss;
+              ss<<"Diff_Point_";
+              ss<<i;
+              ss>>label;
+              string color = "yellow";
+
+                 point.set_label(label);
+                 point.set_color("vertex", color);
+                 point.set_param("vertex_size", "2");
+                 string spec = point.get_spec();
+                 postMessage("VIEW_POINT", spec);
+          }
+        
+        }
+            
+
+        GenSinPoint(second_round_pnts); 
         m_generate_point_sin = false;
     }
     else if(m_point_index != 0 && !m_generate_point_sin){ 

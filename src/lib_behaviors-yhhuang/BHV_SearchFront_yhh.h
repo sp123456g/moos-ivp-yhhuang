@@ -15,6 +15,7 @@
 #include <deque>
 #include <ZAIC_PEAK.h>
 #include "XYPoint.h"
+#include <vector>
 class BHV_SearchFront_yhh : public IvPBehavior {
 public:
   BHV_SearchFront_yhh(IvPDomain);
@@ -28,8 +29,12 @@ public:
   void         postConfigStatus();
   void         onRunToIdleState();
   void         onIdleToRunState();
-  void         GenCirclePoint();
-  void         GenSinPoint();
+  
+  void         GenRecPoint();
+  void         GenSinPoint(vector<array<double,2>>);
+  vector<array<double,2>> CheckDiffPoint();
+  vector<array<double,2>> GenTwoPoint(vector<array<double,2>>);
+
   IvPFunction* onRunState();
   IvPFunction* buildFunctionWithZAIC();
   void         postViewPoint(bool viewable); 
@@ -65,10 +70,22 @@ protected: // State variables
   double      m_width;
   double      m_length;
   double      m_input_index;
+// points
+  double      m_pntx_one;
+  double      m_pntx_two;
+  double      m_pntx_three;
+  double      m_pntx_four;
+  
+  double      m_pnty_one;
+  double      m_pnty_two;
+  double      m_pnty_three;
+  double      m_pnty_four;
 
+// global index variable
   int  m_index;
   int  m_point_index;
   int  m_checking_start_index;
+//global boolin  
   bool m_generate_point;
   bool m_generate_point_sin;
 };
