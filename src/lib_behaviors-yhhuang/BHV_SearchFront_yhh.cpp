@@ -59,11 +59,13 @@ BHV_SearchFront_yhh::BHV_SearchFront_yhh(IvPDomain domain) :
   m_width          = 0;
   m_length         = 0;
   m_threshold      = 2;
+  m_input_index    = 0;
 
   m_index          = 0;
   m_point_index    = 0;
   m_checking_start_index = 0;
   m_generate_point = true; 
+  m_generate_point_sin = true;
 }
 
 //---------------------------------------------------------------
@@ -230,15 +232,24 @@ void BHV_SearchFront_yhh::GenCirclePoint()
      m_next_pnty.push_back(m_middle_y - m_length/2); 
      m_next_pnty.push_back(m_middle_y - m_length/2); 
      m_next_pnty.push_back(m_middle_y + m_length/2); 
-    
-   
-   
    }
 
 }
 //---------------------------------------------------------------
 // Procedure: onRunState()
 //   Purpose: Invoked each iteration when run conditions have been met.
+
+void BHV_SearchFront_yhh::GenSinPoint(){
+
+
+    for(int i=0;i<m_diff_point_buff.size();i++){
+    
+        m_diff_point_buff[i][1];
+        m_next_pntx.push_back(m_diff_point_buff[i][0]);
+        m_next_pnty.push_back(m_diff_point_buff[i][1]);
+    }
+
+}
 
 IvPFunction* BHV_SearchFront_yhh::onRunState()
 {
@@ -257,6 +268,8 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
       m_report = getBufferStringVal("UCTD_MSMNT_REPORT",ok);
       if(ok){
           
+        m_input_index += 1;
+        
         double temperature_dbl,x_dbl,y_dbl; 
         string temperature_str = tokStringParse(m_report, "temp", ',', '=');
         string x_str = tokStringParse(m_report,"x",',','=');
@@ -270,8 +283,9 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
           ss_x>>x_dbl;
           ss_y<<y_str;
           ss_y>>y_dbl;
+          
 
-          array<double,3> array_xytemp={x_dbl,y_dbl,temperature_dbl};
+          array<double,4> array_xytemp={x_dbl,y_dbl,temperature_dbl,m_input_index};
 
           m_temp_dbl_buff.push_back(array_xytemp);
 
@@ -285,7 +299,7 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
 
 // Finding temerature vary point
 
-      int check_interval = 10;
+      int check_interval = 10;  // must be even integer
        if(!m_temp_dbl_buff.empty() && m_checking_start_index+check_interval < m_temp_dbl_buff.size()){
          double temp_checking,temp_checking_two;
              
@@ -294,17 +308,21 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
 
            postMessage("DIFFERENCE",fabs(temp_checking-temp_checking_two)); 
          if(fabs(temp_checking-temp_checking_two)>m_threshold){
-          
-           double temp_diff_x = m_temp_dbl_buff[m_checking_start_index+check_interval/2][0];
-           double temp_diff_y = m_temp_dbl_buff[m_checking_start_index+check_interval/2][1];
+           
+           int    diff_point_index = m_checking_start_index + check_interval/2; 
+           double temp_diff_x = m_temp_dbl_buff[diff_point_index][0];
+           double temp_diff_y = m_temp_dbl_buff[diff_point_index][1];
+
            m_temp_diff_point.set_vx(temp_diff_x);
            m_temp_diff_point.set_vy(temp_diff_y);
            m_temp_diff_point.set_label("difference point");
            postMessage("VIEW_POINT",m_temp_diff_point.get_spec());
+           
+           m_diff_point_buff.push_back(m_temp_dbl_buff[diff_point_index]); 
            //postMessage("STARTING_POINT",);
          }
-
-         m_temp_dbl_buff.pop_front();
+         //m_temp_dbl_buff.pop_front();
+         m_checking_start_index+=10;
        }
 
        // Part 1: Get vehicle position from InfoBuffer and post a 
@@ -338,7 +356,11 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
       m_next_pnty.pop_front();
       m_point_index +=1;
     }
-    else if(m_point_index !=0){ 
+    else if(m_point_index != 0 && m_generate_point_sin){
+        GenSinPoint(); 
+        m_generate_point_sin = false;
+    }
+    else if(m_point_index != 0 && !m_generate_point_sin){ 
         setComplete();
         postViewPoint(false);
         return(0);

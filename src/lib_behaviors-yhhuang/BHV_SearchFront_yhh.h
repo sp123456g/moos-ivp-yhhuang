@@ -29,6 +29,7 @@ public:
   void         onRunToIdleState();
   void         onIdleToRunState();
   void         GenCirclePoint();
+  void         GenSinPoint();
   IvPFunction* onRunState();
   IvPFunction* buildFunctionWithZAIC();
   void         postViewPoint(bool viewable); 
@@ -46,7 +47,8 @@ protected: // State variables
   std::string m_request;
   std::string m_index_str;
   std::string m_direction;
-  std::deque<array<double,3>> m_temp_dbl_buff;
+  std::deque<array<double,4>> m_temp_dbl_buff;
+  std::deque<array<double,4>> m_diff_point_buff;
   std::deque<double> m_next_pntx;
   std::deque<double> m_next_pnty;
   double      m_time0;
@@ -62,12 +64,15 @@ protected: // State variables
   double      m_threshold;
   double      m_width;
   double      m_length;
+  double      m_input_index;
 
   int  m_index;
   int  m_point_index;
   int  m_checking_start_index;
   bool m_generate_point;
+  bool m_generate_point_sin;
 };
+
 
 #define IVP_EXPORT_FUNCTION
 
