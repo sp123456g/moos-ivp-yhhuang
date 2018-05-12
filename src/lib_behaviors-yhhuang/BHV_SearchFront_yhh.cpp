@@ -271,7 +271,6 @@ void BHV_SearchFront_yhh::GenRecPoint()
 // Generate Sine wave in step 2 (after find out two point)
 void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
 {
-<<<<<<< .mine
 // oringin of sin wave
         double origin_x = input[0][0];
         double origin_y = input[0][1];
@@ -299,33 +298,12 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
             m_next_pnty.push_back(pnt_y);
           }
           
-||||||| .r109
-
 
     for(int i=0;i<m_diff_point_buff.size();i++){
     
         m_next_pntx.push_back(input[i][0]);
         m_next_pnty.push_back(input[i][1]);
     }
-
-=======
-// oringin of sin wave
-        double pnt_x = input[0][0];
-        double pnt_y = input[0][1];
-//sin wave configure parameter
-        double pi         = 3.1415926;
-        double amp        = 20;
-        double omega      = 10;
-        double x_interval = 1;
-        double angle      = 0;
-        double distance   = 100;
-        
-        for(int i=0;i<=6*pi;i+=x_interval){
-        
-            m_next_pntx.push_back(input[i][0]);
-            m_next_pnty.push_back(input[i][1]);
-        }  
->>>>>>> .r110
 }
 //--------------------------------------------------------------
 //Average the diff point if it's measured almost in the same time 
