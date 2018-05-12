@@ -111,19 +111,29 @@ bool BHV_SearchFront_yhh::setParam(string param, string val)
   else if(param == "vname"){
     string vname = val;
     m_request  = "vname=";
-    m_request +=  vname;
-    
+    m_request +=  vname;    
     return(true);
   }
   else if(param == "average_number"){
-    m_avg_number = double_val;
-    
+    m_avg_number = double_val;    
     return(true);
   }
   else if((param == "speed") && (double_val > 0) && (isNumber(val))){
     m_desired_speed = double_val;
+    return(true); 
+  }
+  else if((param == "omega") && (double_val > 0) && (isNumber(val))){
+    m_omega = double_val;
    return(true); 
   }
+  else if((param == "amplitude") && (double_val > 0) && (isNumber(val))){
+    m_amp = double_val;
+   return(true); 
+  }
+
+
+
+
   else if((param == "radius") && (double_val > 0) && (isNumber(val))){
     m_arrival_radius = double_val;
    return(true); 
@@ -261,6 +271,44 @@ void BHV_SearchFront_yhh::GenRecPoint()
 // Generate Sine wave in step 2 (after find out two point)
 void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
 {
+<<<<<<< .mine
+// oringin of sin wave
+        double origin_x = input[0][0];
+        double origin_y = input[0][1];
+        double pnt_x;
+        double pnt_y;
+//sin wave configure parameter
+        double pi         = 3.1415926;
+        double amp        = m_amp;   // 20 is good
+        double omega      = m_omega; // 2 is good
+        double x_interval = 10;      // resolution
+        double angle      = 0;       // coordinate rotation angle
+        double distance   = 100;     // distance sin travel
+
+        string direction = "left";
+          for(int i=0;i<=100*pi;i+=x_interval){
+            
+            if(direction == "left") 
+              pnt_x = origin_x - i;
+            else 
+              pnt_x = origin_x + i;
+            
+            pnt_y = origin_y + amp*sin(omega*i);
+
+            m_next_pntx.push_back(pnt_x);
+            m_next_pnty.push_back(pnt_y);
+          }
+          
+||||||| .r109
+
+
+    for(int i=0;i<m_diff_point_buff.size();i++){
+    
+        m_next_pntx.push_back(input[i][0]);
+        m_next_pnty.push_back(input[i][1]);
+    }
+
+=======
 // oringin of sin wave
         double pnt_x = input[0][0];
         double pnt_y = input[0][1];
@@ -277,6 +325,7 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
             m_next_pntx.push_back(input[i][0]);
             m_next_pnty.push_back(input[i][1]);
         }  
+>>>>>>> .r110
 }
 //--------------------------------------------------------------
 //Average the diff point if it's measured almost in the same time 

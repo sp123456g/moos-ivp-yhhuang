@@ -69,7 +69,8 @@ protected: // State variables
   double      m_threshold;
   double      m_width;
   double      m_length;
-  double      m_input_index;
+  double      m_amp;
+  double      m_omega;
 // points
   double      m_pntx_one;
   double      m_pntx_two;
@@ -80,11 +81,11 @@ protected: // State variables
   double      m_pnty_two;
   double      m_pnty_three;
   double      m_pnty_four;
-
 // global index variable
-  int  m_index;
-  int  m_point_index;
-  int  m_checking_start_index;
+  int    m_index;
+  int    m_point_index;
+  int    m_checking_start_index;
+  double m_input_index;
 //global boolin  
   bool m_generate_point;
   bool m_generate_point_sin;
