@@ -276,34 +276,38 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
         double origin_y = input[0][1];
         double pnt_x;
         double pnt_y;
+        double rotate_pnt_x;
+        double rotate_pnt_y;
 //sin wave configure parameter
         double pi         = 3.1415926;
         double amp        = m_amp;   // 20 is good
         double omega      = m_omega; // 2 is good
         double x_interval = 10;      // resolution
-        double angle      = 0;       // coordinate rotation angle
-        double distance   = 100;     // distance sin travel
-
-        string direction = "left";
+        double angle      = -45*pi/180;       // coordinate rotation angle (radical)
+        double destination_x  = 49;     // destination pnt x
+        double destination_y  = -139;   // destination pnt y
+        double dis_to_des;   //distance from destination 
+        double dis_threshold=20; //distance from destination > threshold, it means arrive the destination
           for(int i=0;i<=100*pi;i+=x_interval){
-            
-            if(direction == "left") 
-              pnt_x = origin_x - i;
-            else 
-              pnt_x = origin_x + i;
-            
-            pnt_y = origin_y + amp*sin(omega*i);
-
-            m_next_pntx.push_back(pnt_x);
-            m_next_pnty.push_back(pnt_y);
+              pnt_x = i;
+              pnt_y = amp*sin(omega*i);
+//rotate  using rotational matrice
+           rotate_pnt_x = pnt_x*cos(angle)-pnt_y*sin(angle);  
+           rotate_pnt_y = pnt_x*sin(angle)+pnt_y*cos(angle); 
+//shift
+           rotate_pnt_x +=origin_x;
+           rotate_pnt_y +=origin_y;
+//output to next point
+  
+          dis_to_des = sqrt(pow(rotate_pnt_x-destination_x,2)+pow(rotate_pnt_y-destination_y,2)); 
+           
+            if(dis_to_des>dis_threshold){    
+              m_next_pntx.push_back(rotate_pnt_x);
+              m_next_pnty.push_back(rotate_pnt_y);
+            }
+            else
+                break;
           }
-          
-
-    for(int i=0;i<m_diff_point_buff.size();i++){
-    
-        m_next_pntx.push_back(input[i][0]);
-        m_next_pnty.push_back(input[i][1]);
-    }
 }
 //--------------------------------------------------------------
 //Average the diff point if it's measured almost in the same time 
