@@ -66,6 +66,8 @@ BHV_SearchFront_yhh::BHV_SearchFront_yhh(IvPDomain domain) :
   m_checking_start_index = 0;
   m_generate_point = true; 
   m_generate_point_sin = true;
+
+  m_first_point = true;
 }
 
 //---------------------------------------------------------------
@@ -528,12 +530,20 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
     return(0);
   }
 
-
+  if(m_first_point){
+      m_nextpt.set_vx(m_osx); 
+      m_nextpt.set_vy(m_osy);
+      m_first_point = false;
+  }
+  
   if(m_generate_point){
 //First round searching
     GenRecPoint();
     m_generate_point = false;
   }
+
+  postMessage("NEXT_X", m_nextpt.x());
+  postMessage("NEXT_Y", m_nextpt.y());
 
    // Part 2: Determine if the vehicle has reached the destination 
   // point and if so, declare completion.

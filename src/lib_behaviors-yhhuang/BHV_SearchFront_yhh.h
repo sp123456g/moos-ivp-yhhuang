@@ -89,6 +89,7 @@ protected: // State variables
 //global boolin  
   bool m_generate_point;
   bool m_generate_point_sin;
+  bool m_first_point;
 };
 
 
