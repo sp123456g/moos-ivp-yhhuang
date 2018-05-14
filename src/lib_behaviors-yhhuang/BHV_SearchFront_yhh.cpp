@@ -15,6 +15,7 @@
 #include "OF_Reflector.h"
 #include "BHV_SearchFront_yhh.h"
 #include <math.h>
+#include <cmath>
 //#include <armadillo>
 using namespace std;
 //using namespace arma;
@@ -68,6 +69,7 @@ BHV_SearchFront_yhh::BHV_SearchFront_yhh(IvPDomain domain) :
   m_generate_point_sin = true;
 
   m_first_point = true;
+  m_over_angle = false;
 }
 
 //---------------------------------------------------------------
@@ -315,41 +317,70 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
         double amp         = m_amp;   // 20 is good
         double omega       = m_omega; // 2 is good
         double x_interval  = 0.5;      // resolution
-        double dis_threshold = 10;       // distance from destination > threshold, it means arrive the destination
+        double dis_threshold = 5;       // distance from destination > threshold, it means arrive the destination
         
         double dis_diff;               // x distance difference from destination 
         double angle;       // coordinate rotation angle (radical)
           
-//angle calculation algorithm
+        //angle calculation algorithm
   
         double delta_x = destination_x - origin_x;
         double delta_y = destination_y - origin_y;
         double tangent = delta_y/delta_x;
                angle   = atan(tangent);
         
-         if(delta_x<0)   //go to quadrant2 or 3
-           angle = pi + angle;
 
-//Generate point algorithm
-          for(double i=0;i<=100*pi;i+=x_interval){
-              pnt_x = i;
-              pnt_y = amp*sin(omega*i);
-//rotate  using rotational matrice
-           rotate_pnt_x = pnt_x*cos(angle)-pnt_y*sin(angle);  
-           rotate_pnt_y = pnt_x*sin(angle)+pnt_y*cos(angle); 
-//shift
-           rotate_pnt_x +=origin_x;
-           rotate_pnt_y +=origin_y;
-//check if x is near destination            
-            dis_diff = sqrt(pow(rotate_pnt_x-destination_x,2)+pow(rotate_pnt_y-destination_y,2));
-//output to next point
-            if(dis_diff>dis_threshold){    
-              m_next_pntx.push_back(rotate_pnt_x);
-              m_next_pnty.push_back(rotate_pnt_y);
-            }
-            else
-                break;
+        if(delta_x<0)   //go to quadrant2 or 3
+          angle = pi + angle;
+
+        //Generate point algorithm
+        for(double i=0;i<=100*pi;i+=x_interval)
+        {
+          pnt_x = i;
+          pnt_y = amp*sin(omega*i);
+          
+          //rotate  using rotational matrice
+          rotate_pnt_x = pnt_x*cos(angle)-pnt_y*sin(angle);  
+          rotate_pnt_y = pnt_x*sin(angle)+pnt_y*cos(angle); 
+          
+          //shift
+          rotate_pnt_x +=origin_x;
+          rotate_pnt_y +=origin_y;
+          
+          //check if x is near destination            
+          dis_diff = sqrt(pow(rotate_pnt_x-destination_x,2)+pow(rotate_pnt_y-destination_y,2));
+          
+
+          double angle_diff, angle_1, angle_2;
+          angle_1 = atan2(origin_y - destination_y, origin_x - destination_x);
+          angle_2 = atan2(rotate_pnt_y - destination_y, rotate_pnt_x - destination_x); 
+          angle_diff = angle_1 - angle_2; 
+          angle_diff = angle_diff * 180.0 / pi;
+          angle_diff = remainder(angle_diff, 360.0);
+
+          //postMessage("I", i);
+          //postMessage("ANGLE_1", angle_1);  
+          //postMessage("ANGLE_2", angle_2);  
+          //postMessage("ANGLE_DIFF", angle_diff);  
+
+          
+
+          //calculate the angle between two lines
+          if(fabs(angle_diff) >= 90){
+            m_over_angle = true;
           }
+
+          //output to next point
+          if(!m_over_angle){ 
+
+            m_next_pntx.push_back(rotate_pnt_x);
+            m_next_pnty.push_back(rotate_pnt_y);
+          }
+          else
+            break;
+        }
+
+
 // angle calculation function           
 }
 //--------------------------------------------------------------
