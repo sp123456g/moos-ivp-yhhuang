@@ -70,12 +70,12 @@ Behavior = BHV_AvoidCollision
 
                contact = to-be-set
       on_no_contact_ok = true
-           extrapolate = true
-                 decay = 30,60
+         //  extrapolate = true
+              //   decay = 30,60
 
-        pwt_outer_dist = 50
-        pwt_inner_dist = 20
-        completed_dist = 75
+        pwt_outer_dist = 20
+        pwt_inner_dist = 12
+        completed_dist = 25
      min_util_cpa_dist = 8
      max_util_cpa_dist = 25
              pwt_grade = linear
