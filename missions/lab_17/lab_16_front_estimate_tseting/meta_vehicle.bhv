@@ -112,8 +112,8 @@ Behavior = BHV_SearchFront_yhh
 
 //Sine wave config  
   
-    omega     = 0.5
-    amplitude = 10
+    omega     = 0.1
+    amplitude = 25
 
 //Rectangle Config
 

@@ -246,14 +246,12 @@ void BHV_SearchFront_yhh::GenRecPoint()
      m_next_pntx.push_back(50);
      m_next_pntx.push_back(50);
      m_next_pntx.push_back(-40);
-     m_next_pntx.push_back(-59);
-     m_next_pntx.push_back(-74);
+     m_next_pntx.push_back(-71);
 
      m_next_pnty.push_back(-28);
      m_next_pnty.push_back(-181);
      m_next_pnty.push_back(-178);
-     m_next_pnty.push_back(-112);
-     m_next_pnty.push_back(-76);
+     m_next_pnty.push_back(-87);
    }
    else if(m_direction == "clock"){ 
 
@@ -310,9 +308,9 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
         double amp         = m_amp;   // 20 is good
         double omega       = m_omega; // 2 is good
         double x_interval  = 0.5;      // resolution
-        double x_threshold = 10;       // distance from destination > threshold, it means arrive the destination
+        double dis_threshold = 10;       // distance from destination > threshold, it means arrive the destination
         
-        double x_diff;               // x distance difference from destination 
+        double dis_diff;               // x distance difference from destination 
         double angle;       // coordinate rotation angle (radical)
           
 //angle calculation algorithm
@@ -336,9 +334,9 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
            rotate_pnt_x +=origin_x;
            rotate_pnt_y +=origin_y;
 //check if x is near destination            
-            x_diff = fabs(rotate_pnt_x-destination_x);
+            dis_diff = sqrt(pow(rotate_pnt_x-destination_x,2)+pow(rotate_pnt_y-destination_y,2));
 //output to next point
-            if(x_diff>x_threshold){    
+            if(dis_diff>dis_threshold){    
               m_next_pntx.push_back(rotate_pnt_x);
               m_next_pnty.push_back(rotate_pnt_y);
             }
