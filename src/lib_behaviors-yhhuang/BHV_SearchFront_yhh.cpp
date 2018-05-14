@@ -7,9 +7,9 @@
 
 #include <iterator>
 #include <cstdlib>
-#include "MBUtils.h"
 #include "BuildUtils.h"
 #include "AngleUtils.h"
+#include "MBUtils.h"
 #include "BuildUtils.h"
 #include "OF_Coupler.h"
 #include "OF_Reflector.h"
@@ -232,16 +232,28 @@ void BHV_SearchFront_yhh::GenRecPoint()
        m_pnty_two    = m_middle_y - m_length/2;
        m_pnty_three  = m_middle_y - m_length/2;
        m_pnty_four   = m_middle_y + m_length/2;
-//x
-     m_next_pntx.push_back(m_pntx_one);
-     m_next_pntx.push_back(m_pntx_two);
-     m_next_pntx.push_back(m_pntx_three);
-     m_next_pntx.push_back(m_pntx_four);
-//y     
-     m_next_pnty.push_back(m_pnty_one); 
-     m_next_pnty.push_back(m_pnty_two); 
-     m_next_pnty.push_back(m_pnty_three); 
-     m_next_pnty.push_back(m_pnty_four); 
+////x
+//     m_next_pntx.push_back(m_pntx_one);
+//     m_next_pntx.push_back(m_pntx_two);
+//     m_next_pntx.push_back(m_pntx_three);
+//     m_next_pntx.push_back(m_pntx_four);
+////y     
+//     m_next_pnty.push_back(m_pnty_one); 
+//     m_next_pnty.push_back(m_pnty_two); 
+//     m_next_pnty.push_back(m_pnty_three); 
+//     m_next_pnty.push_back(m_pnty_four); 
+
+     m_next_pntx.push_back(50);
+     m_next_pntx.push_back(50);
+     m_next_pntx.push_back(-40);
+     m_next_pntx.push_back(-59);
+     m_next_pntx.push_back(-74);
+
+     m_next_pnty.push_back(-28);
+     m_next_pnty.push_back(-181);
+     m_next_pnty.push_back(-178);
+     m_next_pnty.push_back(-112);
+     m_next_pnty.push_back(-76);
    }
    else if(m_direction == "clock"){ 
 
@@ -254,16 +266,27 @@ void BHV_SearchFront_yhh::GenRecPoint()
        m_pnty_two    = m_middle_y - m_length/2;
        m_pnty_three  = m_middle_y - m_length/2;
        m_pnty_four   = m_middle_y + m_length/2;
-//x
-     m_next_pntx.push_back(m_pntx_one);
-     m_next_pntx.push_back(m_pntx_two);
-     m_next_pntx.push_back(m_pntx_three);
-     m_next_pntx.push_back(m_pntx_four);
-//y     
-     m_next_pnty.push_back(m_pnty_one); 
-     m_next_pnty.push_back(m_pnty_two); 
-     m_next_pnty.push_back(m_pnty_three); 
-     m_next_pnty.push_back(m_pnty_four); 
+////x
+//     m_next_pntx.push_back(m_pntx_one);
+//     m_next_pntx.push_back(m_pntx_two);
+//     m_next_pntx.push_back(m_pntx_three);
+//     m_next_pntx.push_back(m_pntx_four);
+////y     
+//     m_next_pnty.push_back(m_pnty_one); 
+//     m_next_pnty.push_back(m_pnty_two); 
+//     m_next_pnty.push_back(m_pnty_three); 
+//     m_next_pnty.push_back(m_pnty_four);
+
+
+     m_next_pntx.push_back(65);
+     m_next_pntx.push_back(65);
+     m_next_pntx.push_back(160);
+     m_next_pntx.push_back(160);
+     
+     m_next_pnty.push_back(-28);
+     m_next_pnty.push_back(-181);
+     m_next_pnty.push_back(-181);
+     m_next_pnty.push_back(0);
    }
 
 }
@@ -271,24 +294,39 @@ void BHV_SearchFront_yhh::GenRecPoint()
 // Generate Sine wave in step 2 (after find out two point)
 void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
 {
-// oringin of sin wave
-        double origin_x = input[0][0];
+// oringin and destination of sin wave, 0 is start point 1 is destination point
+        double origin_x = input[0][0];   
         double origin_y = input[0][1];
+        double destination_x = input[1][0];
+        double destination_y = input[1][1];
+
         double pnt_x;
         double pnt_y;
         double rotate_pnt_x;
         double rotate_pnt_y;
+// angle calculation function declare 
 //sin wave configure parameter
-        double pi         = 3.1415926;
-        double amp        = m_amp;   // 20 is good
-        double omega      = m_omega; // 2 is good
-        double x_interval = 10;      // resolution
-        double angle      = -45*pi/180;       // coordinate rotation angle (radical)
-        double destination_x  = 49;     // destination pnt x
-        double destination_y  = -139;   // destination pnt y
-        double dis_to_des;   //distance from destination 
-        double dis_threshold=20; //distance from destination > threshold, it means arrive the destination
-          for(int i=0;i<=100*pi;i+=x_interval){
+        double pi          = 3.1415926;
+        double amp         = m_amp;   // 20 is good
+        double omega       = m_omega; // 2 is good
+        double x_interval  = 0.5;      // resolution
+        double x_threshold = 10;       // distance from destination > threshold, it means arrive the destination
+        
+        double x_diff;               // x distance difference from destination 
+        double angle;       // coordinate rotation angle (radical)
+          
+//angle calculation algorithm
+  
+        double delta_x = destination_x - origin_x;
+        double delta_y = destination_y - origin_y;
+        double tangent = delta_y/delta_x;
+               angle   = atan(tangent);
+        
+         if(delta_x<0)   //go to quadrant2 or 3
+           angle = pi + angle;
+
+//Generate point algorithm
+          for(double i=0;i<=100*pi;i+=x_interval){
               pnt_x = i;
               pnt_y = amp*sin(omega*i);
 //rotate  using rotational matrice
@@ -297,17 +335,17 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
 //shift
            rotate_pnt_x +=origin_x;
            rotate_pnt_y +=origin_y;
+//check if x is near destination            
+            x_diff = fabs(rotate_pnt_x-destination_x);
 //output to next point
-  
-          dis_to_des = sqrt(pow(rotate_pnt_x-destination_x,2)+pow(rotate_pnt_y-destination_y,2)); 
-           
-            if(dis_to_des>dis_threshold){    
+            if(x_diff>x_threshold){    
               m_next_pntx.push_back(rotate_pnt_x);
               m_next_pnty.push_back(rotate_pnt_y);
             }
             else
                 break;
           }
+// angle calculation function           
 }
 //--------------------------------------------------------------
 //Average the diff point if it's measured almost in the same time 
@@ -452,16 +490,18 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
 // Finding temerature vary point
 
       int check_interval = 10;  // must be even integer
-       if(!m_temp_dbl_buff.empty() && m_checking_start_index+check_interval < m_temp_dbl_buff.size()){
+      int check_overlap = 5;
+//check index=0 and index=10
+       if(!m_temp_dbl_buff.empty() && 0+check_interval < m_temp_dbl_buff.size()){
          double temp_checking,temp_checking_two;
              
-         temp_checking     = m_temp_dbl_buff[m_checking_start_index][2];
-         temp_checking_two = m_temp_dbl_buff[m_checking_start_index+check_interval][2];
+         temp_checking     = m_temp_dbl_buff[0][2];
+         temp_checking_two = m_temp_dbl_buff[0+check_interval][2];
 
            postMessage("DIFFERENCE",fabs(temp_checking-temp_checking_two)); 
          if(fabs(temp_checking-temp_checking_two)>m_threshold){
            
-           int    diff_point_index = m_checking_start_index + check_interval/2; 
+           int    diff_point_index = 0 + check_interval/2; 
            double temp_diff_x = m_temp_dbl_buff[diff_point_index][0];
            double temp_diff_y = m_temp_dbl_buff[diff_point_index][1];
 
@@ -473,8 +513,7 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
            m_diff_point_buff.push_back(m_temp_dbl_buff[diff_point_index]); 
            //postMessage("STARTING_POINT",);
          }
-         //m_temp_dbl_buff.pop_front();
-         m_checking_start_index+=check_interval;
+         m_temp_dbl_buff.erase(m_temp_dbl_buff.begin(),m_temp_dbl_buff.begin()+check_overlap);
        }
 
        // Part 1: Get vehicle position from InfoBuffer and post a 
@@ -526,14 +565,18 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
 
               string label;
               stringstream ss;
-              ss<<"Diff_Point_";
-              ss<<i;
+              ss<<"SineWave_";
+              if(i==0)
+              ss<<"Start_point";
+              else
+              ss<<"End_point";
+
               ss>>label;
-              string color = "yellow";
+              string color = "red";
 
                  point.set_label(label);
                  point.set_color("vertex", color);
-                 point.set_param("vertex_size", "2");
+                 point.set_param("vertex_size", "7");
                  string spec = point.get_spec();
                  postMessage("VIEW_POINT", spec);
           }

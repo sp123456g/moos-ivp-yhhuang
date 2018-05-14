@@ -9,9 +9,7 @@ initialize   SURVEY  = true
 initialize   AVOID   = true
 initialize   SURVEY_UNDERWAY = false
 initialize   OPREGION = true
-initialize   SQUARE   = false 
-initialize   CIRCLE   = true 
-initialize   FRONT_SEARCH = false
+initialize   FRONT_SEARCH = true
 set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
@@ -25,22 +23,6 @@ set MODE = SURVEYING {
   MODE = ACTIVE
   SURVEY = true
   RETURN = false
-  SQUARE = false
-}
-
-set MODE = SQUARING{
-  SQUARE = true
-  RETURN = false  
-}
-
-set MODE = FRONT_SEARCHING{
-    FRONT_SEARCH = true 
-    RETURN       = false
-}
-
-set MODE = ROUND_SURVEY{
-    CIRCLE = true
-    RETURN = false
 }
 
 //----------------------------------------------
@@ -66,7 +48,7 @@ Behavior = BHV_Waypoint
 Behavior = BHV_OpRegion
 {
   name       = opregion
-  pwt        = 100
+  pwt        = 120
   condition  = MODE==ACTIVE
   condition  = OPREGION=true
  
@@ -100,41 +82,55 @@ Behavior = BHV_AvoidCollision
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }
 //-------------------------------------------------
-Behavior = BHV_SearchFront_Tony
-{
-    name = search_$(VNAME)
-    condition = MODE == SQUARING
-    pwt = 100
-    vname = $(VNAME)
-    activeflag   = SURVEY_UNDERWAY = true
-    inactiveflag = SURVEY_UNDERWAY = false
-    average_number = 30;
+//Behavior = BHV_SearchFront_Tony
+//{
+//    name = search_$(VNAME)
+//    condition = MODE == SQUARING
+//    pwt = 100
+//    vname = $(VNAME)
+//    activeflag   = SURVEY_UNDERWAY = true
+//    inactiveflag = SURVEY_UNDERWAY = false
+//    average_number = 30;
+//
+//    speed = 2
+//    clockwise = $(CLOCKWISE) // 1 for clockwise, 0 for couter-clockwise
+//}
 
-    speed = 2
-    clockwise = $(CLOCKWISE) // 1 for clockwise, 0 for couter-clockwise
-}
-
-Behavior = BHV_SearchFront 
+Behavior = BHV_SearchFront_yhh 
 {
-    name = circlesearch_$(VNAME)
+    name = Square_$(VNAME)
     pwt  = 100
-    condition = MODE == ROUND_SURVEY 
+    condition = FRONT_SEARCH = true 
     activeflag   = SURVEY_UNDERWAY = true
     inactiveflag = SURVEY_UNDERWAY = false
-    endflag = SQUARE = true
-    endflag = CIRCLE = false
+    endflag = FRONT_SEARCH = false
+    endflag = RETURN = true
+    
     radius = 5
     speed  = 2 
+    vname  = $(VNAME)
 
-    middle_ptx    = 41
-    vname         = $(VNAME)
-    average_number= 30
-    middle_pty    = -92
-    circle_radius = 100
+//Sine wave config  
+  
+    omega     = 0.5
+    amplitude = 10
+
+//Rectangle Config
+
+    threshold      = 1.5
+    average_number = 30
+    width          = 70
+    length         = 100
 
 #ifdef CLOCKWISE  1
     direction     = clock
+    middle_ptx     = -5
+    middle_pty     = -71
+ 
 #elseifdef CLOCKWISE 0
     direction     = cclock
+    middle_ptx     = 123
+    middle_pty     = -77
+ 
 #endif
 }
