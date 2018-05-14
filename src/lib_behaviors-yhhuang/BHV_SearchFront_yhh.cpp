@@ -221,7 +221,7 @@ void BHV_SearchFront_yhh::onRunToIdleState()
 //Generate Rectangle point in step 1 
 void BHV_SearchFront_yhh::GenRecPoint()
 {
-   if(m_direction == "cclock"){ 
+   if(m_direction == "cclock"){   //right side 
     
        m_pntx_one   = m_middle_x - m_width/2;
        m_pntx_two   = m_middle_x - m_width/2;
@@ -243,17 +243,21 @@ void BHV_SearchFront_yhh::GenRecPoint()
 //     m_next_pnty.push_back(m_pnty_three); 
 //     m_next_pnty.push_back(m_pnty_four); 
 
-     m_next_pntx.push_back(50);
-     m_next_pntx.push_back(50);
-     m_next_pntx.push_back(-40);
-     m_next_pntx.push_back(-71);
+        
+       m_next_pntx.push_back(65);
+       m_next_pntx.push_back(65);
+       m_next_pntx.push_back(160);
+       m_next_pntx.push_back(160);
+     
+       m_next_pnty.push_back(-28);
+       m_next_pnty.push_back(-181);
+       m_next_pnty.push_back(-181);
+       m_next_pnty.push_back(0);
 
-     m_next_pnty.push_back(-28);
-     m_next_pnty.push_back(-181);
-     m_next_pnty.push_back(-178);
-     m_next_pnty.push_back(-87);
+   
+   
    }
-   else if(m_direction == "clock"){ 
+   else if(m_direction == "clock"){  //left side 
 
        m_pntx_one   = m_middle_x + m_width/2;
        m_pntx_two   = m_middle_x + m_width/2;
@@ -275,16 +279,15 @@ void BHV_SearchFront_yhh::GenRecPoint()
 //     m_next_pnty.push_back(m_pnty_three); 
 //     m_next_pnty.push_back(m_pnty_four);
 
+       m_next_pntx.push_back(50);
+       m_next_pntx.push_back(50);
+       m_next_pntx.push_back(-40);
+       m_next_pntx.push_back(-71);
 
-     m_next_pntx.push_back(65);
-     m_next_pntx.push_back(65);
-     m_next_pntx.push_back(160);
-     m_next_pntx.push_back(160);
-     
-     m_next_pnty.push_back(-28);
-     m_next_pnty.push_back(-181);
-     m_next_pnty.push_back(-181);
-     m_next_pnty.push_back(0);
+       m_next_pnty.push_back(-28);
+       m_next_pnty.push_back(-181);
+       m_next_pnty.push_back(-178);
+       m_next_pnty.push_back(-87);
    }
 
 }
