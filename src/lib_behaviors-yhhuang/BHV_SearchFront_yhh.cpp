@@ -283,11 +283,13 @@ void BHV_SearchFront_yhh::GenRecPoint()
        m_next_pntx.push_back(50);
        m_next_pntx.push_back(-40);
        m_next_pntx.push_back(-71);
+       m_next_pntx.push_back(-31);
 
        m_next_pnty.push_back(-28);
        m_next_pnty.push_back(-181);
        m_next_pnty.push_back(-178);
        m_next_pnty.push_back(-87);
+       m_next_pnty.push_back(-46);
    }
 
 }
