@@ -16,6 +16,7 @@
 #include "BHV_SearchFront_yhh.h"
 #include <math.h>
 #include <cmath>
+#include <sstream>
 //#include <armadillo>
 using namespace std;
 //using namespace arma;
@@ -328,8 +329,7 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
         double delta_y = destination_y - origin_y;
         double tangent = delta_y/delta_x;
                angle   = atan(tangent);
-        
-
+        string view_seglist="";
         if(delta_x<0)   //go to quadrant2 or 3
           angle = pi + angle;
 
@@ -375,9 +375,17 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
 
             m_next_pntx.push_back(rotate_pnt_x);
             m_next_pnty.push_back(rotate_pnt_y);
+            m_seglist.add_vertex(rotate_pnt_x,rotate_pnt_y);
+            
           }
-          else
-            break;
+          else{
+            
+              view_seglist+=m_seglist.get_spec();
+              view_seglist+=",label=Oblique_Sine_Wave_Survey";
+              postMessage("VIEW_SEGLIST",view_seglist);
+              break;
+          }
+
         }
 
 
@@ -543,7 +551,7 @@ IvPFunction* BHV_SearchFront_yhh::onRunState()
 
            m_temp_diff_point.set_vx(temp_diff_x);
            m_temp_diff_point.set_vy(temp_diff_y);
-           m_temp_diff_point.set_label("difference point");
+           m_temp_diff_point.set_label("Temperature_Changing");
            postMessage("VIEW_POINT",m_temp_diff_point.get_spec());
            
            m_diff_point_buff.push_back(m_temp_dbl_buff[diff_point_index]); 

@@ -15,6 +15,7 @@
 #include <deque>
 #include <ZAIC_PEAK.h>
 #include "XYPoint.h"
+#include <XYSegList.h>
 #include <vector>
 class BHV_SearchFront_yhh : public IvPBehavior {
 public:
@@ -46,6 +47,7 @@ protected: // Configuration parameters
   double      m_desired_speed;
   XYPoint     m_nextpt;
   XYPoint     m_temp_diff_point;
+  XYSegList   m_seglist;
   std::string m_ipf_type;
 protected: // State variables
   std::string m_report;

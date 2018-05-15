@@ -10,6 +10,7 @@
 #include "ACTable.h"
 #include "FrontEstimateX.h"
 #include <deque>
+#include <sstream>
 using namespace std;
 
 //---------------------------------------------------------
@@ -23,6 +24,7 @@ FrontEstimateX::FrontEstimateX()
     m_output_report = "";
     m_input_buff.clear();
     m_recieve = false;
+    m_send_interval = 30;
 }
 
 //---------------------------------------------------------
@@ -129,7 +131,7 @@ bool FrontEstimateX::Iterate()
   if(!m_input_buff.empty()){
       bool ele_less_than_ten = false; 
       int  start_index; 
-      for(int i=m_sending_start_index;i<m_sending_start_index+10;i++){ 
+      for(int i=m_sending_start_index;i<m_sending_start_index+m_send_interval;i++){ 
         
         if(i>=m_input_buff.size()){
          start_index = i;
@@ -200,7 +202,15 @@ bool FrontEstimateX::OnStartUp()
     }
     else if(param == "report_name")
     {
-        m_report_name = value;
+      m_report_name = value;
+      handled = true;
+    }
+    else if(param == "message_amout"){
+      
+      stringstream ss;
+      ss<<value;
+      ss>>m_send_interval;
+       
       handled = true;
     }
     if(!handled)

@@ -32,6 +32,7 @@ class FrontEstimateX : public AppCastingMOOSApp
    std::string m_output_report;
    std::deque<std::string> m_input_buff; 
    std::deque<std::string> m_col_msg_buff; 
+   int         m_send_interval;
  protected:
    void registerVariables();
 
