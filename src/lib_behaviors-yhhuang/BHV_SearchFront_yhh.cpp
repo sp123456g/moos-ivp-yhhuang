@@ -298,6 +298,67 @@ void BHV_SearchFront_yhh::GenRecPoint()
    }
 
 }
+//------------------------------------------
+//dot
+double BHV_SearchFront_yhh::calAngle(double x1, double y1, double x2, double y2)
+{
+  double angle_diff, angle_1, angle_2;
+  angle_1 = atan2(y1, x1);
+  angle_2 = atan2(y2, x2); 
+  angle_diff = angle_1 - angle_2; 
+  angle_diff = angle_diff * 180.0 / 3.1415;
+  angle_diff = remainder(angle_diff, 360.0);  
+  return fabs(angle_diff);
+}
+//------------------------------------------
+//cross
+double BHV_SearchFront_yhh::cross(double x1, double y1, double x2, double y2)
+{
+  return x1 * y2 - y1 * x2;
+}
+//------------------------------------------
+//disPointToLine
+double BHV_SearchFront_yhh::disPointToLine(double x1, double y1, double x2, double y2)
+{
+  double target;
+  double side_1, side_2;
+  target = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+  side_1 = sqrt(x1*x1 + y1*y1);
+  side_2 = sqrt(x2*x2 + y2*y2);
+  double s = 0.5*(side_1+side_2+target);
+  double area = sqrt(s*(s-target)*(s-side_1)*(s-side_2));
+  double height = area / target;
+
+  return height;
+}
+//------------------------------------------
+//Check point whether in op regiom
+bool BHV_SearchFront_yhh::checkOpRegion(double x, double y)
+{
+  //{-50,-40 : -100,-75 : -50,-200 : 180,-200 : 180,20 : 100,20}
+  XYPoint region[7];
+  region[0].set_vertex(-50, -40);
+  region[1].set_vertex(-100, -75);
+  region[2].set_vertex(-50, -200);
+  region[3].set_vertex(180, -200);    
+  region[4].set_vertex(180, 20);
+  region[5].set_vertex(100, 20);
+  region[6].set_vertex(-50, -40);
+  double x1, x2, y1, y2;
+  bool in_range = true;
+  for(int i = 0 ; i<=5 ; i++){
+    x1 = region[i].x() - x;
+    x2 = region[i+1].x() - x;
+    y1 = region[i].y() - y;
+    y2 = region[i+1].y() - y;
+    if(cross(x1, y1, x2, y2) < 0 || disPointToLine(x1, y1, x2, y2) < 10){
+      in_range = false;
+      return in_range;
+    }
+  }
+  return in_range;
+}
+
 //---------------------------------------------------------------
 // Generate Sine wave in step 2 (after find out two point)
 void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
@@ -363,7 +424,7 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
           //postMessage("ANGLE_2", angle_2);  
           //postMessage("ANGLE_DIFF", angle_diff);  
 
-          
+          bool inRange = checkOpRegion(rotate_pnt_x, rotate_pnt_y);
 
           //calculate the angle between two lines
           if(fabs(angle_diff) >= 90){
@@ -371,15 +432,16 @@ void BHV_SearchFront_yhh::GenSinPoint(vector<array<double,2>> input)
           }
 
           //output to next point
-          if(!m_over_angle){ 
+          if(!m_over_angle && inRange){ 
 
             m_next_pntx.push_back(rotate_pnt_x);
             m_next_pnty.push_back(rotate_pnt_y);
             m_seglist.add_vertex(rotate_pnt_x,rotate_pnt_y);
             
           }
-          else{
-            
+          else if(!m_over_angle && !inRange)
+              continue;
+          else{     
               view_seglist+=m_seglist.get_spec();
               view_seglist+=",label=Oblique_Sine_Wave_Survey";
               postMessage("VIEW_SEGLIST",view_seglist);

@@ -39,6 +39,10 @@ public:
   IvPFunction* onRunState();
   IvPFunction* buildFunctionWithZAIC();
   void         postViewPoint(bool viewable); 
+  bool         checkOpRegion(double x, double y);
+  double       cross(double, double, double, double);
+  double       calAngle(double, double, double, double);
+  double       disPointToLine(double, double, double, double); 
 
 protected: // Local Utility functions
     
