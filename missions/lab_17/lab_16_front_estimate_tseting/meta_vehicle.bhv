@@ -110,13 +110,15 @@ Behavior = BHV_SearchFront_yhh
     radius = 5
     speed  = 2 
     vname  = $(VNAME)
+    // the dis tolerance between point and line
+    line_dis = 5
 
 //Sine wave config  
   
 //    omega     = 0.1
       omega     = 0.3
 //    amplitude = 25
-      amplitude =23
+      amplitude = 60
 //Rectangle Config
 
     threshold      = 1.5
