@@ -71,6 +71,7 @@ BHV_SearchFront_yhh::BHV_SearchFront_yhh(IvPDomain domain) :
 
   m_first_point = true;
   m_over_angle = false;
+  m_line_dis = 5;
 }
 
 //---------------------------------------------------------------
@@ -111,6 +112,10 @@ bool BHV_SearchFront_yhh::setParam(string param, string val)
   }
   else if(param == "threshold"){
     m_threshold = double_val;
+    return(true);
+  }
+  else if(param == "line_dis"){
+    m_line_dis = double_val;
     return(true);
   }
   else if(param == "vname"){
@@ -351,7 +356,7 @@ bool BHV_SearchFront_yhh::checkOpRegion(double x, double y)
     x2 = region[i+1].x() - x;
     y1 = region[i].y() - y;
     y2 = region[i+1].y() - y;
-    if(cross(x1, y1, x2, y2) < 0 || disPointToLine(x1, y1, x2, y2) < 10){
+    if(cross(x1, y1, x2, y2) < 0 || disPointToLine(x1, y1, x2, y2) < m_line_dis){
       in_range = false;
       return in_range;
     }

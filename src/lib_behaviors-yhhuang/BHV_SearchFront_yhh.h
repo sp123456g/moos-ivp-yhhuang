@@ -97,6 +97,7 @@ protected: // State variables
   bool m_generate_point_sin;
   bool m_first_point;
   bool m_over_angle;
+  double m_line_dis;
 };
 
 
