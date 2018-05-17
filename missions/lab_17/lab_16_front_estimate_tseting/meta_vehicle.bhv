@@ -25,6 +25,27 @@ set MODE = SURVEYING {
   RETURN = false
 }
 
+set MODE = STATION_KEEPING{
+    MODE = ACTIVE
+    STATION_KEEP = true
+}
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+    name = station-keep
+    pwt  = 120 
+//    condition = MODE==STATION_KEEPING
+      condition = STATION_KEEP = true
+      center_activate = true
+      inner_radius    = 5
+      outer_radius    = 10 
+      outer_speed     = 1.0
+
+      transit_speed   = 1.3
+      swing_time      = 7 
+      visual_hints    = vertex_size=0, edge_size=1,edge_color=light_blue
+}
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {
