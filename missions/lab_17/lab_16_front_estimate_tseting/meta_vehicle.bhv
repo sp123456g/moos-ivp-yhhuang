@@ -107,7 +107,7 @@ Behavior = BHV_SearchFront_yhh
     endflag = FRONT_SEARCH = false
     endflag = RETURN = true
     
-    radius = 5
+    radius = 10
     speed  = 2 
     vname  = $(VNAME)
     // the dis tolerance between point and line

@@ -258,12 +258,15 @@ void BHV_SearchFront_yhh::GenRecPoint()
        m_next_pntx.push_back(65);
        m_next_pntx.push_back(160);
        m_next_pntx.push_back(160);
-     
        m_next_pnty.push_back(-28);
        m_next_pnty.push_back(-181);
        m_next_pnty.push_back(-181);
        m_next_pnty.push_back(0);
-
+       
+       m_pntx_one  = 65;
+       m_pnty_one  = -28;     
+       m_pntx_four = 160; 
+       m_pnty_four = 0;
    
    
    }
@@ -278,6 +281,8 @@ void BHV_SearchFront_yhh::GenRecPoint()
        m_pnty_two    = m_middle_y - m_length/2;
        m_pnty_three  = m_middle_y - m_length/2;
        m_pnty_four   = m_middle_y + m_length/2;
+
+
 ////x
 //     m_next_pntx.push_back(m_pntx_one);
 //     m_next_pntx.push_back(m_pntx_two);
@@ -300,6 +305,12 @@ void BHV_SearchFront_yhh::GenRecPoint()
        m_next_pnty.push_back(-178);
        m_next_pnty.push_back(-87);
        m_next_pnty.push_back(-46);
+
+       m_pntx_one  = 50;
+       m_pnty_one  = -28;
+       m_pntx_four = -61; 
+       m_pnty_four = -100;
+
    }
 
 }
@@ -537,9 +548,14 @@ vector<array<double,2>> BHV_SearchFront_yhh::GenTwoPoint(vector<array<double,2>>
         point_two = input[0];
     }
 //if more than two pnts, output first and the last one
+//in case two point's x is too near, go last point in Rec navigate to first in measure 
     else{
-
+      if(fabs(input[input.size()-1][0]-input[0][0])>=30)
         point_one = input[input.size()-1];
+      else{ 
+        point_one[0] = m_pntx_four;
+        point_one[1] = m_pnty_four;
+      }  
         point_two = input[0];
     }
 
