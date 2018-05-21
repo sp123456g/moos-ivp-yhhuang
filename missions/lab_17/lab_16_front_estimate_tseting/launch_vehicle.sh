@@ -15,7 +15,7 @@ LANE_WIDTH1=10
 LANE_WIDTH2=10
 DEGREES1=270
 DEGREES2=0
-SHORE_IP="192.168.1.252"
+SHORE_IP="18.189.29.222"
 SHORE_LISTEN="9300"
 
 TRAIL_RANGE="3"
@@ -167,8 +167,11 @@ if [ "${HELP}" = "yes" ]; then
     echo "  --kirk,       -k  : Kirk vehicle."
     echo "  --luke,       -l  : Luke vehicle."
     echo "  --nostromo,   -n  : Nostromo vehicle."
+    echo "  --money,      -m  : Money vehicle."
     echo "  --kestrel,   -ke  : Kestrel vehicle."
     echo "  --sim,        -s  : Simulation mode."
+    echo "  --clock,     -cw  : clockwise moving,left region"
+    echo "  --cclock,   -ccw  : counterclockwise,right region"
     echo "  --start-x=        : Start from x position (requires x y a)."
     echo "  --start-y=        : Start from y position (requires x y a)."
     echo "  --start-a=        : Start from angle (requires x y a)."

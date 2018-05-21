@@ -231,86 +231,56 @@ void BHV_SearchFront_yhh::onRunToIdleState()
 //Generate Rectangle point in step 1 
 void BHV_SearchFront_yhh::GenRecPoint()
 {
+
    if(m_direction == "cclock"){   //right side 
     
-       m_pntx_one   = m_middle_x - m_width/2;
-       m_pntx_two   = m_middle_x - m_width/2;
-       m_pntx_three = m_middle_x + m_width/2;
-       m_pntx_four  = m_middle_x + m_width/2;
+       m_pntx_one   = m_pntx_two  = 65;
+       m_pntx_three = m_pntx_four = 160;
        
-       m_pnty_one    = m_middle_y + m_length/2;
-       m_pnty_two    = m_middle_y - m_length/2;
-       m_pnty_three  = m_middle_y - m_length/2;
-       m_pnty_four   = m_middle_y + m_length/2;
-////x
-//     m_next_pntx.push_back(m_pntx_one);
-//     m_next_pntx.push_back(m_pntx_two);
-//     m_next_pntx.push_back(m_pntx_three);
-//     m_next_pntx.push_back(m_pntx_four);
-////y     
-//     m_next_pnty.push_back(m_pnty_one); 
-//     m_next_pnty.push_back(m_pnty_two); 
-//     m_next_pnty.push_back(m_pnty_three); 
-//     m_next_pnty.push_back(m_pnty_four); 
+       m_pnty_one    = -28;
+       m_pnty_two    = m_pnty_three = -160;
+       m_pnty_four   = -7;
+//x
+     m_next_pntx.push_back(m_pntx_one);
+     m_next_pntx.push_back(m_pntx_two);
+     m_next_pntx.push_back(m_pntx_three);
+     m_next_pntx.push_back(m_pntx_four);
+//y     
+     m_next_pnty.push_back(m_pnty_one); 
+     m_next_pnty.push_back(m_pnty_two); 
+     m_next_pnty.push_back(m_pnty_three); 
+     m_next_pnty.push_back(m_pnty_four); 
 
-        
-       m_next_pntx.push_back(65);
-       m_next_pntx.push_back(65);
-       m_next_pntx.push_back(160);
-       m_next_pntx.push_back(160);
-       m_next_pnty.push_back(-28);
-       m_next_pnty.push_back(-181);
-       m_next_pnty.push_back(-181);
-       m_next_pnty.push_back(0);
-       
-       m_pntx_one  = 65;
-       m_pnty_one  = -28;     
-       m_pntx_four = 160; 
-       m_pnty_four = 0;
-   
-   
    }
    else if(m_direction == "clock"){  //left side 
 
-       m_pntx_one   = m_middle_x + m_width/2;
-       m_pntx_two   = m_middle_x + m_width/2;
-       m_pntx_three = m_middle_x - m_width/2;
-       m_pntx_four  = m_middle_x - m_width/2;
+       m_pntx_one          =  50;
+       m_pntx_two          =  50;
+       m_pntx_three        =  -40;
+       m_pntx_four         =  -62;
        
-       m_pnty_one    = m_middle_y + m_length/2;
-       m_pnty_two    = m_middle_y - m_length/2;
-       m_pnty_three  = m_middle_y - m_length/2;
-       m_pnty_four   = m_middle_y + m_length/2;
+       double point_five_x   = -16;
+       
+       m_pnty_one    = -28;
+       m_pnty_two    = -150;
+       m_pnty_three  = -150;
+       m_pnty_four   = -86;
+
+       double point_five_y = -53;
 
 
-////x
-//     m_next_pntx.push_back(m_pntx_one);
-//     m_next_pntx.push_back(m_pntx_two);
-//     m_next_pntx.push_back(m_pntx_three);
-//     m_next_pntx.push_back(m_pntx_four);
-////y     
-//     m_next_pnty.push_back(m_pnty_one); 
-//     m_next_pnty.push_back(m_pnty_two); 
-//     m_next_pnty.push_back(m_pnty_three); 
-//     m_next_pnty.push_back(m_pnty_four);
-
-       m_next_pntx.push_back(50);
-       m_next_pntx.push_back(50);
-       m_next_pntx.push_back(-40);
-       m_next_pntx.push_back(-71);
-       m_next_pntx.push_back(-31);
-
-       m_next_pnty.push_back(-28);
-       m_next_pnty.push_back(-181);
-       m_next_pnty.push_back(-178);
-       m_next_pnty.push_back(-87);
-       m_next_pnty.push_back(-46);
-
-       m_pntx_one  = 50;
-       m_pnty_one  = -28;
-       m_pntx_four = -61; 
-       m_pnty_four = -100;
-
+//x
+     m_next_pntx.push_back(m_pntx_one);
+     m_next_pntx.push_back(m_pntx_two);
+     m_next_pntx.push_back(m_pntx_three);
+     m_next_pntx.push_back(m_pntx_four);
+     m_next_pntx.push_back(point_five_x);
+//y     
+     m_next_pnty.push_back(m_pnty_one); 
+     m_next_pnty.push_back(m_pnty_two); 
+     m_next_pnty.push_back(m_pnty_three); 
+     m_next_pnty.push_back(m_pnty_four);
+     m_next_pnty.push_back(point_five_y);
    }
 
 }
