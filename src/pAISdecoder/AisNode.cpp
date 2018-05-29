@@ -50,7 +50,7 @@ void AisNode::setOrin(std::string input)
 
 void AisNode::analysis()
 {
-
+    if(m_original_inform.find("!AI")!=std::string::npos){
     m_parse_information = parseString(m_original_inform, ',');
 //AIS DATA is seperated by ','
      m_packet_type   = m_parse_information[0]; 
@@ -74,6 +74,7 @@ void AisNode::analysis()
     }
 
       m_main_bin_message = AsciiToBinVec(binary_str_buff);
+    }
 };
 
 std::string AisNode::getPacketType() const            

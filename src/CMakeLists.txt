@@ -31,6 +31,7 @@ ADD_SUBDIRECTORY(pPointAssign_Auto)
 ADD_SUBDIRECTORY(uFldHazardMgrX)
 ADD_SUBDIRECTORY(pHazardPath)
 ADD_SUBDIRECTORY(pFrontEstimateX)
+ADD_SUBDIRECTORY(pSTFTAnalyser)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################

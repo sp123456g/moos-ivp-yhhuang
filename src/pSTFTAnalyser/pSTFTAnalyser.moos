@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pSTFTAnalyser config block
+
+ProcessConfig = pSTFTAnalyser
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
