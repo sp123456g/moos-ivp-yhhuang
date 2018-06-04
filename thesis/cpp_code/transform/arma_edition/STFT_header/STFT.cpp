@@ -123,7 +123,7 @@ mat Gabor(arma::vec x, int fs, int sgm=200, double dt=0.01, double df=1){
 
   
   if(2*Q>N)
-      cout<<"Warning: change sgm, df,dt to let window length 2*Q <= N"<<endl;
+      cout<<"Warning: N must greater than 2*Q+1, you may want to change sgm, df,dt"<<endl;
 
      for(int n=n0;n<n0+C;n+=S){   
  //step1 using window function to access input
@@ -149,18 +149,18 @@ mat Gabor(arma::vec x, int fs, int sgm=200, double dt=0.01, double df=1){
 }
 //-------------------------------------------------------------------------
 
-mat recSTFT_new(arma::vec x, int fs, double B, double dt=0.01, double df=1){
+mat recSTFT_new(arma::vec x, int fs=44100, double B=0.01, double dt=0.01, double df=50){
 //------------------------------------------------------------------------
 // output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)
 // output: frequency element represent for the band, ex: index 10 is 90~100 for case dt=10)
 //      x: input, need to be single channel data in arma::vec form
-//     fs: sample rate
+//     fs: sample rate 
 //      B: window length (sec)
 //     dt: output time resolution
 //     df: output frequency resolution
 //-------------------------------------------------------------------------
      double dtau = 1/(double)fs;  // input sampling interval
-     vec    tau  = regspace<vec>(0,1/(double)fs,x.n_elem/(double)fs); // digital input time 
+     vec    tau  = regspace<vec>(0,1/(double)fs,x.n_elem/(double)fs); // digital input time
      vec      t  = regspace<vec>(0,dt,max(tau));
 //     vec      f  = regspace<vec>(20,df,1000);
 //-------------------------------------------------------------------------       
@@ -170,13 +170,13 @@ mat recSTFT_new(arma::vec x, int fs, double B, double dt=0.01, double df=1){
 //     unsigned int F = f.n_elem;               // length of output frequency series
      unsigned int N = round(1/(dtau*df));     // constraint of FFT base implimentation
      unsigned int C = tau.n_elem;             // digital input length
-     unsigned int S = dt/dtau;                // unbalance form factor
-     unsigned int Q = B*fs;
+     unsigned int S = round(dt/dtau);                // unbalance form factor
+     unsigned int Q = round(B*fs);
+     double       Overlap =1-(double)S/(2*Q);
 //-------------------------------------------------------------------------
 //window function
 //-------------------------------------------------------------------------
  
-
     vec window = ones<vec>(2*Q);    // rectangular window with length 1 sec
     vec zero= zeros<vec>(Q);
     vec addzerox = join_vert(zero,x);
@@ -184,14 +184,20 @@ mat recSTFT_new(arma::vec x, int fs, double B, double dt=0.01, double df=1){
 //-------------------------------------------------------------------------
 //FFT loop for calculating using unbalance form
 //-------------------------------------------------------------------------
+//  cx_mat X(T,N);    // row is time, column is frequency now
   cx_mat X(T,N);    // row is time, column is frequency now
-  cout<<"2*Q="<<2*Q<<",N="<<N<<endl;
-
-  
+  cout<<"Window length  2*Q ="<<2*Q<<endl;
+  cout<<"fft samples      N ="<<N<<endl;
+  cout<<"Unbalance factor S ="<<S<<endl;
+  cout<<"Overlap:            "<<Overlap*100<<"%"<<endl; 
+//Constrain cheching 
   if(2*Q>N)
-      cout<<"Warning: change sgm, df,dt to let window length 2*Q <= N"<<endl;
+      cout<<"\nWarning: N must greater than 2*Q+1, you may want to change B, df,dt"<<endl;
+  if(Overlap<0)
+     cout<<"\nWarning: Change B to let Overlap>=0%"<<endl;
 
-     for(int n=n0;n<n0+C;n+=S){   
+// Calculate spectrogram  
+     for(int n=n0;n<n0+C;n+=S){  
  //step1 using window function to access input
       vec x1q = zeros<vec>(2*Q);
        for(int q=0;q<2*Q;q++){
@@ -214,6 +220,7 @@ mat recSTFT_new(arma::vec x, int fs, double B, double dt=0.01, double df=1){
     return(output);
 }
 
+// detect_whistle algorithm
 void detect_whistle(arma::mat &P, double threshold){
         
     for(int n=0;n<P.n_cols;n++){
