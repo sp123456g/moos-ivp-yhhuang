@@ -20,9 +20,9 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pSTFTAnalyser application is used for               ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The pSTFTAnalyser application is used for analysis acoustics  ");
+  blk("  data, input the acoustic data and output the spectrogram matrix");
+  blk("                                                                 ");
   blk("                                                                ");
   blk("                                                                ");
 }
@@ -71,9 +71,17 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("ProcessConfig = pSTFTAnalyser                              ");
   blk("{                                                               ");
-  blk("  AppTick   = 4                                                 ");
-  blk("  CommsTick = 4                                                 ");
-  blk("                                                                ");
+  blk("        AppTick     = 4                                         ");
+  blk("        CommsTick   = 4                                         ");
+  blk("        dt          = 0.01                                      ");
+  blk("        df          = 20                                        ");
+  blk("        sample_rate = 44100                                     ");
+  blk("detection_threshold = 30                                        ");
+  blk("        do_detect   = true                                      ");
+  blk("       iterate_data = 1                                         ");
+  blk("        window_type = rec (or gassian)                          ");
+  blk("        sigma     = 600                                         ");
+  blk("        bandwidth   = 0.02                                      ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

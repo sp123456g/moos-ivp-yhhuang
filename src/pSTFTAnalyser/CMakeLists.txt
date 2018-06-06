@@ -6,6 +6,7 @@
 SET(SRC
   STFTAnalyser.cpp
   STFTAnalyser_Info.cpp
+  STFT.cpp
   main.cpp
 )
 
