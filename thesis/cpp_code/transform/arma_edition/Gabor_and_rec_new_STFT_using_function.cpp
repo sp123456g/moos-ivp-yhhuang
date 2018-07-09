@@ -20,7 +20,7 @@ using namespace arma;
 using namespace sp;
 int main(int argc, char* argv[]){
 
-// decline the constant 
+// declare the constant 
     const double pi = 3.1415926;
     const complex<double> i(0,1);
 //---------------------------------------------------------
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
      double          B   = 0.02;      // rectangular window length (seconds)
         int         fs   = 44100;     // sample rate
      double  threshold   = 30;        // threshold for detection
-     double  do_dectect  = true;     // using detection algorithm to seperate data
+     bool    do_dectect  = true;     // using detection algorithm to seperate data
      string  window_type = "rec";     // Window type: Gassian and rec
 //----------------------------------------------------------
 

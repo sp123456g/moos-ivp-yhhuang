@@ -149,7 +149,7 @@ mat Gabor(arma::vec x, int fs, int sgm=200, double dt=0.01, double df=1){
 }
 //-------------------------------------------------------------------------
 
-mat recSTFT_new(arma::vec x, int fs=44100, double B=0.01, double dt=0.01, double df=50){
+mat recSTFT_new(arma::vec x, int fs=44100, double B=0.02, double dt=0.01, double df=20){
 //------------------------------------------------------------------------
 // output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)
 // output: frequency element represent for the band, ex: index 10 is 90~100 for case dt=10)
