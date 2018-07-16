@@ -1,0 +1,24 @@
+//Configuration file: YHHuang
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = SpectrogramMonitor
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		       @ NewConsole = false
+  Run = pSpectrogramMonitor@ NewConsole = false
+}
+
+//------------------------------------------
+// uTimerScript
+
+ProcessConfig = pSpectrogramMonitor
+{
+    AppTick   = 4
+    CommsTick = 4
+}

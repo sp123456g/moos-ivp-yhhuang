@@ -32,6 +32,7 @@ ADD_SUBDIRECTORY(uFldHazardMgrX)
 ADD_SUBDIRECTORY(pHazardPath)
 ADD_SUBDIRECTORY(pFrontEstimateX)
 ADD_SUBDIRECTORY(pSTFTAnalyser)
+ADD_SUBDIRECTORY(pSpectrogramMonitor)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################
