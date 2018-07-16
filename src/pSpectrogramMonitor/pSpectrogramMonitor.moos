@@ -21,4 +21,7 @@ ProcessConfig = pSpectrogramMonitor
 {
     AppTick   = 4
     CommsTick = 4
+    SENSITIVITY = -165
+    SAMPLE_RATE = 44100
+    BITS = 16
 }

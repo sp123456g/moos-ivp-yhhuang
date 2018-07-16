@@ -41,6 +41,7 @@
 #include <math.h>
 #include <fftw3.h>
 #include <iostream>
+#include <deque>
 //#define PI              3.14159265358979323846
 
 class audioInput;      // declarations (things needed before defined)
@@ -826,7 +827,7 @@ const char *helptext[] = {
   NULL };
 
 // ===========================================================================
-void RealTimeSpectrogram()
+void RealTimeSpectrogram(std::deque<double>)
 {
   int scrnmode = 0;  // 0 for window, 1 fullscreen       **Defaults go here**
   verb = 0;          // 0 silent, 1 debug, etc

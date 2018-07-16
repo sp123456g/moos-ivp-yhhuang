@@ -9,7 +9,7 @@
 #define SpectrogramMonitor_HEADER
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-
+#include <deque>
 class SpectrogramMonitor : public AppCastingMOOSApp
 {
  public:
@@ -29,8 +29,16 @@ class SpectrogramMonitor : public AppCastingMOOSApp
    void registerVariables();
 
  private: // Configuration variables
-
+   std::deque<double> GetPressure(int bits, double sen, std::deque<std::string> Input);   
  private: // State variables
+    
+    unsigned int    m_input_frame;
+    int             m_bits;
+    int             m_sample_rate;
+    bool            m_get_data;
+    double          m_sen;
+
+    std::deque<std::string> m_input_per_frame_buffer;
 };
 
 #endif 

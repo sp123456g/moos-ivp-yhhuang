@@ -17,8 +17,13 @@ using namespace std;
 
 SpectrogramMonitor::SpectrogramMonitor()
 {
+    m_bits = 16;
+    m_sample_rate = 44100;
+    m_input_frame = 0;
+    m_get_data = false;
+    m_input_per_frame_buffer.clear(); 
+    m_sen = -165;
 }
-
 //---------------------------------------------------------
 // Destructor
 
@@ -50,7 +55,11 @@ bool SpectrogramMonitor::OnNewMail(MOOSMSG_LIST &NewMail)
 
      if(key == "FOO") 
        cout << "great!";
-
+     else if( key == "Sound_Data" ){
+        m_get_data = true;
+        m_input_per_frame_buffer.push_back(msg.GetString());
+        m_input_frame++;
+     }     
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
    }
@@ -75,7 +84,16 @@ bool SpectrogramMonitor::Iterate()
 {
   AppCastingMOOSApp::Iterate();
   // Do your thing here!
-    RealTimeSpectrogram();
+  
+  
+  if(m_get_data){
+
+    deque<double> Pressure_buff = GetPressure(m_bits, m_sen, m_input_per_frame_buffer);
+    
+    RealTimeSpectrogram(Pressure_buff);
+    m_get_data = false;
+  }
+
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -84,6 +102,51 @@ bool SpectrogramMonitor::Iterate()
 // Procedure: OnStartUp()
 //            happens before connection is open
 
+deque<double> SpectrogramMonitor::GetPressure(int bits, double sen, deque<string> Input){
+
+   deque<double> pressure;
+
+   if(!Input.empty()){
+       std::string input_str = Input.front();
+       vector<string> value = parseString(input_str,',');
+       for(int i=0;i<value.size();i++){
+          long double num = atoi(value[i].c_str());
+          double volt; 
+         switch(m_bits){
+            case 16:
+             if(num <= 0){
+              volt = num/32768;
+             }
+             else{
+              volt = num/32767;
+             }
+              break;
+            case 24:
+             if(num <= 0){
+              volt = num/8388608;
+             }
+            else{
+              volt = num/8388607;
+            }
+            break;
+            case 32:
+             if(num <= 0){
+              volt = num/2147483648;
+             }
+            else{
+              volt = num/2147483647;
+            }
+            break;
+        }
+         volt = volt/(pow(10,(sen/20)));
+        
+        pressure.push_back(volt); 
+   }
+}
+
+  return(pressure); 
+
+}
 bool SpectrogramMonitor::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
@@ -107,7 +170,16 @@ bool SpectrogramMonitor::OnStartUp()
     else if(param == "bar") {
       handled = true;
     }
-
+    else if(param == "BITS"){
+        m_bits = atoi(value.c_str());
+        handled = true;
+    }
+    else if(param == "SAMPLE_RATE"){
+        m_sample_rate = atoi(value.c_str());
+        handled = true;
+    }
+    else if(param == "SENSITIVITY")
+        m_sen = atof(value.c_str());
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
@@ -124,6 +196,7 @@ void SpectrogramMonitor::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   // Register("FOOBAR", 0);
+     Register("Sound_Data",0);
 }
 
 
