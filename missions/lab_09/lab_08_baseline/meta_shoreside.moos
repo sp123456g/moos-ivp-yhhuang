@@ -95,8 +95,8 @@ ProcessConfig = pMarineViewer
 
   scope = PHI_HOST_INFO
 
-  action = STATION_ALL = false
-  action = STATION_ALL = true
+//  action = STATION_ALL = false
+//  action = STATION_ALL = true
 
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 

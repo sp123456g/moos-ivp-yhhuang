@@ -19,8 +19,8 @@ ProcessConfig = ANTLER
 
 ProcessConfig = pSpectrogramMonitor
 {
-    AppTick   = 4
-    CommsTick = 4
+    AppTick   = 60
+    CommsTick = 60
     SENSITIVITY = -165
     SAMPLE_RATE = 44100
     BITS = 16

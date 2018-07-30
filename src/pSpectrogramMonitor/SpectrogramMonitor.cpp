@@ -22,7 +22,11 @@ SpectrogramMonitor::SpectrogramMonitor()
     m_input_frame = 0;
     m_get_data = false;
     m_input_per_frame_buffer.clear(); 
-    m_sen = -165;
+    m_sen = 165;
+    char *myargv[1];
+    int myargc=1;
+    myargv[0] = strdup("pSpectrogramMonitor");
+    glutInit(&myargc,myargv);
 }
 //---------------------------------------------------------
 // Destructor
@@ -89,19 +93,18 @@ bool SpectrogramMonitor::Iterate()
   if(m_get_data){
 
     deque<double> Pressure_buff = GetPressure(m_bits, m_sen, m_input_per_frame_buffer);
-    
-    RealTimeSpectrogram(Pressure_buff);
+    pthread_t thread_gui;   
+//    pthread_create(&thread_gui,NULL,RealTimeSpectrogram,void_pnt);
+    pthread_create(&thread_gui,NULL,(void*(*)(void*))RealTimeSpectrogram,&Pressure_buff);
+    cout<<"Real-time_end"<<endl;
+    pthread_join(thread_gui,NULL);
     m_get_data = false;
   }
 
   AppCastingMOOSApp::PostReport();
   return(true);
 }
-
-//---------------------------------------------------------
-// Procedure: OnStartUp()
-//            happens before connection is open
-
+// String message to voltage
 deque<double> SpectrogramMonitor::GetPressure(int bits, double sen, deque<string> Input){
 
    deque<double> pressure;
@@ -119,6 +122,8 @@ deque<double> SpectrogramMonitor::GetPressure(int bits, double sen, deque<string
              }
              else{
               volt = num/32767;
+              cout<<"case16: num="<<num<<endl;
+              cout<<"case16: volt="<<volt<<endl;
              }
               break;
             case 24:
@@ -138,8 +143,9 @@ deque<double> SpectrogramMonitor::GetPressure(int bits, double sen, deque<string
             }
             break;
         }
-         volt = volt/(pow(10,(sen/20)));
+   //      volt = volt/(pow(10,(sen/20)));
         
+              cout<<"voltage"<<volt<<endl;
         pressure.push_back(volt); 
    }
 }
@@ -147,6 +153,11 @@ deque<double> SpectrogramMonitor::GetPressure(int bits, double sen, deque<string
   return(pressure); 
 
 }
+
+//---------------------------------------------------------
+// Procedure: OnStartUp()
+//            happens before connection is open
+
 bool SpectrogramMonitor::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
@@ -170,16 +181,18 @@ bool SpectrogramMonitor::OnStartUp()
     else if(param == "bar") {
       handled = true;
     }
-    else if(param == "BITS"){
+    else if(param == "bits"){
         m_bits = atoi(value.c_str());
         handled = true;
     }
-    else if(param == "SAMPLE_RATE"){
+    else if(param == "sample_rate"){
         m_sample_rate = atoi(value.c_str());
         handled = true;
     }
-    else if(param == "SENSITIVITY")
+    else if(param == "sensitivity"){
         m_sen = atof(value.c_str());
+    }
+        handled = true;
     if(!handled)
       reportUnhandledConfigWarning(orig);
 

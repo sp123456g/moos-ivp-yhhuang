@@ -32,7 +32,6 @@
 
 #include <GL/glut.h>
 #include <GL/gl.h>
-#include <alsa/asoundlib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -44,10 +43,10 @@
 #include <deque>
 //#define PI              3.14159265358979323846
 
+
 class audioInput;      // declarations (things needed before defined)
 void computespecslice(audioInput *ai);
 int chooseTics(float lo, float range, float fac, float *tics);
-
 static int verb;         // global verbosity
 struct Param {           // parameters object
   int windowtype;        // DFT windowing function type
@@ -88,7 +87,7 @@ void smallText(float x, float y, char *string) {
 ///////////// AUDIOINPUT class (no references to scn) ////////////////////
 class audioInput {
   public:
-  char *chunk;
+//  char *chunk;
   float *b, *specslice, *bwin, *winf, *sg;
   char *sgb;
   int b_ind, b_size, n_f, n_tw, sg_size, win_size;
@@ -102,20 +101,19 @@ class audioInput {
   int bytes_per_frame, frames_per_period, nperiods, channels;
   int req_rate, rate;   /* Requested and actual sample rate */
   int dir;          /* rate == req_rate --> dir = 0 */
-                    /* rate < req_rate  --> dir = -1 */
                     /* rate > req_rate  --> dir = 1 */
-  snd_pcm_uframes_t period_size;     // Period size (bytes)
-  snd_pcm_uframes_t req_size, size;  // requested and actual ALSA buffer size
-  snd_pcm_t *pcm_handle;        /* Handle for the PCM device */ 
-  snd_pcm_stream_t stream;     /* Playback stream */
+//  snd_pcm_uframes_t period_size;     // Period size (bytes)
+//  snd_pcm_uframes_t req_size, size;  // requested and actual ALSA buffer size
+//  snd_pcm_t *pcm_handle;        /* Handle for the PCM device */ 
+//  snd_pcm_stream_t stream;     /* Playback stream */
   /* This structure contains information about    */
   /* the hardware and can be used to specify the  */      
   /* configuration to be used for the PCM stream. */ 
-  snd_pcm_hw_params_t *hwparams;
+//  snd_pcm_hw_params_t *hwparams;
   /* Name of the PCM device, like plughw:0,0          */
   /* The first number is the number of the soundcard, */
   /* the second number is the number of the device.   */
-  char *pcm_name;
+ // char *pcm_name;
 
 // w is window function array
 // N is the length of the window 
@@ -152,13 +150,12 @@ class audioInput {
     frames_per_period = (int)(req_rate/60.0);   // 735 = 44100Hz/60fps assumed
     nperiods = 2;             // >=2, see ALSA manual
     t_memory = 20.0;            // memory of our circular buffer in secs
-
-    period_size = frames_per_period * bytes_per_frame;
-    chunk = new char[period_size];   // raw data buffer for PCM read: 1 period
-    req_size = frames_per_period * nperiods; // ALSA device buffer size (frames)
-    b_ind = 0;                // integer index where to write to in buffer    
-    if( initDevice() < 0 ) // set up sound card for recording (sets rate, size)
-      exit(1);
+    
+    int period_size = frames_per_period * bytes_per_frame;
+    int req_size = frames_per_period * nperiods; // ALSA device buffer size (frames)
+    int b_ind = 0;                // integer index where to write to in buffer    
+ //   if( initDevice() < 0 ) // set up sound card for recording (sets rate, size)
+ //     exit(1);
     dt = 1.0 / (float)rate;   // sampling period
     b_size = (int)(t_memory * rate);   // buffer size
     if (verb) printf("memory buffer size %d samples\n", b_size);
@@ -177,12 +174,13 @@ class audioInput {
     sg_size = n_f * n_tw;
     sg = new float[sg_size];  // spectrogram array float
     sgb = new char[sg_size];  // spectrogram array 8-bit
-    //for( int i=0; i<sg_size; ++i )  // fill with random for now
-    //sg[i] = (float)(random()/(float)RAND_MAX);
-    //for( int i=0; i<sg_size; ++i )  // fill with random for now
-    //sgb[i] = (int)(256.0*random()/(float)RAND_MAX);
-//    Hz_per_pixel = 1.0F / (win_size*dt);
+    
+//    for( int i=0; i<sg_size; ++i )  // fill with random for now
+//    sg[i] = (float)(random()/(float)RAND_MAX);
+//    for( int i=0; i<sg_size; ++i )  // fill with random for now
+//    sgb[i] = (int)(256.0*random()/(float)RAND_MAX);
     Hz_per_pixel = 1.0F / (win_size*dt);
+    
     if (verb) printf("Hz per pixel = %.3f\n", Hz_per_pixel);
  
     // Start recording thread... runs independently, writing data into ai->b
@@ -192,101 +190,101 @@ class audioInput {
     // second parameter is the attribute of the thread, here set to NULL
     // third  parameter is the start address of the function operate by thread
     // parameter of operating function
-    pthread_create(&capture_thread, NULL, audioCapture, (void*)this); // this?
+//    pthread_create(&capture_thread, NULL, audioCapture, (void*)this); // this?
   }
   ~audioInput() {             // destructor
-    snd_pcm_close (pcm_handle);
+//    snd_pcm_close (variable_handle);
     fftwf_destroy_plan(fftw_p);
   }
   
-  int initDevice() {  // ........ set up sound card for recording ........
-    // ALSA tutorial, taken from http://www.suse.de/~mana/alsa090_howto.html
-    
-    stream = SND_PCM_STREAM_CAPTURE;
-    /* Init pcm_name. Of course, later you */
-    /* will make this configurable ;-)     */
-    pcm_name = strdup("plughw:0,0");
-    /* Allocate the snd_pcm_hw_params_t structure on the stack. */
-    snd_pcm_hw_params_alloca(&hwparams);
-    /* Open PCM. The last parameter of this function is the mode. */
-    /* If this is set to 0, the standard mode is used. Possible   */
-    /* other values are SND_PCM_NONBLOCK and SND_PCM_ASYNC.       */ 
-    /* If SND_PCM_NONBLOCK is used, read / write access to the    */
-    /* PCM device will return immediately. If SND_PCM_ASYNC is    */
-    /* specified, SIGIO will be emitted whenever a period has     */
-    /* been completely processed by the soundcard.                */
-    if (snd_pcm_open(&pcm_handle, pcm_name, stream, 0) < 0) {
-      fprintf(stderr, "Error opening PCM device %s\n", pcm_name);
-      return(-1);
-    }
-    /* Init hwparams with full configuration space */
-    if (snd_pcm_hw_params_any(pcm_handle, hwparams) < 0) {
-      fprintf(stderr, "Can not configure this PCM device.\n");
-      return(-1);
-    }
-    /* Set access type. This can be either    */
-    /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
-    /* SND_PCM_ACCESS_RW_NONINTERLEAVED.      */
-    /* There are also access types for MMAPed */
-    /* access, but this is beyond the scope   */
-    /* of this introduction.                  */
-    if (snd_pcm_hw_params_set_access(pcm_handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
-      fprintf(stderr, "Error setting access.\n");
-      return(-1);
-    }
-    
-    /* Set sample format */
-    if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE) < 0) {
-      fprintf(stderr, "Error setting format.\n");
-      return(-1);
-    }
-    
-    /* Set sample rate. If the requested rate is not supported */
-    /* by the hardware, use nearest possible rate.         */ 
-    rate = req_rate;
-    if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, (uint*)&rate, 0) < 0) {
-      fprintf(stderr, "Error setting rate.\n");
-      return(-1);
-    }
-    if (rate != req_rate) {
-      fprintf(stderr, "The rate %d Hz is not supported by your hardware.\n \
-                        ==> Using %d Hz instead.\n", req_rate, rate);
-    }
-    
-    /* Set number of channels */
-    if (snd_pcm_hw_params_set_channels(pcm_handle, hwparams, channels) < 0) {
-      fprintf(stderr, "Error setting channels.\n");
-      return(-1);
-    }
-    
-    /* Set number of periods. Periods used to be called fragments. */ 
-    if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, nperiods, 0) < 0) {
-      fprintf(stderr, "Error setting number of periods.\n");
-      return(-1);
-    }
-    /* Set buffer size (in frames). The resulting latency is given by */
-    /* latency = period_size * nperiods / (rate * bytes_per_frame)     */
-    size = req_size;
-    if (snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hwparams, &size) < 0) {
-      fprintf(stderr, "Error setting buffersize.\n");
-      return(-1);
-    }
-    if( size != req_size ) {
-      fprintf(stderr, "Buffer size %d is not supported, using %d instead.\n", (int)req_size, (int)size);
-    }
-    
-    /* Apply HW parameter settings to PCM device and prepare device  */
-    if (snd_pcm_hw_params(pcm_handle, hwparams) < 0) {
-      fprintf(stderr, "Error setting HW params.\n");
-      return(-1);
-    }
-    return 1;
-  } // ........................................
+//  int initDevice() {  // ........ set up sound card for recording ........
+//    // ALSA tutorial, taken from http://www.suse.de/~mana/alsa090_howto.html
+//    
+// //   stream = SND_PCM_STREAM_CAPTURE;
+//    /* Init pcm_name. Of course, later you */
+//    /* will make this configurable ;-)     */
+//    pcm_name = strdup("plughw:0,0");
+//    /* Allocate the snd_pcm_hw_params_t structure on the stack. */
+//    snd_pcm_hw_params_alloca(&hwparams);
+//    /* Open PCM. The last parameter of this function is the mode. */
+//    /* If this is set to 0, the standard mode is used. Possible   */
+//    /* other values are SND_PCM_NONBLOCK and SND_PCM_ASYNC.       */ 
+//    /* If SND_PCM_NONBLOCK is used, read / write access to the    */
+//    /* PCM device will return immediately. If SND_PCM_ASYNC is    */
+//    /* specified, SIGIO will be emitted whenever a period has     */
+//    /* been completely processed by the soundcard.                */
+////    if (snd_pcm_open(&pcm_handle, pcm_name, stream, 0) < 0) {
+////      fprintf(stderr, "Error opening PCM device %s\n", pcm_name);
+////      return(-1);
+////    }
+//    /* Init hwparams with full configuration space */
+////    if (snd_pcm_hw_params_any(pcm_handle, hwparams) < 0) {
+////      fprintf(stderr, "Can not configure this PCM device.\n");
+////      return(-1);
+//    }
+//    /* Set access type. This can be either    */
+//    /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
+//    /* SND_PCM_ACCESS_RW_NONINTERLEAVED.      */
+//    /* There are also access types for MMAPed */
+//    /* access, but this is beyond the scope   */
+//    /* of this introduction.                  */
+//    if (snd_pcm_hw_params_set_access(pcm_handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
+//      fprintf(stderr, "Error setting access.\n");
+//      return(-1);
+//    }
+//    
+//    /* Set sample format */
+//    if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE) < 0) {
+//      fprintf(stderr, "Error setting format.\n");
+//      return(-1);
+//    }
+//    
+//    /* Set sample rate. If the requested rate is not supported */
+//    /* by the hardware, use nearest possible rate.         */ 
+//    rate = req_rate;
+//    if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, (uint*)&rate, 0) < 0) {
+//      fprintf(stderr, "Error setting rate.\n");
+//      return(-1);
+//    }
+//    if (rate != req_rate) {
+//      fprintf(stderr, "The rate %d Hz is not supported by your hardware.\n \
+//                        ==> Using %d Hz instead.\n", req_rate, rate);
+//    }
+//    
+//    /* Set number of channels */
+//    if (snd_pcm_hw_params_set_channels(pcm_handle, hwparams, channels) < 0) {
+//      fprintf(stderr, "Error setting channels.\n");
+//      return(-1);
+//    }
+//    
+//    /* Set number of periods. Periods used to be called fragments. */ 
+//    if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, nperiods, 0) < 0) {
+//      fprintf(stderr, "Error setting number of periods.\n");
+//      return(-1);
+//    }
+//    /* Set buffer size (in frames). The resulting latency is given by */
+//    /* latency = period_size * nperiods / (rate * bytes_per_frame)     */
+//    size = req_size;
+//    if (snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hwparams, &size) < 0) {
+//      fprintf(stderr, "Error setting buffersize.\n");
+//      return(-1);
+//    }
+//    if( size != req_size ) {
+//      fprintf(stderr, "Buffer size %d is not supported, using %d instead.\n", (int)req_size, (int)size);
+//    }
+//    
+//    /* Apply HW parameter settings to PCM device and prepare device  */
+//    if (snd_pcm_hw_params(pcm_handle, hwparams) < 0) {
+//      fprintf(stderr, "Error setting HW params.\n");
+//      return(-1);
+//    }
+//    return 1;
+//  } // ........................................
   
   void quitNow() {
     quit = true;
     //      pthread_kill_other_threads_np();
-    snd_pcm_close (pcm_handle);
+  //  snd_pcm_close (pcm_handle);
   }
   
   union byte {                    // used to convert from signed to unsigned
@@ -302,54 +300,57 @@ class audioInput {
     return r;
   }
   
-  static void* audioCapture(void* a) { //-------- capture: thread runs indep --
-    // still mostly Luke's code, some names changed. Aims to read 1 "period"
-    // (ALSA device setting) into the current write index of our ai->b buffer.
-    fprintf(stderr, "audioCapture thread started...\n");
-    audioInput* ai = (audioInput*) a;  // shares data with main thread = cool!
-    
-    float inv256 = 1.0 / 256.0;
-    float inv256_2 = inv256*inv256;
-    
-    while( ! ai->quit ) {  // loops around until state of ai kills it
-      int n;
-      if( ! ai->pause ) {
-	// keep trying to get exactly 1 "period" of raw data from sound card...
-    // snd_pcm_readi(handle,buffer,frames)
-	while((n = snd_pcm_readi(ai->pcm_handle, ai->chunk, ai->frames_per_period)) < 0 ) {
-	  //	  if (n == -EPIPE) fprintf(stderr, "Overrun occurred: %d\n", n); // broken pipe
-	  fprintf(stderr, "Error occured while recording: %s\n", snd_strerror(n));
-
-	  //n = snd_pcm_recover(ai->pcm_handle, n, 0); // ahb
-
-	  //fprintf(stderr, "Error occured while recording: %s\n", snd_strerror(n));
-	  snd_pcm_prepare(ai->pcm_handle);
-	  //fprintf(stderr, "Dropped audio data (frames read n=%d)\n", n);
-	}  // n samples were got
-	if (verb>1) printf("snd_pcm_readi got n=%d frames\n", n);
-
-	byte by;
-	int write_ptr, read_ptr;
-	for( int i = 0; i < n; i++ ) { // read chunk into our buffer ai->b ...
-	  read_ptr = i * ai->bytes_per_frame;
-	  write_ptr = ai->mod(ai->b_ind + i); // wraps around
-	  by.char_val = ai->chunk[read_ptr];
-	  // compute float in [-1/2,1/2) from 16-bit raw... (LSB unsigned char)
-	  // two bytes represent one data
-      ai->b[write_ptr] = (float)ai->chunk[read_ptr+1]*inv256 + (float)by.uchar_val*inv256_2;
-//	    std::cout<<"chunk["<<read_ptr<<"]="<<ai->b[write_ptr]<<std::endl;
-//      b is the main voltage buffer
-    }
-	ai->b_ind = ai->mod(ai->b_ind+n);  // update index (in one go)
-    // n is samples in one frame, go to next frame 
-	computespecslice(ai); // compute spectral slice of recent buffer history
-      }
-      else {
-	usleep(10000);  // wait 0.01 sec if paused (keeps thread CPU usage low)
-      }
-    }
-    fprintf(stderr, "audioCapture thread exiting.\n");
-  }                          // ----------------------- end capture thread ----
+//  static void* audioCapture(void* a) { //-------- capture: thread runs indep --
+//    // still mostly Luke's code, some names changed. Aims to read 1 "period"
+//    // (ALSA device setting) into the current write index of our ai->b buffer.
+//    fprintf(stderr, "audioCapture thread started...\n");
+//    audioInput* ai = (audioInput*) a;  // shares data with main thread = cool!
+//    
+//    float inv256 = 1.0 / 256.0;
+//    float inv256_2 = inv256*inv256;
+//    
+//    while( ! ai->quit ) {  // loops around until state of ai kills it
+//      int n;
+//      if( ! ai->pause ) {
+//     //     std::cout<<"pthread loop going"<<std::endl;
+//	// keep trying to get exactly 1 "period" of raw data from sound card...
+//    // snd_pcm_readi(handle,buffer,frames)
+////	while((n = snd_pcm_readi(ai->pcm_handle, ai->chunk, ai->frames_per_period)) < 0 ) {
+////	  //	  if (n == -EPIPE) fprintf(stderr, "Overrun occurred: %d\n", n); // broken pipe
+////	  fprintf(stderr, "Error occured while recording: %s\n", snd_strerror(n));
+////
+////	  //n = snd_pcm_recover(ai->pcm_handle, n, 0); // ahb
+////
+////	  //fprintf(stderr, "Error occured while recording: %s\n", snd_strerror(n));
+////	  snd_pcm_prepare(ai->pcm_handle);
+////	  //fprintf(stderr, "Dropped audio data (frames read n=%d)\n", n);
+////	}  // n samples were got
+////	if (verb>1) printf("snd_pcm_readi got n=%d frames\n", n);
+////
+////	byte by;
+////	int write_ptr, read_ptr;
+////	for( int i = 0; i < n; i++ ) { // read chunk into our buffer ai->b ...
+////	  read_ptr = i * ai->bytes_per_frame;
+////	  write_ptr = ai->mod(ai->b_ind + i); // wraps around
+////	  by.char_val = ai->chunk[read_ptr];
+////	  // compute float in [-1/2,1/2) from 16-bit raw... (LSB unsigned char)
+////	  // two bytes represent one data
+//////      ai->b[write_ptr] = (float)ai->chunk[read_ptr+1]*inv256 + (float)by.uchar_val*inv256_2;
+////        ai->b[write_ptr] = (float)ai->chunk[read_ptr+1]*inv256 + (float)by.uchar_val*inv256_2;
+//    
+////	    std::cout<<"chunk["<<read_ptr<<"]="<<ai->b[write_ptr]<<std::endl;
+////      b is the main voltage buffer
+////    }
+////	ai->b_ind = ai->mod(ai->b_ind+n);  // update index (in one go)
+//    // n is samples in one frame, go to next frame 
+//	computespecslice(ai); // compute spectral slice of recent buffer history
+//      }
+//      else {
+////	usleep(10000);  // wait 0.01 sec if paused (keeps thread CPU usage low)
+//      }
+//    }
+//    fprintf(stderr, "audioCapture thread exiting.\n");
+//  }                          // ----------------------- end capture thread ----
 };
 
 
@@ -374,8 +375,7 @@ class scene
   scene() { }        // trivial constructor, to prevent global init fiasco
   ~scene() { }      // destructor
   
-  void init() {       // meaningful constructor - could move some to main to
-                      // parse cmd line
+  void init() {   // meaningful constructor - could move some to main to
     pause = false;
     color_scale[0] = 100.0;     // 8-bit intensity offset (gain offset)
     color_scale[1] = 255/120.0;     // 8-bit intensity slope (per dB units) (dynamic range)
@@ -389,7 +389,29 @@ class scene
     diagnose = 0;                         // initialize Medical stuff
     strcpy(diagnosis, "no diagnosis ..."); 
   }
-  
+
+  void get_voltage(std::deque<double> In){
+	
+    int n=In.size();
+    std::cout<<"n="<<n<<std::endl;
+    int write_ptr, read_ptr;
+	for( int i = 0; i < n; i++ ) { // read chunk into our buffer ai->b ...
+	
+//        write_ptr = ai->mod(ai->b_ind + i); // wraps around
+  std::cout<<"probe_after_write"<<std::endl;
+//        ai->b[write_ptr] = (float)ai->chunk[read_ptr+1]*inv256 + (float)by.uchar_val*inv256_2;
+ 
+  std::cout<<"probe_loop_"<<i<<std::endl;
+      ai->b[i] = In[i];
+  std::cout<<"probe_loop_after_"<<i<<std::endl;
+    }
+    std::cout<<"Gotcha!"<<std::endl;
+//	ai->b_ind = ai->mod(ai->b_ind+n);  // update index (in one go)
+    // n is samples in one frame, go to next frame 
+	computespecslice(ai); // compute spectral slice of recent buffer history
+    std::cout<<"Compute_done!"<<std::endl;
+  } 
+
   void graph() // simple graph of ai->float_data ............................
   {
     float tshow = 0.1;    // only show the most recent tshow secs of samples
@@ -672,6 +694,7 @@ void display()  //  GLUT's display routine: 2D layering by write order
 void computespecslice(audioInput *ai)   // windowed spectral slice!
   {
     int N = ai->win_size;             // transform length
+    std::cout<<"N="<<N<<std::endl;
     int nf = ai->n_f;              // # freqs to fill in powerspec
    
     if (0)
@@ -679,11 +702,12 @@ void computespecslice(audioInput *ai)   // windowed spectral slice!
 	ai->specslice[i] = 100.0 * ai->b[ai->mod(ai->b_ind - nf + i)];
 
     else {                      // actual windowed power spectrum
-      for ( int i=0; i<N; ++i )     // copy last N samples & mult by window func
-	ai->bwin[i] = ai->winf[i] * ai->b[ai->mod(ai->b_ind - N + i)];
-
+        for ( int i=0; i<N; ++i ){     // copy last N samples & mult by window func
+        ai->bwin[i] = ai->winf[i] * ai->b[ai->mod(ai->b_ind - N + i)];
+        std::cout<<"In compute loop_"<<i<<std::endl;
+        }
       fftwf_execute(ai->fftw_p); // do the already-planned fft
-
+        std::cout<<"after_fft"<<std::endl;
       if (nf>N/2) {fprintf(stderr,"window too short cf n_f!\n"); return;}
       ai->specslice[0] = ai->bwin[0]*ai->bwin[0];  // zero-freq has no imag
       for ( int i=1; i<nf; ++i )     // compute power spectrum from hc dft
@@ -827,34 +851,39 @@ const char *helptext[] = {
   NULL };
 
 // ===========================================================================
-void RealTimeSpectrogram(std::deque<double>)
+void RealTimeSpectrogram(std::deque<double> In)
 {
-  int scrnmode = 0;  // 0 for window, 1 fullscreen       **Defaults go here**
-  verb = 0;          // 0 silent, 1 debug, etc
-  scn.scroll_fac = 2;    // how many vSyncs to wait before scrolling sg
-  param.windowtype = 2;  // Gaussian
-  param.twowinsize = 11; // 2048 samples (around 0.04 sec). Remains fixed
+ int scrnmode = 0;  // 0 for window, 1 fullscreen       **Defaults go here**
+ verb = 0;          // 0 silent, 1 debug, etc
+ scn.scroll_fac = 2;    // how many vSyncs to wait before scrolling sg
+ param.windowtype = 2;  // Gaussian
+ param.twowinsize = 11; // 2048 samples (around 0.04 sec). Remains fixed
 
-  scn.init();       // true constructor for global scn object
 
-  //glutInit(&argc, argv);
+//  scn.initial(In);       // true constructor for global scn object
+  std::cout<<"probe1"<<std::endl;
+  std::cout<<"probe2"<<std::endl;
+  scn.init();
+  std::cout<<"probe3"<<std::endl;
+  scn.get_voltage(In);
+//glutInit(&argc, argv);
     char *myargv [1];
     int myargc=1;
     myargv [0]=strdup ("pSpectrogramMonitor");
     glutInit(&myargc, myargv);
 
 
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-  if (scrnmode==1) {  // implement desired screen mode
-    //glutGameModeString( "1680x1050:24@60" ); // res, pixel depth, refresh
-    glutGameModeString( "1024x768:24@60" ); // for XGA projector
-    glutEnterGameMode();                     // start fullscreen game mode
-  } else {
-    glutInitWindowSize(1024, 768);  // window same size as XGA
-    int mainWindow = glutCreateWindow("glSpect by Alex Barnett, modified by yhh, July 2018");
-    //  glutFullScreen();    // maximizes window, but is not game mode
-  }
-
+ glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+ if (scrnmode==1) {  // implement desired screen mode
+   //glutGameModeString( "1680x1050:24@60" ); // res, pixel depth, refresh
+   glutGameModeString( "1024x768:24@60" ); // for XGA projector
+   glutEnterGameMode();                     // start fullscreen game mode
+ } else {
+   glutInitWindowSize(1024, 768);  // window same size as XGA
+   int mainWindow = glutCreateWindow("glSpect by Alex Barnett, modified by yhh, July 2018");
+   //  glutFullScreen();    // maximizes window, but is not game mode
+ }
+//
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
@@ -864,4 +893,10 @@ void RealTimeSpectrogram(std::deque<double>)
   glutIdleFunc(idle);
 
   glutMainLoop();        // pass control to GLUT
+}
+
+void* Say_Hi(std::string hi_str){
+    
+    std::cout<<hi_str<<std::endl;
+
 }
