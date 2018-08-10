@@ -1,28 +1,17 @@
-#ifndef  STFT_H 
-#define  STFT_H
 //***********************************************************************
 //Author: Yen-Hsiang Huang(yhhuang)
 //Origin: National Taiwan University
 //Date:   Apr.20.2018
 //***********************************************************************
-#include <iostream>
-#include <armadillo>
-#include <cmath>
-#include <math.h>
-#include <stdio.h>
-#include <vector>
-#include <iomanip>
 #include "STFT.h"
 #include <fftw3.h>
 using namespace arma;
 using namespace std;
 
-const float pi = 3.1415926;
-const complex<float> i(0,1);
 
 //-------------------------------------------------------------------------
 
-mat STFT_with_FFTW3f(std::vector<float> x,int fs=44100,unsigned int N=2048,float overlap_percent=0.9,int win=1)
+mat STFT_with_FFTW3f(std::vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
 {
 //STEP_1 set up window function 
     float   W;
@@ -142,6 +131,7 @@ unsigned int inv_time_map(float input_time,int fs, int N,float overlap_percent){
 //4. moving_square  
 //--------------------------------------------------------------------------------------
 
+
 void simple_mov_avg(arma::mat &P, int n_avg=10){
 
     
@@ -161,27 +151,26 @@ void simple_mov_avg(arma::mat &P, int n_avg=10){
             start_index++;
         }
     }
-  //  P = P - avg_P;
     P = avg_P;
 }
 
 void median_filter(arma::mat &P){
 // 3*3 median filter
 
-    for(int x = 1 ; x < P.n_rows-1 ; x++) {
-        for(int y = 1; y < P.n_cols-1 ; y++) {
+    for(unsigned int x = 1 ; x < P.n_rows-1 ; x++) {
+        for(unsigned int y = 1; y < P.n_cols-1 ; y++) {
 
-            int k = 0;  
+            unsigned int k = 0;  
             float window[9];  
-            for(int xx = x - 1; xx < x + 2; ++xx){  
-                for(int yy = y - 1; yy < y + 2; ++yy)  
+            for(unsigned int xx = x - 1; xx < x + 2; ++xx){  
+                for(unsigned int yy = y - 1; yy < y + 2; ++yy)  
                     window[k++] = P(xx,yy);  
             }
             //   Order elements (only half of them)  
-            for (int m = 0; m < 5; ++m)  
+            for (unsigned int m = 0; m < 5; ++m)  
             {  
-                int min = m;  
-                for (int n = m + 1; n < 9; ++n)  
+                unsigned int min = m;  
+                for (unsigned int n = m + 1; n < 9; ++n)  
                     if (window[n] < window[min])  
                         min = n;  
                 //   Put found minimum element in its place  
@@ -194,6 +183,8 @@ void median_filter(arma::mat &P){
     }
 }
 
+
+
 void edge_detector(arma::mat &P,float SNR_threshold,unsigned int jump_num){
 
     float SNR=0;
@@ -204,10 +195,8 @@ void edge_detector(arma::mat &P,float SNR_threshold,unsigned int jump_num){
 
         vec time_column = P.col(i);
         for(int j=jump_num;j<time_column.n_elem;j++){
-            
             if(j>=time_column.n_elem-jump_num)
-            P(j,i) = 0;
-            
+                P(j,i) = 0;
             else{
                 if(time_column(j-jump_num)!=0 || time_column(j+jump_num)!=0)    
                     SNR= 10*log(time_column(j)/(time_column(j-jump_num)*0.5+time_column(j+jump_num)*0.5));
@@ -217,10 +206,8 @@ void edge_detector(arma::mat &P,float SNR_threshold,unsigned int jump_num){
             }
         }
     }
-    
     P = P_new;
 }
-
 
 //narrow band checking 
 void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,float frq){
@@ -276,13 +263,7 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
 
             }
             percent =float(k)/float(bandwidth_sample*time_width_sample);
-//            if(percent<percent_threshold){
-//            
-//                for(int xx = x-(bandwidth_sample-1)/2; xx < x + 2; ++xx){  
-//                    for(int yy = y-(time_width_sample-1)/2; yy < y + 2; ++yy)
-//                        P(xx,yy)=0; 
-//                }
-//            }
+
             if(percent >= percent_threshold){ 
                 if(x>N*frq/fs){     //high pass filter (frq Hz)
                     for(int i=0;i<x_buf.size();i++){
@@ -295,8 +276,42 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
   
     P = P_new;
 }
+
+
+void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,float frq){
+//moving square and high pass filter with frq Hz
+    mat     P_new(P.n_rows,P.n_cols);
+    P_new.zeros();
+
+    unsigned int    last_time_index;
+    unsigned int    last_frq_index;
+
+    float  time_width = 0.01;
+    float  percent_threshold=0.5;
+
+    unsigned int bandwidth_sample = 5;
+    unsigned int time_width_sample = 11;
+
+    unsigned int threshold_num = round(percent_threshold*bandwidth_sample*time_width_sample);
+    unsigned int sum=0;    
+
+    mat P_sub(bandwidth_sample,time_width_sample);
+
+    for(int x=0;x<P.n_cols-time_width_sample;x++){
+        for(int y=inv_freq_map(frq,fs,N);y<P.n_rows-bandwidth_sample;y+=bandwidth_sample){
+            P_sub = P.submat(y,x,y+bandwidth_sample,x+time_width_sample);
+            sum=accu(P_sub);             
+
+            if(sum>=threshold_num){
+                P_new.submat(y,x,y+bandwidth_sample,x+time_width_sample) = P_sub;
+            }
+        }
+    }
+    
+    P = P_new;
+}
 // detect_whistle algorithm
-void detect_whistle(arma::mat &P,int fs=96000,unsigned int N=2048,float overlap=0.9){
+void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap){
         
 //step1: simple moving average for each frequency(not good, take it off)
 //    simple_mov_avg(P,10);
@@ -305,7 +320,65 @@ void detect_whistle(arma::mat &P,int fs=96000,unsigned int N=2048,float overlap=
 //step3: edge_detector
     edge_detector(P,10,5);
 //step4: using moving square for narrow band checking 
-    moving_square(P,fs,N,overlap,3000);
-//step5: dolphin whistle check    
+//slower edition
+//    moving_square(P,fs,N,overlap,3000);
+//faster edition
+    moving_square_use_sub_mat(P,fs,N,3000);
 }
-#endif
+
+std::vector<whistle> check_result(mat P, int fs,unsigned int N,float overlap){
+   
+    
+    vector<whistle> output;
+    output.clear();
+    
+    xy_index        last_node;
+    xy_index        current_node;
+    whistle         wh;
+    
+    wh.fs = fs;
+    wh.N  = N;
+    wh.overlap = overlap;
+
+    int     x_ind_tor=7;  //x index tolerance
+    int     y_ind_tor=10;  //y index tolerance
+    bool    first_node = true;
+    int     checking_bandwidth = 300;  //Hz
+    int     checking_bandwidth_sample = inv_freq_map(checking_bandwidth,fs,N);
+    
+    for(int i=0;i<P.n_cols;i++){
+        for(int j=0;j<P.n_rows;j++){
+            if(P(j,i)==1){
+                if(first_node){
+                    last_node.x = i;
+                    last_node.y = j;
+                    wh.start_node = last_node;
+                    first_node = false;
+                }
+                else{
+                    if(fabs(i-last_node.x)<x_ind_tor && fabs(j-last_node.y)<y_ind_tor){
+                        last_node.x = i;
+                        last_node.y = j;
+                    }
+                    else{
+                        wh.end_node = last_node;
+                        wh.calculate();
+                        output.push_back(wh);
+                        
+                        last_node.x = i;
+                        last_node.y = j;
+                        wh.start_node = last_node;
+                    }
+                }
+            }    
+        }
+    }
+    
+    if(!first_node){
+        wh.end_node = last_node;
+        wh.calculate();
+        output.push_back(wh);
+    }
+
+    return(output);
+}

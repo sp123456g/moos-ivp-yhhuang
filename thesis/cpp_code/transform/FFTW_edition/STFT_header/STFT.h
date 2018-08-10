@@ -13,12 +13,9 @@
 #include <vector>
 #include <iomanip>
 
-using namespace arma;
-using namespace std;
-//using namespace sp;
 
 const float pi = 3.1415926;
-const complex<float> i(0,1);
+const std::complex<float> i(0,1);
 
 
 //Function list:
@@ -29,7 +26,7 @@ const complex<float> i(0,1);
 //5. void detect_click();
 //-------------------------------------------------------------------------
 
-mat STFT_with_FFTW3f(std::vector<float> x, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1);
+arma::mat STFT_with_FFTW3f(std::vector<float> x, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1);
 //Use fft in FFTW package, is faster than arma package
 //------------------------------------------------------------------------
 // output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)
@@ -38,16 +35,46 @@ mat STFT_with_FFTW3f(std::vector<float> x, int fs=96000,unsigned int N=2048,floa
 //              fs: sample rate
 //               N: window length 
 // overlap_percent: overlap_percentage of overlap    
-//             win: window type
+//             win: window type, 0 is rectangular 1 is hanning
 //-------------------------------------------------------------------------
 
 unsigned int frequency_mapping(unsigned int input_index,int fs,int N);
 // input_index is the frequency index in spectrogram_mat which was output by STFT_with_FFTW3f()
 
-float time_mapping(unsigned int input_index,int fs,int N,double overlap_percent);
+float time_mapping(unsigned int input_index,int fs,int N,float overlap_percent);
 // input_index is the time index in spectrogram_mat which was output by STFT_with_FFTW3f()
 
+struct xy_index{
+    
+    int x;
+    int y;
+};
+
+class whistle{
+    public:
+        xy_index start_node;
+        xy_index end_node;
+    
+        int     fs;
+        int     N;
+        float   overlap;
+
+        float duration;
+        unsigned int start_frq;
+        unsigned int end_frq;
+
+        void calculate(){
+            duration = time_mapping(end_node.x,fs,N,overlap)-time_mapping(start_node.x,fs,N,overlap);
+            start_frq = frequency_mapping(start_node.y,fs,N);
+            end_frq   = frequency_mapping(end_node.y,fs,N);
+
+        }
+};
+
+
 void detect_whistle(arma::mat &P,int fs=96000,unsigned int N=2048,float overlap=0.9);
+
+std::vector<whistle> check_result(arma::mat P,int fs, unsigned int N,float overlap);
 
 void detect_click();
 #endif

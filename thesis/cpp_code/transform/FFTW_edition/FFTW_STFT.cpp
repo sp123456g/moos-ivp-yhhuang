@@ -82,27 +82,39 @@ int main(int argc, char* argv[]){
 clock_t t_one;
 t_one =clock();
 
+        vector<whistle> whistle_list;
         mat P   = STFT_with_FFTW3f(input_x,fs,N,overlap,window_type);   
 // P: row is time and column is frequency
 
 //put detection algorithm in
       if(do_detect){
         detect_whistle(P); 
+        whistle_list = check_result(P,fs,N,overlap);        
       }
 //time end
 t_one = (clock()-t_one);
 float total_time = (float)t_one/CLOCKS_PER_SEC;
 cout<<"\nTotal time:"<<total_time<<" seconds"<<endl;
 
-//using gp class to do the plotting
-//------------------------------------------------------------
+        if(!whistle_list.empty()){
+            for(int i=0;i<whistle_list.size();i++){
+//                cout<<"whistle_"<<i<<" duration="<<whistle_list[i].duration<<endl;        
+//                cout<<"whistle_"<<i<<" start frequency="<<whistle_list[i].start_frq<<endl;        
+//                cout<<"whistle_"<<i<<" end frequency="<<whistle_list[i].end_frq<<endl;        
+                cout<<"whistle_"<<i<<" start node x="<<whistle_list[i].start_node.x<<endl;        
+                cout<<"whistle_"<<i<<" start node y="<<whistle_list[i].start_node.y<<endl;        
+                cout<<"whistle_"<<i<<" end node x="<<whistle_list[i].end_node.x<<endl;        
+                cout<<"whistle_"<<i<<" end node y="<<whistle_list[i].end_node.y<<endl;        
+            }
+        }
+        else 
+            cout<<"whistle_list.empty()="<<whistle_list.empty()<<endl;
 
-float x_data;
-float y_data;
-float power_value;
 
 //Save data in matrix format
     FILE *fp;    
+    float power_value;
+
             fp = fopen("/home/yhhuang/thesis/Matlab/data_for_plot.dat","w");
 
             for(unsigned int i=0;i<P.n_rows;i++){
@@ -116,4 +128,8 @@ float power_value;
                 fprintf(fp,"%s","\n");
             }
     fclose(fp);
+
+    float dt = time_mapping(1,fs,N,overlap)-time_mapping(0,fs,N,overlap);
+    cout<<"df="<<fs/N<<endl;
+    cout<<"dt="<<dt<<endl;
 }
