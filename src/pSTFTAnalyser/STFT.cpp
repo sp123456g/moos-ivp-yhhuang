@@ -1,228 +1,384 @@
-#ifndef  STFT_H 
-#define  STFT_H
 //***********************************************************************
 //Author: Yen-Hsiang Huang(yhhuang)
 //Origin: National Taiwan University
 //Date:   Apr.20.2018
 //***********************************************************************
-#include <iostream>
-#include <armadillo>
-#include <cmath>
-#include <math.h>
-#include <stdio.h>
-#include <vector>
-#include <iomanip>
 #include "STFT.h"
+#include <fftw3.h>
 using namespace arma;
 using namespace std;
 
-const double pi = 3.1415926;
-const complex<double> i(0,1);
 
-//Function list:
-//1. mat recSTFT(arma::vec x, arma::vec t, arma::vec f, int B)
-//2. mat Gabor(arma::vec x, int fs, int sigma, double dt, double df)
-//3. mat recSTFT_new(arma::vec x, int fs, int B, double dt, double df)
+//-------------------------------------------------------------------------
 
+mat STFT_with_FFTW3f(std::vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
+{
+//STEP_1 set up window function 
+    float   W;
+    int     overlap = round(overlap_percent*N);
+    int     no_overlap = N-overlap; 
+    float   *window_func;
 
-mat recSTFT(arma::vec x, arma::vec t, arma::vec f, int B){
-//-------------------------------------------------------
-// Short time fourier transform using retangular function
-// output: matrix with x:time and y:frequency
-//      x: input
-//      t: output time length
-//      f: output frequency length
-//      B: analog bandwidth
-//-------------------------------------------------------
+    if(no_overlap ==0)
+        no_overlap =1;
 
-//1.Calculate parameter
-//-------------------------------------------------------
-    double dt = t(1)-t(0); 
-    double df = f(1)-f(0); 
-    float n0 = t(0)/dt;
-    float m0 = f(0)/dt;
-    unsigned int T = t.n_elem;               // length of x
-    unsigned int F = f.n_elem;               // length of output frequency series
-    unsigned int N = round(1/(dt*df));       // constraint of FFT base implimentation
-//-------------------------------------------------------
+    window_func = new float[N];
+
+// 0 is Rectangular 
+// 1 is Hann 
+// 2 is Gassian
+
+    int i;
+    switch (win) {
     
-//2.window function decide
-//-------------------------------------------------------
-    unsigned int Q = B/dt;
-    vec window = ones<vec>(2*Q);    // rectangular window with length 1 sec
-    vec zero= zeros<vec>(Q);
-    vec addzerox = join_vert(zero,x);
-    addzerox = join_vert(addzerox,zero);    //add zero in front and behind
-//-------------------------------------------------------
-//3.FFT loop for calculating (4 steps)
-//-------------------------------------------------------
- cx_mat X_mod(T,N);
- cx_mat X(T,N);    // row is time, column is frequency now
- mat output(T,N);
-     for(int n=n0;n<n0+T;n++){
-//step1 using window function to access input
-     vec x1q = zeros<vec>(2*Q);
+    case 0:  // rectangular
+      for( i=0; i<N; ++i)
+	    window_func[i] = 1.0F;
+    break;
     
-      for(int q=0;q<2*Q;q++){
-        x1q(q) = window.at(q)*addzerox.at(n+q); 
-      }
-//step2 use x1q to do fft
-       X.row(n) = fft(x1q,N).t();   //after fft is column vector
+    case 1:  // Hann window (C^1 cont, so third-order tails)
+      W = N/2.0F;
+      for( i=0; i<N; ++i)
+	    window_func[i] = (1.0F + cos(pi*(i-W)/W))/2;
+    break;
     
-//step3 modified amplitude of output 
-      for(int m=m0;m<m0+F;m++){
-        X_mod(n,m) = abs(X(n,m))*dt*exp(i*2.0*pi*(double)((double)Q-n)*(double)m/(double)N);
-      }
+    default:
+      fprintf(stderr, "unknown windowtype!\n");
     }
-//step4 Let complex be scalar and transpose 
-//output: row is frequency and column is time, just means x is time and y is frequency
-    output = abs(X_mod).t();
-    return(output);
-}
-
-mat Gabor(arma::vec x, int fs, int sgm=200, double dt=0.01, double df=1){
-//------------------------------------------------------------------------
-// output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)
-// output: frequency element represent for the band, ex: index 10 is 90~100 for case dt=10)
-//      x: input, need to be single channel data in arma::vec form
-//     fs: sample rate
-//    sgm: sigma, for scale gabor transform
-//     dt: output time resolution
-//     df: output frequency resolution
-//-------------------------------------------------------------------------
-     double dtau = 1/(double)fs;  // input sampling interval
-     vec    tau  = regspace<vec>(0,1/(double)fs,x.n_elem/(double)fs); // digital input time 
-     double   B  = 1.9141/sqrt(sgm);  // gaussian window bandwidth
-     vec      t  = regspace<vec>(0,dt,max(tau));
-//     vec      f  = regspace<vec>(20,df,1000);
-//-------------------------------------------------------------------------       
-     float n0 = t(0)/dt;                      // first point of t vector 
-//     float m0 = f(0)/dt;                      // second point of f vector
-     unsigned int T = t.n_elem;               // length of x
-//     unsigned int F = f.n_elem;               // length of output frequency series
-     unsigned int N = round(1/(dtau*df));     // constraint of FFT base implimentation
-     unsigned int C = tau.n_elem;             // digital input length
-     unsigned int Q = round(B*fs);            // digital bandwidth
-     unsigned int S = dt/dtau;                // unbalance form factor
-//-------------------------------------------------------------------------
-//window function
-//-------------------------------------------------------------------------
-     vec window_time = regspace<vec>(dtau,dtau,Q*dtau);
-     vec right_half_gaussian = exp(-sgm*pi*square(window_time));
-     vec left_half_gaussian = flipud(right_half_gaussian);
-     vec window = join_vert(right_half_gaussian,left_half_gaussian);
-      
-     vec zero= zeros<vec>(Q);
-     vec addzerox = join_vert(zero,x);
-     addzerox = join_vert(addzerox,zero);    //add zero in front and behind
-//-------------------------------------------------------------------------
-//FFT loop for calculating using unbalance form
-//-------------------------------------------------------------------------
-  cx_mat X(T,N);    // row is time, column is frequency now
-  cout<<"2*Q="<<2*Q<<",N="<<N<<endl;
-
-  
-  if(2*Q>N)
-      cout<<"Warning: change sgm, df,dt to let window length 2*Q <= N"<<endl;
-
-     for(int n=n0;n<n0+C;n+=S){   
- //step1 using window function to access input
-      vec x1q = zeros<vec>(2*Q);
-       for(int q=0;q<2*Q;q++){
-        x1q(q) = window.at(q)*addzerox.at(n+q); 
-       }
- //step2 use x1q to do fft
-        X.row(n/S) = fft(x1q,N).t();
-     }
-
-//step3 Let complex be scalar and transpose
-//and mapping the frequency to let the output resolution be df=1    
-//ex: if df=10, the first frequency element is frequency 1~10 Hz, 4410 is 44090~44100
-    mat output(N*df,T);
-    mat absX = abs(X).t();
-    for(int k=0;k<absX.n_rows*df;k++){
-        output.row(k) = absX.row((int)(k/df)); 
-    }
-        output = output.submat(0,0,fs/2-1,T-1);
-//output: row is frequency and column is time, just means x is time and y is frequency
-    return(output);
-}
-//-------------------------------------------------------------------------
-
-mat recSTFT_new(arma::vec x, int fs, double B, double dt=0.01, double df=1){
-//------------------------------------------------------------------------
-// output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)
-// output: frequency element represent for the band, ex: index 10 is 90~100 for case dt=10)
-//      x: input, need to be single channel data in arma::vec form
-//     fs: sample rate
-//      B: window length (sec)
-//     dt: output time resolution
-//     df: output frequency resolution
-//-------------------------------------------------------------------------
-     double dtau = 1/(double)fs;  // input sampling interval
-     vec    tau  = regspace<vec>(0,1/(double)fs,x.n_elem/(double)fs); // digital input time 
-     vec      t  = regspace<vec>(0,dt,max(tau));
-//     vec      f  = regspace<vec>(20,df,1000);
-//-------------------------------------------------------------------------       
-     float n0 = t(0)/dt;                      // first point of t vector 
-//     float m0 = f(0)/dt;                      // second point of f vector
-     unsigned int T = t.n_elem;               // length of x
-//     unsigned int F = f.n_elem;               // length of output frequency series
-     unsigned int N = round(1/(dtau*df));     // constraint of FFT base implimentation
-     unsigned int C = tau.n_elem;             // digital input length
-     unsigned int S = dt/dtau;                // unbalance form factor
-     unsigned int Q = B*fs;
-//-------------------------------------------------------------------------
-//window function
-//-------------------------------------------------------------------------
+//STEP_2 set up fftw plan 
+    float*  in;
+    float*  after_fft;
+    float*  power;
+    unsigned int loop_num = 0;
+    int     time_index = 0;
  
+    in = new float[N];
+    after_fft = new float[N];
+    power = new float[N+1];
+    fftwf_plan plan;
+    plan = fftwf_plan_r2r_1d(N, in,after_fft,FFTW_R2HC,FFTW_MEASURE);
 
-    vec window = ones<vec>(2*Q);    // rectangular window with length 1 sec
-    vec zero= zeros<vec>(Q);
-    vec addzerox = join_vert(zero,x);
-    addzerox = join_vert(addzerox,zero);    //add zero in front and behind
-//-------------------------------------------------------------------------
-//FFT loop for calculating using unbalance form
-//-------------------------------------------------------------------------
-  cx_mat X(T,N);    // row is time, column is frequency now
-  cout<<"2*Q="<<2*Q<<",N="<<N<<endl;
+//Get the loop number to set up the size of the output matrice
+    for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap)
+        loop_num +=1;
 
-  
-  if(2*Q>N)
-      cout<<"Warning: change sgm, df,dt to let window length 2*Q <= N"<<endl;
-
-     for(int n=n0;n<n0+C;n+=S){   
- //step1 using window function to access input
-      vec x1q = zeros<vec>(2*Q);
-       for(int q=0;q<2*Q;q++){
-        x1q(q) = window.at(q)*addzerox.at(n+q); 
-       }
- //step2 use x1q to do fft
-        X.row(n/S) = fft(x1q,N).t();
-     }
-
-//step3 Let complex be scalar and transpose
-//and mapping the frequency to let the output resolution be df=1    
-//ex: if df=10, the first frequency element is frequency 1~10 Hz, 4410 is 44090~44100
-    mat output(N*df,T);
-    mat absX = abs(X).t();
-    for(int k=0;k<absX.n_rows*df;k++){
-        output.row(k) = absX.row((int)(k/df)); 
+    mat spectrogram_mat(N+1,loop_num);
+    mat output(fs/2,loop_num);
+//STEP_3 doing fftw loop
+    for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap){
+//get data by window function 
+        for(int i=start_index,j=0;i<start_index+N;i++,j++){
+            in[j] = x[i]*window_func[j];    
+        }
+//fft 
+        fftwf_execute(plan);
+// Calculate power and let index 0 = frequency = 1Hz
+        for(int k=0 ;k<=N;k++){
+            power[k+1] = sqrt(pow(after_fft[k],2)+pow(after_fft[N-k],2));
+//Save in the 2 dimensional array
+            spectrogram_mat(k,time_index) = power[k];
+        }
+        time_index++;
     }
-        output = output.submat(0,0,fs/2-1,T-1);
+// the spectrogram_mat variable is now x:time sample, y:frequency   
+//STEP_4 mapping frequency from N sample(spectrogram_mat) to fs sample (output)
+// but this step spend too many times
+//    for(int i=0;i<fs/2;i++){
+//       output.row(i) = spectrogram_mat.row(round(i*N/fs)); 
+//       cout<<"round(i*N/fs)="<<round(i*N/fs)<<endl;
+//    }
+        fftwf_destroy_plan(plan);
+        fftwf_cleanup();
 //output: row is frequency and column is time, just means x is time and y is frequency
-    return(output);
+//But remember to change the index to exact frequency and time 
+        spectrogram_mat = spectrogram_mat.submat(0,0,N/2,time_index-1);
+
+    return(spectrogram_mat);
 }
 
-void detect_whistle(arma::mat &P, double threshold){
+unsigned int frequency_mapping(unsigned int input_index, int fs,int N){
+// input_index is the frequency index in spectrogram_mat which was output by STFT_with_FFTW3f()
+    unsigned int exact_frequency = round((fs/N)*input_index);
+
+    return(exact_frequency);
+}
+
+unsigned int inv_freq_map(unsigned int input_frq, int fs, int N){
+
+    unsigned int frq_index = round(input_frq*N/fs);
+
+    return(frq_index);
+}
+
+float time_mapping(unsigned int input_index,int fs,int N, float overlap_percent){
+// input_index is the time index in spectrogram_mat which was output by STFT_with_FFTW3f()
+
+    int     start_index = (N-round(overlap_percent*N))*input_index;
+    float  exact_time  = float(start_index*2+N)/float(2*fs);
+    return(exact_time);
+}
+
+unsigned int inv_time_map(float input_time,int fs, int N,float overlap_percent){
+    
+    unsigned int time_index = round((input_time*2*fs*N)/(2*(N-round(overlap_percent*N))));
+    return(time_index);
+}
+//--------------------------------------------------------------------------------------
+//function for detect algorithm
+//1. simple moving average 
+//2. median filter
+//3. edge detector
+//4. moving_square  
+//--------------------------------------------------------------------------------------
+
+
+void simple_mov_avg(arma::mat &P, int n_avg=10){
+
+    
+    mat     avg_P(P.n_rows,P.n_cols); 
+
+    for(int m=0;m<P.n_rows;m++){
+        int start_index = 0;
         
-    for(int n=0;n<P.n_cols;n++){
-        for(int m=0;m<P.n_rows;m++){
-            if(P(m,n)>threshold)
-                P(m,n) = 1;
-            else
-                P(m,n) = 0;
+        while(start_index!=(P.n_cols-1)){
+            float  temp    = 0;   //temperary sum
+            for(int n=(start_index-n_avg/2);n<(start_index+n_avg/2);n++){
+                if(!(n<0 || n>=P.n_cols))
+                    temp += P(m,n); 
+                
+            }
+            avg_P(m,start_index) = temp/n_avg; 
+            start_index++;
+        }
+    }
+    P = avg_P;
+}
+
+void median_filter(arma::mat &P){
+// 3*3 median filter
+
+    for(unsigned int x = 1 ; x < P.n_rows-1 ; x++) {
+        for(unsigned int y = 1; y < P.n_cols-1 ; y++) {
+
+            unsigned int k = 0;  
+            float window[9];  
+            for(unsigned int xx = x - 1; xx < x + 2; ++xx){  
+                for(unsigned int yy = y - 1; yy < y + 2; ++yy)  
+                    window[k++] = P(xx,yy);  
+            }
+            //   Order elements (only half of them)  
+            for (unsigned int m = 0; m < 5; ++m)  
+            {  
+                unsigned int min = m;  
+                for (unsigned int n = m + 1; n < 9; ++n)  
+                    if (window[n] < window[min])  
+                        min = n;  
+                //   Put found minimum element in its place  
+               float temp = window[m];  
+                window[m] = window[min];  
+                window[min] = temp;  
+            }  
+            P(x,y)= window[4]; 
         }
     }
 }
-#endif
+
+
+
+void edge_detector(arma::mat &P,float SNR_threshold,unsigned int jump_num){
+
+    float SNR=0;
+    mat P_new(P.n_rows,P.n_cols); 
+    P_new.zeros();
+
+    for(int i=0;i<P.n_cols;i++){
+
+        vec time_column = P.col(i);
+        for(int j=jump_num;j<time_column.n_elem;j++){
+            if(j>=time_column.n_elem-jump_num)
+                P(j,i) = 0;
+            else{
+                if(time_column(j-jump_num)!=0 || time_column(j+jump_num)!=0)    
+                    SNR= 10*log(time_column(j)/(time_column(j-jump_num)*0.5+time_column(j+jump_num)*0.5));
+                if(SNR > SNR_threshold){
+                    P_new(j,i) = 1;
+                }
+            }
+        }
+    }
+    P = P_new;
+}
+
+//narrow band checking 
+void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,float frq){
+//moving square and high pass filter with frq Hz
+    mat     P_new(P.n_rows,P.n_cols);
+    P_new.zeros();
+    
+    vector<int> x_buf;
+    vector<int> y_buf;
+    int last_time_x;
+
+    float  time_width = 0.01;
+    float  percent_threshold=0.5;
+    unsigned int bandwidth_sample = 5;
+    unsigned int time_width_sample = 11;
+//    unsigned int bandwidth  = 200;
+//    float       dt = time_mapping(1,fs,N,overlap)-time_mapping(0,fs,N,overlap);
+//    unsigned int bandwidth_sample = inv_freq_map(bandwidth,fs,N);
+//    unsigned int time_width_sample= round(time_width/dt);
+//    cout<<"bandwidth_sample="<<bandwidth_sample<<endl;
+//    cout<<"time_width_sample="<<time_width_sample<<endl;
+
+    if(bandwidth_sample%2==0)
+        bandwidth_sample-=1;
+    if(time_width_sample%2==0)
+        time_width_sample+=1;
+ //   unsigned int time_width_sample= inv_time_map(time_width,fs,N,overlap);
+    
+    for(int x = (bandwidth_sample-1)/2 ; x < P.n_rows-((bandwidth_sample-1)/2) ; x++) {
+        for(int y = (time_width_sample-1)/2; y < P.n_cols-((time_width_sample-1)/2) ; y++) {
+
+            float percent = 0;
+            int k = 0;  
+            x_buf.clear();
+            y_buf.clear();
+
+            for(int xx = x-(bandwidth_sample-1)/2; xx < x +((bandwidth_sample-1)/2)+1; ++xx){  
+                for(int yy = y-(time_width_sample-1)/2;yy<y+((time_width_sample-1)/2)+1;++yy){  
+                    if(P(xx,yy)==1){
+                        k++;  
+                        x_buf.push_back(xx);
+                        y_buf.push_back(yy);
+                    }
+                        
+                }
+            }
+           if(k>30){
+//               cout<<"k="<<k<<endl;
+//               cout<<"x="<<x<<endl;
+//               cout<<"y="<<y<<endl;
+//                   percent =float(k)/float(bandwidth_sample*time_width_sample);
+//                   cout<<"percent:"<<percent<<endl;
+
+            }
+            percent =float(k)/float(bandwidth_sample*time_width_sample);
+
+            if(percent >= percent_threshold){ 
+                if(x>N*frq/fs){     //high pass filter (frq Hz)
+                    for(int i=0;i<x_buf.size();i++){
+                        P_new(x_buf[i],y_buf[i]) = 1;
+                    } 
+                }
+            }
+        }
+    }
+  
+    P = P_new;
+}
+
+
+void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,float frq){
+//moving square and high pass filter with frq Hz
+    mat     P_new(P.n_rows,P.n_cols);
+    P_new.zeros();
+
+    unsigned int    last_time_index;
+    unsigned int    last_frq_index;
+
+    float  time_width = 0.01;
+    float  percent_threshold=0.5;
+
+    unsigned int bandwidth_sample = 5;
+    unsigned int time_width_sample = 11;
+
+    unsigned int threshold_num = round(percent_threshold*bandwidth_sample*time_width_sample);
+    unsigned int sum=0;    
+
+    mat P_sub(bandwidth_sample,time_width_sample);
+
+    for(int x=0;x<P.n_cols-time_width_sample;x++){
+        for(int y=inv_freq_map(frq,fs,N);y<P.n_rows-bandwidth_sample;y+=bandwidth_sample){
+            P_sub = P.submat(y,x,y+bandwidth_sample,x+time_width_sample);
+            sum=accu(P_sub);             
+
+            if(sum>=threshold_num){
+                P_new.submat(y,x,y+bandwidth_sample,x+time_width_sample) = P_sub;
+            }
+        }
+    }
+    
+    P = P_new;
+}
+// detect_whistle algorithm
+void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap){
+        
+//step1: simple moving average for each frequency(not good, take it off)
+//    simple_mov_avg(P,10);
+//step2: median filter
+    median_filter(P);
+//step3: edge_detector
+    edge_detector(P,10,5);
+//step4: using moving square for narrow band checking 
+//slower edition
+//    moving_square(P,fs,N,overlap,3000);
+//faster edition
+    moving_square_use_sub_mat(P,fs,N,3000);
+}
+
+std::vector<whistle> check_result(mat P, int fs,unsigned int N,float overlap){
+   
+    
+    vector<whistle> output;
+    output.clear();
+    
+    xy_index        last_node;
+    xy_index        current_node;
+    whistle         wh;
+    
+    wh.fs = fs;
+    wh.N  = N;
+    wh.overlap = overlap;
+
+    int     x_ind_tor=7;  //x index tolerance
+    int     y_ind_tor=10;  //y index tolerance
+    bool    first_node = true;
+    int     checking_bandwidth = 300;  //Hz
+    int     checking_bandwidth_sample = inv_freq_map(checking_bandwidth,fs,N);
+    
+    for(int i=0;i<P.n_cols;i++){
+        for(int j=0;j<P.n_rows;j++){
+            if(P(j,i)==1){
+                if(first_node){
+                    last_node.x = i;
+                    last_node.y = j;
+                    wh.start_node = last_node;
+                    first_node = false;
+                }
+                else{
+                    if(fabs(i-last_node.x)<x_ind_tor && fabs(j-last_node.y)<y_ind_tor){
+                        last_node.x = i;
+                        last_node.y = j;
+                    }
+                    else{
+                        wh.end_node = last_node;
+                        wh.calculate();
+                        output.push_back(wh);
+                        
+                        last_node.x = i;
+                        last_node.y = j;
+                        wh.start_node = last_node;
+                    }
+                }
+            }    
+        }
+    }
+    
+    if(!first_node){
+        wh.end_node = last_node;
+        wh.calculate();
+        output.push_back(wh);
+    }
+
+    return(output);
+}

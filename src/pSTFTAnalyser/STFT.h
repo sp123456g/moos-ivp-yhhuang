@@ -13,50 +13,66 @@
 #include <vector>
 #include <iomanip>
 
-using namespace arma;
-using namespace std;
 
-const double pi = 3.1415926;
-const complex<double> i(0,1);
+const float pi = 3.1415926;
+const std::complex<float> i(0,1);
+
 
 //Function list:
-//1. mat recSTFT(arma::vec x, arma::vec t, arma::vec f, int B)
-//2. mat Gabor(arma::vec x, int fs, int sigma, double dt, double df)
-//3. mat recSTFT_new(arma::vec x, int fs, int B, double dt, double df)
-
-
-mat recSTFT(arma::vec x, arma::vec t, arma::vec f, int B);
-//-------------------------------------------------------
-// Short time fourier transform using retangular function
-// output: matrix with x:time and y:frequency
-//      x: input
-//      t: output time length
-//      f: output frequency length
-//      B: analog bandwidth
-//-------------------------------------------------------
-
-mat Gabor(arma::vec x, int fs, int sgm=200, double dt=0.01, double df=1);
-//------------------------------------------------------------------------
-// output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)
-// output: frequency element represent for the band, ex: index 10 is 90~100 for case dt=10)
-//      x: input, need to be single channel data in arma::vec form
-//     fs: sample rate
-//    sgm: sigma, for scale gabor transform
-//     dt: output time resolution
-//     df: output frequency resolution
+//1. mat STFT_WITH_FFTW3f(std::vector<float>, int fs)
+//2. unsigned int frequency_mapping(unsigned int,int,int);
+//3. float time_mapping(unsigned int,int,int);
+//4. void detect_whistle(arma::mat &P,float threshold);
+//5. void detect_click();
 //-------------------------------------------------------------------------
 
-mat recSTFT_new(arma::vec x, int fs, double B, double dt=0.01, double df=1);
+arma::mat STFT_with_FFTW3f(std::vector<float> x, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1);
+//Use fft in FFTW package, is faster than arma package
 //------------------------------------------------------------------------
 // output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)
-// output: frequency element represent for the band, ex: index 10 is 90~100 for case dt=10)
-//      x: input, need to be single channel data in arma::vec form
-//     fs: sample rate
-//      B: window length (sec)
-//     dt: output time resolution
-//     df: output frequency resolution
+// output: frequency element represent for the band, need frequency_mapping and time_mapping function to get excact value)
+//               x: input, need to be single channel data in std::vector<float> form
+//              fs: sample rate
+//               N: window length 
+// overlap_percent: overlap_percentage of overlap    
+//             win: window type, 0 is rectangular 1 is hanning
 //-------------------------------------------------------------------------
 
-void detect_whistle(arma::mat &P,double threshold);
-void detect_click();
+unsigned int frequency_mapping(unsigned int input_index,int fs,int N);
+// input_index is the frequency index in spectrogram_mat which was output by STFT_with_FFTW3f()
+
+float time_mapping(unsigned int input_index,int fs,int N,float overlap_percent);
+// input_index is the time index in spectrogram_mat which was output by STFT_with_FFTW3f()
+
+struct xy_index{
+    
+    int x;
+    int y;
+};
+
+class whistle{
+    public:
+        xy_index start_node;
+        xy_index end_node;
+    
+        int     fs;
+        int     N;
+        float   overlap;
+
+        float duration;
+        unsigned int start_frq;
+        unsigned int end_frq;
+
+        void calculate(){
+            duration = time_mapping(end_node.x,fs,N,overlap)-time_mapping(start_node.x,fs,N,overlap);
+            start_frq = frequency_mapping(start_node.y,fs,N);
+            end_frq   = frequency_mapping(end_node.y,fs,N);
+
+        }
+};
+
+
+void detect_whistle(arma::mat &P,int fs=96000,unsigned int N=2048,float overlap=0.9);
+
+std::vector<whistle> check_result(arma::mat P,int fs, unsigned int N,float overlap);
 #endif

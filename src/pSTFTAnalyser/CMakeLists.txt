@@ -16,6 +16,7 @@ TARGET_LINK_LIBRARIES(pSTFTAnalyser
    ${MOOS_LIBRARIES}
    apputil
    armadillo
+   fftw3f
    mbutil
    m
    pthread)

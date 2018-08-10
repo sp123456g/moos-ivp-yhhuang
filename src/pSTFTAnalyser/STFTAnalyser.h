@@ -36,15 +36,12 @@ class STFTAnalyser : public AppCastingMOOSApp
 
  private: // STFT variables
 
-    double  m_dt;                 // output time resolution
-    double  m_df;                 // output frequency resolution
-    int     m_sgm;                // scale gabor factor
-    double  m_Bandwidth;                  // rectangular window length (seconds)
-    int     m_fs;                 // sample rate
-    double  m_threshold;          // threshold for detection
-    std::string  m_do_dectect;         // using detection algorithm to seperate data
-    double  m_iterate_data;       // "m_iterate_data" seconds per iterate loop  
-    std::string  m_window_type;   // Window type: Gassian and rec
+    int         m_fs;               // sample rate
+    int         m_window_length;    // window length
+    double      m_iterate_data;   // "m_iterate_data" seconds per iterate loop  
+    double      m_overlap;
+    std::string m_window_type;   // Window type: "hanning" or "rectangular" window
+    std::string m_do_dectect;   // using detection algorithm to seperate data
 };
 
 #endif 

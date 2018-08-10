@@ -12,6 +12,7 @@
 #include <armadillo>
 #include "STFT.h"
 using namespace std;
+using namespace arma;
 
 //---------------------------------------------------------
 // Constructor
@@ -20,15 +21,12 @@ STFTAnalyser::STFTAnalyser()
 {
     m_input_data.clear();
 
-    m_dt            = 0.01;
-    m_df            = 20;
-    m_sgm           = 6000;
-    m_Bandwidth     = 0.02;
-    m_fs            = 44100;
-    m_threshold     = 30;
+    m_overlap       = 0.9;
+    m_window_length = 2048;
+    m_fs            = 96000;
     m_do_dectect    = true;
     m_iterate_data  = 1;   // 1 second
-    m_window_type   = "rec";
+    m_window_type   = "hanning";
 }
 
 //---------------------------------------------------------
@@ -89,41 +87,47 @@ bool STFTAnalyser::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-//step1: Check the average SPL of ambient noise 
-//step2: Check if the SPL of the point is between AVG_SPL+2db ~ AVG_SPL+10db
-//or over than AVG_SPL+10
-//step3: if over AVG_SPL+10, check SEL, if between, go to step 4  
-//step4: Access data -> "m_iterate_data" seconds data per Iterate loop
+//Access data -> "m_iterate_data" seconds data per Iterate loop
 
 //x is the data need to analysis
     int access_data_number = round(m_fs*m_iterate_data);
-//    
-    vec x = zeros<vec>(access_data_number);
-//
-//   //for single channel: using i++
-//   //for stereo channel: using i+=2
+    
+    vector<float> input_x(access_data_number,0);
+    mat P;
+
+   //for single channel: using i++
+   //for stereo channel: using i+=2 left: i start from 0;right: i start from 1
+   
     if(m_input_data.size()>=access_data_number){
         for(int i=0;i<access_data_number;i++){
-            x(i) = m_input_data[i];
+            input_x[i] = m_input_data[i];
         }
 //erase the data which already used
   
         m_input_data.erase(m_input_data.begin(),m_input_data.begin()+access_data_number); 
     
-        mat P;
 
 //using Gabor 
-        if(m_window_type == "Gassian")
-            P   = Gabor(x,m_fs,m_sgm,m_dt,m_df);   // P: row is time and column is frequency
-//Using recSTFT if want
-        else if(m_window_type == "rec")
-            P   = recSTFT_new(x,m_fs,m_Bandwidth,m_dt,m_df);   // P: row is time and column is frequency                     
-//put detection algorithm in 
-        if(m_do_dectect == "true"){
-//set a threshold to catch the chirp data
-            detect_whistle(P,m_threshold); 
-        }
+        int win_number;
+        if(m_window_type == "rectagular")
+            win_number = 0;
+        else 
+            win_number = 1; 
+
+        P = STFT_with_FFTW3f(input_x,m_fs,m_window_length,m_overlap,win_number);
+
+        if(m_do_dectect == "true")
+            detect_whistle(P);
     }
+    
+    bool whistle_exist = any(vectorise(P));
+         
+    if(whistle_exist)
+        Notify("WHISTLE_EXIST","true");
+    else 
+        Notify("WHISTLE_EXIST","false");
+         
+        
     AppCastingMOOSApp::PostReport();
     return(true);
 }
@@ -155,32 +159,18 @@ bool STFTAnalyser::OnStartUp()
     else if(param == "bar") {
       handled = true;
     }
-    else if(param == "dt"){
+    else if(param == "overlap"){
       
       stringstream ss;
       ss<<value;
-      ss>>m_dt;
+      ss>>m_overlap;
 
       handled = true;
     }
-    else if(param == "df"){
+    else if(param == "window_length"){
       stringstream ss;
       ss<<value;
-      ss>>m_df;
-
-      handled = true;
-    }
-    else if(param == "sigma"){
-      stringstream ss;
-      ss<<value;
-      ss>>m_sgm;
-
-      handled = true;
-    }
-    else if(param == "bandwidth"){
-      stringstream ss;
-      ss<<value;
-      ss>>m_Bandwidth;
+      ss>>m_window_length;
 
       handled = true;
     }
@@ -188,13 +178,6 @@ bool STFTAnalyser::OnStartUp()
       stringstream ss;
       ss<<value;
       ss>>m_fs;
-
-      handled = true;
-    }
-    else if(param == "detection_threshold"){
-      stringstream ss;
-      ss<<value;
-      ss>>m_threshold;
 
       handled = true;
     }
