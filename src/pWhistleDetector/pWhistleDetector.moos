@@ -1,0 +1,68 @@
+//Configuration file: YHHuang
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = STFT
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = true
+  Run = pLogger         @ NewConsole = false     
+  Run = pSTFTAnalyser   @ NewConsole = true
+}
+
+//------------------------------------------------
+// pSTFTAnalyser config block
+
+ProcessConfig = pSTFTAnalyser
+{
+    AppTick   = 4
+    CommsTick = 4
+    
+    overlap         = 0.9 
+    window_length   = 2048
+    sample_rate     = 96000
+    do_detect       = true 
+    iterate_data    = 1 
+    window_type     = hanning
+}
+
+//------------------------------------------------
+// uTimerScript Configuration Block
+
+//ProcessConfig = uTimerScript
+//{
+//  AppTick   = 1000
+//  CommsTick = 1000
+//
+// 
+////  RESET_MAX  = unlimited
+////  RESET_MAX  = non
+// 
+////  RESET_TIME = end
+//
+//
+//  condition = LOGGER = true 
+//  rand_var = varname=VOLTAGE, min=-1,  max=1, key=at_post
+//
+//  EVENT = var=ACOUSTIC_DATA, val=$[VOLTAGE], time=0,amt=100000
+//
+//}
+//
+//ProcessConfig = pLogger
+//{
+//
+//    AppTick   = 1000
+//    CommsTick = 1000
+//
+//    AsyncLog = true 
+//    WildCardLogging = true
+//    WildCardOmitPattern = *_STATUS
+//    LOG = ACOUSTIC_DATA @ 0
+//    LOG = LOGGER @ 0
+//}

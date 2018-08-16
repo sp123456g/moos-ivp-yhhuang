@@ -1,18 +1,18 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                       pSTFTAnalyser
+# The CMakeLists.txt for:                       pWhistleDetector
 # Author(s):                              yhhuang
 #--------------------------------------------------------
 
 SET(SRC
-  STFTAnalyser.cpp
-  STFTAnalyser_Info.cpp
+  WhistleDetector.cpp
+  WhistleDetector_Info.cpp
   STFT.cpp
   main.cpp
 )
 
-ADD_EXECUTABLE(pSTFTAnalyser ${SRC})
+ADD_EXECUTABLE(pWhistleDetector ${SRC})
 
-TARGET_LINK_LIBRARIES(pSTFTAnalyser
+TARGET_LINK_LIBRARIES(pWhistleDetector
    ${MOOS_LIBRARIES}
    apputil
    armadillo

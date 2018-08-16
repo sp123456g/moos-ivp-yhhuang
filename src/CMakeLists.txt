@@ -31,7 +31,7 @@ ADD_SUBDIRECTORY(pPointAssign_Auto)
 ADD_SUBDIRECTORY(uFldHazardMgrX)
 ADD_SUBDIRECTORY(pHazardPath)
 ADD_SUBDIRECTORY(pFrontEstimateX)
-ADD_SUBDIRECTORY(pSTFTAnalyser)
+ADD_SUBDIRECTORY(pWhistleDetector)
 ADD_SUBDIRECTORY(pSpectrogramMonitor)
 ADD_SUBDIRECTORY(pStoreSoundX)
 ##############################################################################

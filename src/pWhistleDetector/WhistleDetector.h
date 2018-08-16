@@ -1,20 +1,20 @@
 /************************************************************/
 /*    NAME: yhhuang                                         */
 /*    ORGN: MIT                                             */
-/*    FILE: STFTAnalyser.h                                  */
+/*    FILE: WhistleDetector.h                                  */
 /*    DATE: May 29th 2018                                   */
 /************************************************************/
 
-#ifndef STFTAnalyser_HEADER
-#define STFTAnalyser_HEADER
+#ifndef WhistleDetector_HEADER
+#define WhistleDetector_HEADER
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include <deque>
-class STFTAnalyser : public AppCastingMOOSApp
+class WhistleDetector : public AppCastingMOOSApp
 {
  public:
-   STFTAnalyser();
-   ~STFTAnalyser();
+   WhistleDetector();
+   ~WhistleDetector();
 
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);

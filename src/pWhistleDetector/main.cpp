@@ -8,8 +8,8 @@
 #include <string>
 #include "MBUtils.h"
 #include "ColorParse.h"
-#include "STFTAnalyser.h"
-#include "STFTAnalyser_Info.h"
+#include "WhistleDetector.h"
+#include "WhistleDetector_Info.h"
 
 using namespace std;
 
@@ -40,12 +40,12 @@ int main(int argc, char *argv[])
     showHelpAndExit();
 
   cout << termColor("green");
-  cout << "pSTFTAnalyser launching as " << run_command << endl;
+  cout << "pWhistleDetector launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  STFTAnalyser STFTAnalyser;
+  WhistleDetector WhistleDetector;
 
-  STFTAnalyser.Run(run_command.c_str(), mission_file.c_str());
+  WhistleDetector.Run(run_command.c_str(), mission_file.c_str());
   
   return(0);
 }

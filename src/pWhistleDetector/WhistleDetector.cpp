@@ -1,14 +1,14 @@
 /************************************************************/
 /*    NAME: yhhuang                                         */
 /*    ORGN: MIT                                             */
-/*    FILE: STFTAnalyser.cpp                                */
+/*    FILE: WhistleDetector.cpp                                */
 /*    DATE: May 29th 2018                                   */
 /************************************************************/
 
 #include <iterator>
 #include "MBUtils.h"
 #include "ACTable.h"
-#include "STFTAnalyser.h"
+#include "WhistleDetector.h"
 #include <armadillo>
 #include "STFT.h"
 using namespace std;
@@ -17,7 +17,7 @@ using namespace arma;
 //---------------------------------------------------------
 // Constructor
 
-STFTAnalyser::STFTAnalyser()
+WhistleDetector::WhistleDetector()
 {
     m_input_data.clear();
 
@@ -32,14 +32,14 @@ STFTAnalyser::STFTAnalyser()
 //---------------------------------------------------------
 // Destructor
 
-STFTAnalyser::~STFTAnalyser()
+WhistleDetector::~WhistleDetector()
 {
 }
 
 //---------------------------------------------------------
 // Procedure: OnNewMail
 
-bool STFTAnalyser::OnNewMail(MOOSMSG_LIST &NewMail)
+bool WhistleDetector::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   AppCastingMOOSApp::OnNewMail(NewMail);
 
@@ -73,7 +73,7 @@ bool STFTAnalyser::OnNewMail(MOOSMSG_LIST &NewMail)
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 
-bool STFTAnalyser::OnConnectToServer()
+bool WhistleDetector::OnConnectToServer()
 {
    registerVariables();
    return(true);
@@ -83,7 +83,7 @@ bool STFTAnalyser::OnConnectToServer()
 // Procedure: Iterate()
 //            happens AppTick times per second
 
-bool STFTAnalyser::Iterate()
+bool WhistleDetector::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
@@ -136,7 +136,7 @@ bool STFTAnalyser::Iterate()
 // Procedure: OnStartUp()
 //            happens before connection is open
 
-bool STFTAnalyser::OnStartUp()
+bool WhistleDetector::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
@@ -208,7 +208,7 @@ bool STFTAnalyser::OnStartUp()
 //---------------------------------------------------------
 // Procedure: registerVariables
 
-void STFTAnalyser::registerVariables()
+void WhistleDetector::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   // Register("FOOBAR", 0);
@@ -219,7 +219,7 @@ void STFTAnalyser::registerVariables()
 //------------------------------------------------------------
 // Procedure: buildReport()
 
-bool STFTAnalyser::buildReport() 
+bool WhistleDetector::buildReport() 
 {
   m_msgs << "============================================ \n";
   m_msgs << "File:                                        \n";

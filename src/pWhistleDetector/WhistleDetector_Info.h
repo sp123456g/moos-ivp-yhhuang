@@ -1,12 +1,12 @@
 /****************************************************************/
 /*   NAME: yhhuang                                              */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: STFTAnalyser_Info.h                                  */
+/*   FILE: WhistleDetector_Info.h                                  */
 /*   DATE: May 29th 2018                                        */
 /****************************************************************/
 
-#ifndef STFTAnalyser_INFO_HEADER
-#define STFTAnalyser_INFO_HEADER
+#ifndef WhistleDetector_INFO_HEADER
+#define WhistleDetector_INFO_HEADER
 
 void showSynopsis();
 void showHelpAndExit();

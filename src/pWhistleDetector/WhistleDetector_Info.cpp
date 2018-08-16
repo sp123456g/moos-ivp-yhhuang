@@ -1,13 +1,13 @@
 /****************************************************************/
 /*   NAME: yhhuang                                              */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: STFTAnalyser_Info.cpp                                */
+/*   FILE: WhistleDetector_Info.cpp                                */
 /*   DATE: May 29th 2018                                        */
 /****************************************************************/
 
 #include <cstdlib>
 #include <iostream>
-#include "STFTAnalyser_Info.h"
+#include "WhistleDetector_Info.h"
 #include "ColorParse.h"
 #include "ReleaseInfo.h"
 
@@ -20,7 +20,7 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pSTFTAnalyser application is used for analysis acoustics  ");
+  blk("  The pWhistleDetector application is used for analysis acoustics  ");
   blk("  data, input the acoustic data and output the spectrogram matrix");
   blk("                                                                 ");
   blk("                                                                ");
@@ -34,15 +34,15 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: pSTFTAnalyser file.moos [OPTIONS]                   ");
+  blu("Usage: pWhistleDetector file.moos [OPTIONS]                   ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pSTFTAnalyser with the given process name         ");
-  blk("      rather than pSTFTAnalyser.                           ");
+  blk("      Launch pWhistleDetector with the given process name         ");
+  blk("      rather than pWhistleDetector.                           ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -50,7 +50,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pSTFTAnalyser.        ");
+  blk("      Display the release version of pWhistleDetector.        ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -66,10 +66,10 @@ void showExampleConfigAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pSTFTAnalyser Example MOOS Configuration                   ");
+  blu("pWhistleDetector Example MOOS Configuration                   ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = pSTFTAnalyser                              ");
+  blk("ProcessConfig = pWhistleDetector                              ");
   blk("{                                                               ");
   blk("        AppTick     = 4                                         ");
   blk("        CommsTick   = 4                                         ");
@@ -95,7 +95,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pSTFTAnalyser INTERFACE                                    ");
+  blu("pWhistleDetector INTERFACE                                    ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -117,7 +117,7 @@ void showInterfaceAndExit()
 
 void showReleaseInfoAndExit()
 {
-  showReleaseInfo("pSTFTAnalyser", "gpl");
+  showReleaseInfo("pWhistleDetector", "gpl");
   exit(0);
 }
 
