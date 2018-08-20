@@ -1,8 +1,8 @@
 /************************************************************/
 /*    NAME: yhhuang                                         */
-/*    ORGN: MIT                                             */
+/*    ORGN: NTU, Taiwan                                             */
 /*    FILE: WhistleDetector.h                                  */
-/*    DATE: May 29th 2018                                   */
+/*    DATE: Aug 17th 2018                                   */
 /************************************************************/
 
 #ifndef WhistleDetector_HEADER
@@ -24,6 +24,7 @@ class WhistleDetector : public AppCastingMOOSApp
 
  protected: // Standard AppCastingMOOSApp function to overload 
    bool buildReport();
+   bool GetVoltageData(std::string,int);
 
  protected:
    void registerVariables();
@@ -32,16 +33,19 @@ class WhistleDetector : public AppCastingMOOSApp
 
  private: // State variables
 
-   std::deque<double> m_input_data;
+   std::deque<float>       m_voltage_data;
+   std::deque<std::string>  m_input_data;
 
  private: // STFT variables
 
     int         m_fs;               // sample rate
     int         m_window_length;    // window length
+    int         m_bits;
     double      m_iterate_data;   // "m_iterate_data" seconds per iterate loop  
     double      m_overlap;
     std::string m_window_type;   // Window type: "hanning" or "rectangular" window
-    std::string m_do_dectect;   // using detection algorithm to seperate data
+    bool        m_whistle_exist;
+                    
 };
 
 #endif 

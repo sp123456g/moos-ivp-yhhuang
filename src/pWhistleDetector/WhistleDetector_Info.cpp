@@ -1,8 +1,8 @@
 /****************************************************************/
 /*   NAME: yhhuang                                              */
-/*   ORGN: MIT Cambridge MA                                     */
+/*   ORGN: NTU Taiwan                                           */
 /*   FILE: WhistleDetector_Info.cpp                                */
-/*   DATE: May 29th 2018                                        */
+/*   DATE: Aug 17th 2018                                        */
 /****************************************************************/
 
 #include <cstdlib>
@@ -20,11 +20,11 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pWhistleDetector application is used for analysis acoustics  ");
-  blk("  data, input the acoustic data and output the spectrogram matrix");
-  blk("                                                                 ");
+  blk("  The pWhistleDetector application is used for analysis acoustics");
+  blk("  data and check if there are whistle or chirp signal exist.    ");
   blk("                                                                ");
-  blk("                                                                ");
+  blk("  Installation Package:                                         ");
+  blk("     armadillo, fftw3f                                          ");
 }
 
 //----------------------------------------------------------------
@@ -64,26 +64,29 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
-  blu("=============================================================== ");
-  blu("pWhistleDetector Example MOOS Configuration                   ");
-  blu("=============================================================== ");
-  blk("                                                                ");
-  blk("ProcessConfig = pWhistleDetector                              ");
-  blk("{                                                               ");
-  blk("        AppTick     = 4                                         ");
-  blk("        CommsTick   = 4                                         ");
-  blk("        dt          = 0.01                                      ");
-  blk("        df          = 20                                        ");
-  blk("        sample_rate = 44100                                     ");
-  blk("detection_threshold = 30                                        ");
-  blk("        do_detect   = true                                      ");
-  blk("       iterate_data = 1                                         ");
-  blk("        window_type = rec (or gassian)                          ");
-  blk("        sigma     = 600                                         ");
-  blk("        bandwidth   = 0.02                                      ");
-  blk("}                                                               ");
-  blk("                                                                ");
+  blk("                                                                 ");
+  blu("===============================================================  ");
+  blu("pWhistleDetector Example MOOS Configuration                      ");
+  blu("===============================================================  ");
+  blk("                                                                 ");
+  blk("ProcessConfig = pWhistleDetector                                 ");
+  blk("{                                                                ");
+  blk("        AppTick          = 4                                     ");
+  blk("        CommsTick        = 4                                     ");
+  blk("                                                                 ");
+  blk("        overlap          = 0.9                                   ");
+  blk("        window_length    = 2048                                  ");
+  blk("        sample_rate      = 96000                                 ");
+  blk("        iterate_data     = 1                                     ");
+  blk("        window_type      = hanning (or rectangular)              ");
+  blk("}                                                                ");
+  blk("                                                                 ");
+  blk(" overlap:        STFT overlap between each window                ");
+  blk(" window_length:  samples, must be power of two to be faster      ");
+  blk(" sample_rate:    how many sample per second                      ");
+  blk(" iterate_data:   how many seconds data each iterate              ");
+  blk(" window_type:    STFT window type, hanning or rectagular         ");
+  blk("                                                                 ");
   exit(0);
 }
 
@@ -95,19 +98,23 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pWhistleDetector INTERFACE                                    ");
+  blu("pWhistleDetector INTERFACE                                      ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk(" SOUND_VOLTAGE_DATA_CH_ONE:                                     ");
+  blk("     string value, Voltage data seperate by comma               ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk("  WHISTLE_EXIST:                                                ");
+  blk("     string value, \"true\" or \"false\"                        ");
+  blk("                                                                ");
+  blk("  SOUND_VOLTAGE_DATA_WITH_WHISTLE:                              ");
+  blk("     string value, Voltage data seperate by comma               ");
   blk("                                                                ");
   exit(0);
 }

@@ -3,7 +3,7 @@
 //***********************************************************************
 //Author: Yen-Hsiang Huang
 //Origin: National Taiwan University
-//Date:   Apr.20.2018
+//Date:   Aug 17th 2018
 //***********************************************************************
 #include <iostream>
 #include <armadillo>
@@ -11,6 +11,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <vector>
+#include <deque>
 #include <iomanip>
 
 
@@ -26,7 +27,7 @@ const std::complex<float> i(0,1);
 //5. void detect_click();
 //-------------------------------------------------------------------------
 
-arma::mat STFT_with_FFTW3f(std::vector<float> x, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1);
+arma::mat STFT_with_FFTW3f(std::deque<float> x, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1);
 //Use fft in FFTW package, is faster than arma package
 //------------------------------------------------------------------------
 // output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)

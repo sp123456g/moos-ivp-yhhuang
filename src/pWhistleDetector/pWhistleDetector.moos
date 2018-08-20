@@ -13,13 +13,13 @@ ProcessConfig = ANTLER
   Run = MOOSDB          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = true
   Run = pLogger         @ NewConsole = false     
-  Run = pSTFTAnalyser   @ NewConsole = true
+  Run = pWhistleDetector   @ NewConsole = true
 }
 
 //------------------------------------------------
-// pSTFTAnalyser config block
+// pWhistleDetector config block
 
-ProcessConfig = pSTFTAnalyser
+ProcessConfig = pWhistleDetector
 {
     AppTick   = 4
     CommsTick = 4

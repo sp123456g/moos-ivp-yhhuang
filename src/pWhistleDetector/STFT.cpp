@@ -1,7 +1,7 @@
 //***********************************************************************
 //Author: Yen-Hsiang Huang(yhhuang)
 //Origin: National Taiwan University
-//Date:   Apr.20.2018
+//Date:   Aug 17th, 2018
 //***********************************************************************
 #include "STFT.h"
 #include <fftw3.h>
@@ -11,7 +11,7 @@ using namespace std;
 
 //-------------------------------------------------------------------------
 
-mat STFT_with_FFTW3f(std::vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
+mat STFT_with_FFTW3f(std::deque<float> x,int fs,unsigned int N,float overlap_percent,int win)
 {
 //STEP_1 set up window function 
     float   W;
@@ -327,7 +327,8 @@ void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap){
 }
 
 std::vector<whistle> check_result(mat P, int fs,unsigned int N,float overlap){
-   
+// this is the function for checking result of the algorithm, but only work
+// when there is only one chirp signal   
     
     vector<whistle> output;
     output.clear();

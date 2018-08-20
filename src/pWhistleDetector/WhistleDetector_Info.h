@@ -1,8 +1,8 @@
 /****************************************************************/
 /*   NAME: yhhuang                                              */
-/*   ORGN: MIT Cambridge MA                                     */
+/*   ORGN: NTU, Taiwan                                     */
 /*   FILE: WhistleDetector_Info.h                                  */
-/*   DATE: May 29th 2018                                        */
+/*   DATE: Aug 17th 2018                                        */
 /****************************************************************/
 
 #ifndef WhistleDetector_INFO_HEADER

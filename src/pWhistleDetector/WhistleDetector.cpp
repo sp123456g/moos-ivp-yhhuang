@@ -1,8 +1,8 @@
 /************************************************************/
 /*    NAME: yhhuang                                         */
-/*    ORGN: MIT                                             */
+/*    ORGN: NTU, Taiwan                                     */
 /*    FILE: WhistleDetector.cpp                                */
-/*    DATE: May 29th 2018                                   */
+/*    DATE: Aug 17th 2018                                   */
 /************************************************************/
 
 #include <iterator>
@@ -24,9 +24,10 @@ WhistleDetector::WhistleDetector()
     m_overlap       = 0.9;
     m_window_length = 2048;
     m_fs            = 96000;
-    m_do_dectect    = true;
+    m_bits          = 32;
     m_iterate_data  = 1;   // 1 second
     m_window_type   = "hanning";
+    m_whistle_exist = false;
 }
 
 //---------------------------------------------------------
@@ -60,8 +61,8 @@ bool WhistleDetector::OnNewMail(MOOSMSG_LIST &NewMail)
 
      if(key == "FOO") 
        cout << "great!";
-     else if(key == "ACOUSTIC_DATA"){
-      m_input_data.push_back(msg.GetDouble());   
+     else if(key == "SOUND_VOLTAGE_DATA_CH_ONE"){
+      m_input_data.push_back(msg.GetString());   
      }
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
@@ -79,6 +80,21 @@ bool WhistleDetector::OnConnectToServer()
    return(true);
 }
 
+bool WhistleDetector::GetVoltageData(std::string input,int sample_number)
+{
+
+    vector<string> voltages = parseString(input,',');
+
+    for(int i=0; i<voltages.size(); i++){
+      float volt = atoi(voltages[i].c_str());
+      
+      if(m_voltage_data.size() >= sample_number)
+        m_voltage_data.pop_front();
+
+      m_voltage_data.push_back(volt);
+    }
+}
+
 //---------------------------------------------------------
 // Procedure: Iterate()
 //            happens AppTick times per second
@@ -88,46 +104,40 @@ bool WhistleDetector::Iterate()
   AppCastingMOOSApp::Iterate();
 
 //Access data -> "m_iterate_data" seconds data per Iterate loop
+  std::string   input_str_voltage;
+  int           access_data_number = round(m_fs*m_iterate_data);
+  vector<float> input_x;
+  mat           P; 
+//Get String data and transfer to voltage buffer
+  if(!m_input_data.empty()){
+    input_str_voltage = m_input_data.front();
+    GetVoltageData(input_str_voltage,access_data_number); 
+    m_input_data.pop_front();
+  }
 
-//x is the data need to analysis
-    int access_data_number = round(m_fs*m_iterate_data);
-    
-    vector<float> input_x(access_data_number,0);
-    mat P;
-
-   //for single channel: using i++
-   //for stereo channel: using i+=2 left: i start from 0;right: i start from 1
-   
-    if(m_input_data.size()>=access_data_number){
-        for(int i=0;i<access_data_number;i++){
-            input_x[i] = m_input_data[i];
-        }
-//erase the data which already used
-  
-        m_input_data.erase(m_input_data.begin(),m_input_data.begin()+access_data_number); 
-    
-
-//using Gabor 
-        int win_number;
-        if(m_window_type == "rectagular")
-            win_number = 0;
-        else 
-            win_number = 1; 
-
-        P = STFT_with_FFTW3f(input_x,m_fs,m_window_length,m_overlap,win_number);
-
-        if(m_do_dectect == "true")
-            detect_whistle(P);
-    }
-    
-    bool whistle_exist = any(vectorise(P));
-         
-    if(whistle_exist)
-        Notify("WHISTLE_EXIST","true");
+//set up window
+    int win_number;
+    if(m_window_type == "rectagular")
+        win_number = 0;
     else 
-        Notify("WHISTLE_EXIST","false");
+        win_number = 1; 
+
+    if(!m_voltage_data.empty()){
+//fft
+        P = STFT_with_FFTW3f(m_voltage_data,m_fs,m_window_length,m_overlap,win_number);
+// detect_whistle algorithm
+        detect_whistle(P);
+//check if there is whistle in the matrix
+        m_whistle_exist = any(vectorise(P));
          
-        
+        if(m_whistle_exist){
+            Notify("WHISTLE_EXIST","true");
+            Notify("SOUND_VOLTAGE_DATA_WITH_WHISTLE",input_str_voltage);
+        }
+        else 
+            Notify("WHISTLE_EXIST","false");
+         
+    }     
     AppCastingMOOSApp::PostReport();
     return(true);
 }
@@ -174,15 +184,18 @@ bool WhistleDetector::OnStartUp()
 
       handled = true;
     }
+    else if(param == "bits"){
+      stringstream ss;
+      ss<<value;
+      ss>>m_bits;
+
+      handled = true;
+    }
     else if(param == "sample_rate"){
       stringstream ss;
       ss<<value;
       ss>>m_fs;
 
-      handled = true;
-    }
-    else if(param == "do_detect"){
-      m_do_dectect = value;
       handled = true;
     }
     else if(param == "iterate_data"){
@@ -213,6 +226,7 @@ void WhistleDetector::registerVariables()
   AppCastingMOOSApp::RegisterVariables();
   // Register("FOOBAR", 0);
    Register("ACOUSTIC_DATA", 0);
+   Register("SOUND_VOLTAGE_DATA_CH_ONE", 0);
 }
 
 
@@ -225,11 +239,19 @@ bool WhistleDetector::buildReport()
   m_msgs << "File:                                        \n";
   m_msgs << "============================================ \n";
 
+  stringstream ss;
+  string    iterate_data_second;
+  ss<<m_iterate_data;
+  ss>>iterate_data_second;
+
   ACTable actab(4);
-  actab << "Alpha | Bravo | Charlie | Delta";
-  actab.addHeaderLines();
-  actab << "one" << "two" << "three" << "four";
-  m_msgs << actab.getFormattedString();
+
+  if(m_whistle_exist)
+    m_msgs << "Whistle exist!!";
+  else
+    m_msgs << "No whistle in this "<<iterate_data_second<<" seconds\n";
+
+    m_msgs << actab.getFormattedString();
 
   return(true);
 }
