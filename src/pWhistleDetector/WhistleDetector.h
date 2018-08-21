@@ -24,7 +24,7 @@ class WhistleDetector : public AppCastingMOOSApp
 
  protected: // Standard AppCastingMOOSApp function to overload 
    bool buildReport();
-   bool GetVoltageData(std::string,int);
+   bool GetVoltageData(std::string);
 
  protected:
    void registerVariables();
@@ -43,9 +43,9 @@ class WhistleDetector : public AppCastingMOOSApp
     int         m_bits;
     double      m_iterate_data;   // "m_iterate_data" seconds per iterate loop  
     double      m_overlap;
+    double      m_update_percent;
     std::string m_window_type;   // Window type: "hanning" or "rectangular" window
     bool        m_whistle_exist;
-                    
 };
 
 #endif 

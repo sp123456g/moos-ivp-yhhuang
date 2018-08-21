@@ -24,11 +24,14 @@ WhistleDetector::WhistleDetector()
     m_overlap       = 0.9;
     m_window_length = 2048;
     m_fs            = 96000;
+    m_window_length = (double)m_fs/46.875;
     m_bits          = 32;
     m_iterate_data  = 1;   // 1 second
+    m_update_percent= 0.5;
     m_window_type   = "hanning";
     m_whistle_exist = false;
 }
+
 
 //---------------------------------------------------------
 // Destructor
@@ -61,6 +64,7 @@ bool WhistleDetector::OnNewMail(MOOSMSG_LIST &NewMail)
 
      if(key == "FOO") 
        cout << "great!";
+//     else if(key == "SOUND_VOLTAGE_DATA_CH_ONE"){
      else if(key == "SOUND_VOLTAGE_DATA_CH_ONE"){
       m_input_data.push_back(msg.GetString());   
      }
@@ -80,7 +84,7 @@ bool WhistleDetector::OnConnectToServer()
    return(true);
 }
 
-bool WhistleDetector::GetVoltageData(std::string input,int sample_number)
+bool WhistleDetector::GetVoltageData(std::string input)
 {
 
     vector<string> voltages = parseString(input,',');
@@ -88,8 +92,8 @@ bool WhistleDetector::GetVoltageData(std::string input,int sample_number)
     for(int i=0; i<voltages.size(); i++){
       float volt = atoi(voltages[i].c_str());
       
-      if(m_voltage_data.size() >= sample_number)
-        m_voltage_data.pop_front();
+//      if(m_voltage_data.size() >= sample_number)
+//        m_voltage_data.pop_front();
 
       m_voltage_data.push_back(volt);
     }
@@ -106,12 +110,14 @@ bool WhistleDetector::Iterate()
 //Access data -> "m_iterate_data" seconds data per Iterate loop
   std::string   input_str_voltage;
   int           access_data_number = round(m_fs*m_iterate_data);
-  vector<float> input_x;
+
+
+  vector<float> input_x(access_data_number,0);
   mat           P; 
 //Get String data and transfer to voltage buffer
   if(!m_input_data.empty()){
     input_str_voltage = m_input_data.front();
-    GetVoltageData(input_str_voltage,access_data_number); 
+    GetVoltageData(input_str_voltage); 
     m_input_data.pop_front();
   }
 
@@ -123,21 +129,36 @@ bool WhistleDetector::Iterate()
         win_number = 1; 
 
     if(!m_voltage_data.empty()){
-//fft
-        P = STFT_with_FFTW3f(m_voltage_data,m_fs,m_window_length,m_overlap,win_number);
+        stringstream ss;
+        ss<<m_voltage_data.size();
+        reportEvent("m_voltage_data size:" + ss.str());
+//fft   
+            if(m_voltage_data.size() >= access_data_number){
+                for(int i=0;i<access_data_number;i++)
+                    input_x[i] = m_voltage_data[i];
+            
+               
+            P = STFT_with_FFTW3f(input_x,m_fs,m_window_length,m_overlap,win_number);
 // detect_whistle algorithm
-        detect_whistle(P);
+            detect_whistle(P);
 //check if there is whistle in the matrix
-        m_whistle_exist = any(vectorise(P));
-         
+            m_whistle_exist = any(vectorise(P));
+            stringstream ss_exist;
+            ss_exist<<m_whistle_exist;
+            reportEvent("m_whistle_exist:" + ss_exist.str());
+
+//remove calculated data 
+            m_voltage_data.erase(m_voltage_data.begin(),m_voltage_data.begin()+round(access_data_number*1));
+           
+            }         
+    }
         if(m_whistle_exist){
             Notify("WHISTLE_EXIST","true");
             Notify("SOUND_VOLTAGE_DATA_WITH_WHISTLE",input_str_voltage);
         }
         else 
             Notify("WHISTLE_EXIST","false");
-         
-    }     
+                 
     AppCastingMOOSApp::PostReport();
     return(true);
 }
@@ -177,13 +198,6 @@ bool WhistleDetector::OnStartUp()
 
       handled = true;
     }
-    else if(param == "window_length"){
-      stringstream ss;
-      ss<<value;
-      ss>>m_window_length;
-
-      handled = true;
-    }
     else if(param == "bits"){
       stringstream ss;
       ss<<value;
@@ -195,6 +209,8 @@ bool WhistleDetector::OnStartUp()
       stringstream ss;
       ss<<value;
       ss>>m_fs;
+      
+      m_window_length = (double)m_fs/46.875;
 
       handled = true;
     }
@@ -208,6 +224,12 @@ bool WhistleDetector::OnStartUp()
     else if(param == "window_type"){
       m_window_type = value;
       handled = true;
+    }
+    else if(param == "data_update_second"){
+        stringstream ss;
+        ss<<value;
+        ss>>m_update_percent;
+        handled = true;
     }
     if(!handled)
       reportUnhandledConfigWarning(orig);

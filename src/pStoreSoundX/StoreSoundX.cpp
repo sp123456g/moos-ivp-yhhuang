@@ -372,8 +372,8 @@ void StoreSoundX::Capture()
       case 16:
        if(m_channels == 1){
           for(int i=0; i<m_period_size-3; i=i+4){
-            ch1_part1 = (unsigned char)(m_period_buffer[0])*(1/(pow(2,16)));
-            ch1_part2 = (float)(m_period_buffer[1])*(1/pow(2,8)); 
+            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,16)));
+            ch1_part2 = (float)(m_period_buffer[i+1])*(1/pow(2,8)); 
 
             voltage_ch1 = ch1_part1 + ch1_part2; 
             m_tem_buffer_ch1.push_back(voltage_ch1);
@@ -381,11 +381,11 @@ void StoreSoundX::Capture()
        }
        else if(m_channels == 2){
         for(int i=0; i<m_period_size-3; i=i+4){
-            ch1_part1 = (unsigned char)(m_period_buffer[0])*(1/(pow(2,16)));
-            ch1_part2 = (float)(m_period_buffer[1])*(1/pow(2,8)); 
+            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,16)));
+            ch1_part2 = (float)(m_period_buffer[i+1])*(1/pow(2,8)); 
 
-            ch2_part1 = (unsigned char)(m_period_buffer[2])*(1/pow(2,16)); 
-            ch2_part2 = (float)(m_period_buffer[3])*(1/pow(2,8)); 
+            ch2_part1 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
+            ch2_part2 = (float)(m_period_buffer[i+3])*(1/pow(2,8)); 
 
             voltage_ch1 = ch1_part1 + ch1_part2; 
             voltage_ch2 = ch2_part1 + ch2_part2; 
@@ -398,24 +398,25 @@ void StoreSoundX::Capture()
 
       case 24:
        if(m_channels == 1){
-       
-            ch1_part1 = (unsigned char)(m_period_buffer[0])*(1/(pow(2,24)));
-            ch1_part2 = (unsigned char)(m_period_buffer[1])*(1/pow(2,16)); 
-            ch1_part3 = (float)(m_period_buffer[2])*(1/pow(2,8));
+        for(int i=0; i<m_period_size-5; i=i+6){
+            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,24)));
+            ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,16)); 
+            ch1_part3 = (float)(m_period_buffer[i+2])*(1/pow(2,8));
 
             voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3; 
 
             m_tem_buffer_ch1.push_back(voltage_ch1);
+        }
        }
        else if(m_channels ==2){ 
         for(int i=0; i<m_period_size-5; i=i+6){
-            ch1_part1 = (unsigned char)(m_period_buffer[0])*(1/(pow(2,24)));
-            ch1_part2 = (unsigned char)(m_period_buffer[1])*(1/pow(2,16)); 
-            ch1_part3 = (float)(m_period_buffer[2])*(1/pow(2,8));
+            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,24)));
+            ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,16)); 
+            ch1_part3 = (float)(m_period_buffer[i+2])*(1/pow(2,8));
 
-            ch2_part1 = (unsigned char)(m_period_buffer[3])*(1/pow(2,24)); 
-            ch2_part2 = (unsigned char)(m_period_buffer[4])*(1/pow(2,16)); 
-            ch2_part3 = (float)(m_period_buffer[5])*(1/pow(2,8));
+            ch2_part1 = (unsigned char)(m_period_buffer[i+3])*(1/pow(2,24)); 
+            ch2_part2 = (unsigned char)(m_period_buffer[i+4])*(1/pow(2,16)); 
+            ch2_part3 = (float)(m_period_buffer[i+5])*(1/pow(2,8));
 
             voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3; 
             voltage_ch2 = ch2_part1 + ch2_part2 + ch2_part3; 
@@ -429,10 +430,10 @@ void StoreSoundX::Capture()
       case 32:
        if(m_channels == 1){
         for(int i=0; i<m_period_size-7; i=i+8){
-            ch1_part1 = (unsigned char)(m_period_buffer[0])*(1/(pow(2,32)));
-            ch1_part2 = (unsigned char)(m_period_buffer[1])*(1/pow(2,24)); 
-            ch1_part3 = (unsigned char)(m_period_buffer[2])*(1/pow(2,16)); 
-            ch1_part4 = (float)(m_period_buffer[3])*(1/pow(2,8));
+            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,32)));
+            ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,24)); 
+            ch1_part3 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
+            ch1_part4 = (float)(m_period_buffer[i+3])*(1/pow(2,8));
 
             voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3 + ch1_part4; 
             
@@ -441,15 +442,15 @@ void StoreSoundX::Capture()
        }
        else if(m_channels == 2){
         for(int i=0; i<m_period_size-7; i=i+8){
-            ch1_part1 = (unsigned char)(m_period_buffer[0])*(1/(pow(2,32)));
-            ch1_part2 = (unsigned char)(m_period_buffer[1])*(1/pow(2,24)); 
-            ch1_part3 = (unsigned char)(m_period_buffer[2])*(1/pow(2,16)); 
-            ch1_part4 = (float)(m_period_buffer[3])*(1/pow(2,8));
+            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,32)));
+            ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,24)); 
+            ch1_part3 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
+            ch1_part4 = (float)(m_period_buffer[i+3])*(1/pow(2,8));
 
-            ch2_part1 = (unsigned char)(m_period_buffer[4])*(1/pow(2,32)); 
-            ch2_part2 = (unsigned char)(m_period_buffer[5])*(1/pow(2,24)); 
-            ch2_part3 = (unsigned char)(m_period_buffer[6])*(1/pow(2,16));
-            ch2_part4 = (float)(m_period_buffer[7])*(1/pow(2,8));
+            ch2_part1 = (unsigned char)(m_period_buffer[i+4])*(1/pow(2,32)); 
+            ch2_part2 = (unsigned char)(m_period_buffer[i+5])*(1/pow(2,24)); 
+            ch2_part3 = (unsigned char)(m_period_buffer[i+6])*(1/pow(2,16));
+            ch2_part4 = (float)(m_period_buffer[i+7])*(1/pow(2,8));
 
             voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3 + ch1_part4; 
             voltage_ch2 = ch2_part1 + ch2_part2 + ch2_part3 + ch2_part4; 
@@ -470,18 +471,18 @@ void StoreSoundX::SendData()
     stringstream msg;
     if(m_tem_buffer_ch1.size() >= m_send_size){
       for(int i=0; i<m_send_size; i++){
-        int value = m_tem_buffer_ch1.front();
+        float value = m_tem_buffer_ch1.front();
         m_tem_buffer_ch1.pop_front();
         msg << value << ",";
+          Notify("SOUND_VOLTAGE_DATA_CH_ONE", msg.str());
       }
     }else{
       for(int i=0; i<m_tem_buffer_ch1.size(); i++){
-        int value_ch1 = m_tem_buffer_ch1.front();
+        float value_ch1 = m_tem_buffer_ch1.front();
         m_tem_buffer_ch1.pop_front();
         msg << value_ch1 << ",";
        }
       }
-  Notify("SOUND_VOLTAGE_DATA_CH_ONE", msg.str());
   }
  }
  else if(m_channels == 2){
@@ -489,8 +490,8 @@ void StoreSoundX::SendData()
     stringstream msg_ch1,msg_ch2;
     if(m_tem_buffer_ch1.size() >= m_send_size && m_tem_buffer_ch2.size() >=m_send_size){
       for(int i=0; i<m_send_size; i++){
-        int value_ch1 = m_tem_buffer_ch1.front();
-        int value_ch2 = m_tem_buffer_ch2.front();
+        float value_ch1 = m_tem_buffer_ch1.front();
+        float value_ch2 = m_tem_buffer_ch2.front();
         m_tem_buffer_ch1.pop_front();
         m_tem_buffer_ch2.pop_front();
         msg_ch1 << value_ch1 << ",";
@@ -498,8 +499,8 @@ void StoreSoundX::SendData()
       }
     }else{
       for(int i=0; i<m_tem_buffer_ch1.size(); i++){
-        int value_ch1 = m_tem_buffer_ch1.front();
-        int value_ch2 = m_tem_buffer_ch2.front();
+        float value_ch1 = m_tem_buffer_ch1.front();
+        float value_ch2 = m_tem_buffer_ch2.front();
         m_tem_buffer_ch1.pop_front();
         m_tem_buffer_ch2.pop_front();
         msg_ch1 << value_ch1 << ",";

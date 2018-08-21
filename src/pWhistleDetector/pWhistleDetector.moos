@@ -11,9 +11,9 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = true
-  Run = pLogger         @ NewConsole = false     
-  Run = pWhistleDetector   @ NewConsole = true
+//  Run = uTimerScript    @ NewConsole = false
+//  Run = pLogger         @ NewConsole = false     
+  Run = pWhistleDetector   @ NewConsole = false
 }
 
 //------------------------------------------------
@@ -21,13 +21,11 @@ ProcessConfig = ANTLER
 
 ProcessConfig = pWhistleDetector
 {
-    AppTick   = 4
-    CommsTick = 4
+    AppTick   = 10
+    CommsTick = 10
     
     overlap         = 0.9 
-    window_length   = 2048
-    sample_rate     = 96000
-    do_detect       = true 
+    sample_rate     = 48000
     iterate_data    = 1 
     window_type     = hanning
 }

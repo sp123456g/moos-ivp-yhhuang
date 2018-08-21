@@ -11,7 +11,7 @@ using namespace std;
 
 //-------------------------------------------------------------------------
 
-mat STFT_with_FFTW3f(std::deque<float> x,int fs,unsigned int N,float overlap_percent,int win)
+mat STFT_with_FFTW3f(std::vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
 {
 //STEP_1 set up window function 
     float   W;

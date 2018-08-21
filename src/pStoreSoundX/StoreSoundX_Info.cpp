@@ -110,7 +110,8 @@ void showInterfaceAndExit()
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  Publications are determined by the node message content.      ");
-  blk("  Sound_Data = string type                                      ");
+  blk("  SOUND_VOLTAGE_DATA_CH_ONE = string type                       ");
+  blk("  SOUND_VOLTAGE_DATA_CH_TWO = string type                       ");
   blk("  START_CHECK = false                                           ");
   blk("                                                                ");
   exit(0);
