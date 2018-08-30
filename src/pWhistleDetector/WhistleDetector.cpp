@@ -90,11 +90,12 @@ bool WhistleDetector::GetVoltageData(std::string input)
     vector<string> voltages = parseString(input,',');
 
     for(int i=0; i<voltages.size(); i++){
-      float volt = atoi(voltages[i].c_str());
+      float volt = atof(voltages[i].c_str());
       
 //      if(m_voltage_data.size() >= sample_number)
 //        m_voltage_data.pop_front();
-
+//
+        
       m_voltage_data.push_back(volt);
     }
 }
@@ -131,16 +132,16 @@ bool WhistleDetector::Iterate()
     if(!m_voltage_data.empty()){
         stringstream ss;
         ss<<m_voltage_data.size();
-        reportEvent("m_voltage_data size:" + ss.str());
+//        reportEvent("m_voltage_data size:" + ss.str());
 //fft   
             if(m_voltage_data.size() >= access_data_number){
                 for(int i=0;i<access_data_number;i++)
                     input_x[i] = m_voltage_data[i];
-            
-               
+//save data to check
+              
             P = STFT_with_FFTW3f(input_x,m_fs,m_window_length,m_overlap,win_number);
 // detect_whistle algorithm
-            detect_whistle(P);
+            detect_whistle(P,m_fs,m_window_length,m_overlap);
 //check if there is whistle in the matrix
             m_whistle_exist = any(vectorise(P));
             stringstream ss_exist;
@@ -277,7 +278,3 @@ bool WhistleDetector::buildReport()
 
   return(true);
 }
-
-
-
-

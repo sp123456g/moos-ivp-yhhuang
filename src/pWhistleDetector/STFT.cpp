@@ -11,6 +11,29 @@ using namespace std;
 
 //-------------------------------------------------------------------------
 
+
+void save_data(std::string filename, FILE *fpp, mat P){
+
+    stringstream ss;
+    string filepath = "/home/yhhuang/thesis/Matlab/MOOS_DATA/";
+    string filepath_name;
+    ss<<filepath<<filename;
+    ss>>filepath_name;
+    
+    
+    fpp = fopen(filepath_name.c_str(),"w");
+    float value;
+    for(unsigned int i=0;i<P.n_rows;i++){
+        for(unsigned int j=0;j<P.n_cols;j++){
+            value = P(i,j);
+        fprintf(fpp,"%f %s",value,"  ");    
+        }
+        fprintf(fpp,"%s","\n");
+    }
+    fclose(fpp);
+}
+
+
 mat STFT_with_FFTW3f(std::vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
 {
 //STEP_1 set up window function 
@@ -278,7 +301,7 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
 }
 
 
-void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,float frq){
+void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,float frq,float frq_two){
 //moving square and high pass filter with frq Hz
     mat     P_new(P.n_rows,P.n_cols);
     P_new.zeros();
@@ -298,7 +321,7 @@ void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,floa
     mat P_sub(bandwidth_sample,time_width_sample);
 
     for(int x=0;x<P.n_cols-time_width_sample;x++){
-        for(int y=inv_freq_map(frq,fs,N);y<P.n_rows-bandwidth_sample;y+=bandwidth_sample){
+        for(int y=inv_freq_map(frq,fs,N);y<inv_freq_map(frq_two,fs,N);y+=bandwidth_sample){
             P_sub = P.submat(y,x,y+bandwidth_sample,x+time_width_sample);
             sum=accu(P_sub);             
 
@@ -313,18 +336,24 @@ void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,floa
 // detect_whistle algorithm
 void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap){
         
+    FILE *fp_first, *fp_second, *fp_third, *fp_fourth, *fp_fifth;
+    save_data("original_P",fp_first,P);
 //step1: simple moving average for each frequency(not good, take it off)
 //    simple_mov_avg(P,10);
 //step2: median filter
     median_filter(P);
+    save_data("P_after_median",fp_second,P);
 //step3: edge_detector
     edge_detector(P,10,5);
+    save_data("P_after_edge",fp_third,P);
 //step4: using moving square for narrow band checking 
 //slower edition
 //    moving_square(P,fs,N,overlap,3000);
 //faster edition
-    moving_square_use_sub_mat(P,fs,N,3000);
+    moving_square_use_sub_mat(P,fs,N,3000,10000);
+    save_data("final_P",fp_fifth,P);
 }
+
 
 std::vector<whistle> check_result(mat P, int fs,unsigned int N,float overlap){
 // this is the function for checking result of the algorithm, but only work

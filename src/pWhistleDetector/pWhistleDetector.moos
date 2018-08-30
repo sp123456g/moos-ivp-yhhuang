@@ -4,17 +4,19 @@ ServerHost = localhost
 ServerPort = 9000
 Community  = STFT
 
+
 //------------------------------------------
 // Antler configuration  block
 ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB          @ NewConsole = false
-//  Run = uTimerScript    @ NewConsole = false
-//  Run = pLogger         @ NewConsole = false     
-  Run = pWhistleDetector   @ NewConsole = false
+  Run = MOOSDB           @ NewConsole = false
+  Run = pLogger          @ NewConsole = false     
+  Run = pWhistleDetector @ NewConsole = false
+//  Run = pStoreSoundX     @ NewConsole = true
 }
+
 
 //------------------------------------------------
 // pWhistleDetector config block
@@ -30,37 +32,35 @@ ProcessConfig = pWhistleDetector
     window_type     = hanning
 }
 
-//------------------------------------------------
-// uTimerScript Configuration Block
 
-//ProcessConfig = uTimerScript
-//{
-//  AppTick   = 1000
-//  CommsTick = 1000
-//
-// 
-////  RESET_MAX  = unlimited
-////  RESET_MAX  = non
-// 
-////  RESET_TIME = end
-//
-//
-//  condition = LOGGER = true 
-//  rand_var = varname=VOLTAGE, min=-1,  max=1, key=at_post
-//
-//  EVENT = var=ACOUSTIC_DATA, val=$[VOLTAGE], time=0,amt=100000
-//
-//}
-//
-//ProcessConfig = pLogger
-//{
-//
-//    AppTick   = 1000
-//    CommsTick = 1000
-//
-//    AsyncLog = true 
-//    WildCardLogging = true
-//    WildCardOmitPattern = *_STATUS
-//    LOG = ACOUSTIC_DATA @ 0
-//    LOG = LOGGER @ 0
-//}
+//------------------------------------------------
+// pStoreSoundX config block 
+
+ProcessConfig = pStoreSoundX
+{
+    AppTick     = 10 
+    CommsTick   = 10 
+    PATH = ./ 
+    SAMPLE_RATE = 48000
+    CHANNELS = 2
+    RECORD_DEVICE = hw:0,0
+    BITS = 16
+    RECORD_TIME = 2
+    PASS_TIME = 20
+    FRAMES = 4800
+    REPEAT = false
+    SEND_SIZE = 4800
+}
+
+//------------------------------------------------
+//pLogger config block
+ProcessConfig = pLogger
+{
+
+    AppTick   = 1000
+    CommsTick = 1000
+
+    AsyncLog = true 
+    WildCardLogging = true
+    WildCardOmitPattern = *_STATUS
+}
