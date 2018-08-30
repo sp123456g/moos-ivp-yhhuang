@@ -8,7 +8,7 @@ ProcessConfig = ANTLER
 {
   Run = MOOSDB      @ NewConsole = false
   Run = pStoreSoundX @ NewConsole = false
-  Run = pLogger     @ NewConsole = false
+//  Run = pLogger     @ NewConsole = false
 }
 
 
@@ -26,7 +26,7 @@ ProcessConfig = pStoreSoundX
   CHANNELS = 2
   RECORD_DEVICE = hw:0,0
   BITS = 16
-  RECORD_TIME = 1
+  RECORD_TIME = 5
   PASS_TIME = 20
   FRAMES = 4800
   REPEAT = false
@@ -39,5 +39,6 @@ ProcessConfig = pLogger
     WildCardLogging = true 
     WildCardOmitPattern = *_STATUS
 
-    LOG = Sound_Data @ 0
+    LOG = SOUND_VOLTAGE_DATA_CH_ONE @ 0
+    LOG = SOUND_VOLTAGE_DATA_CH_TWO @ 0
 }

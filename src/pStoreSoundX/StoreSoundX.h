@@ -50,6 +50,7 @@ class StoreSoundX : public AppCastingMOOSApp
    std::deque<float> m_tem_buffer_ch1;
    std::deque<float> m_tem_buffer_ch2;
    FILE *m_fp;
+   FILE *m_fp_checking;
 
  private: // Record params
    std::string m_recordDevice;

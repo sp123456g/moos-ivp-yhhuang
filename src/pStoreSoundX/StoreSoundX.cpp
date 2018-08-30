@@ -56,6 +56,8 @@ StoreSoundX::~StoreSoundX()
   free(m_period_buffer);
   if(m_fp)
     fclose(m_fp);
+  if(m_fp_checking)
+    fclose(m_fp_checking);
 }
 
 //---------------------------------------------------------
@@ -78,6 +80,9 @@ bool StoreSoundX::OnNewMail(MOOSMSG_LIST &NewMail)
         m_loops = m_recordTime*m_sampleRate/m_frames;
         m_filename = m_path + "/" + fileTime('f'); //filename = start_record_time.bin
         m_fp = fopen(m_filename.c_str(), "wb");
+
+        m_fp_checking = fopen("/home/yhhuang/thesis/cpp_code/transform/FFTW_edition/voltage_ch1_data.dat","w");
+
         if(m_fp){
           reportEvent("Create file sucess: " + m_filename);
           stringstream tt;
@@ -377,7 +382,8 @@ void StoreSoundX::Capture()
 
             voltage_ch1 = ch1_part1 + ch1_part2; 
             m_tem_buffer_ch1.push_back(voltage_ch1);
-          }
+            
+         }
        }
        else if(m_channels == 2){
         for(int i=0; i<m_period_size-3; i=i+4){
@@ -392,6 +398,10 @@ void StoreSoundX::Capture()
 
             m_tem_buffer_ch1.push_back(voltage_ch1);
             m_tem_buffer_ch2.push_back(voltage_ch2);
+
+//store data to check if voltage is right or not 
+            fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
+ 
         }
        }
        break;
