@@ -342,10 +342,8 @@ void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap){
 //    simple_mov_avg(P,10);
 //step2: median filter
     median_filter(P);
-    save_data("P_after_median",fp_second,P);
 //step3: edge_detector
     edge_detector(P,10,5);
-    save_data("P_after_edge",fp_third,P);
 //step4: using moving square for narrow band checking 
 //slower edition
 //    moving_square(P,fs,N,overlap,3000);

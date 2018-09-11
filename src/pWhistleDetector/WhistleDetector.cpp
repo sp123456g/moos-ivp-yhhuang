@@ -146,7 +146,7 @@ bool WhistleDetector::Iterate()
             m_whistle_exist = any(vectorise(P));
             stringstream ss_exist;
             ss_exist<<m_whistle_exist;
-            reportEvent("m_whistle_exist:" + ss_exist.str());
+  //          reportEvent("m_whistle_exist:" + ss_exist.str());
 
 //remove calculated data 
             m_voltage_data.erase(m_voltage_data.begin(),m_voltage_data.begin()+round(access_data_number*1));
