@@ -64,9 +64,12 @@ bool WhistleDetector::OnNewMail(MOOSMSG_LIST &NewMail)
 
      if(key == "FOO") 
        cout << "great!";
-//     else if(key == "SOUND_VOLTAGE_DATA_CH_ONE"){
      else if(key == "SOUND_VOLTAGE_DATA_CH_ONE"){
-      m_input_data.push_back(msg.GetString());   
+//Get String data and transfer to voltage buffer
+        GetVoltageData(msg.GetString()); 
+     }
+     else if(key == "TEST_MESSAGE"){
+        m_testing_message = msg.GetString();
      }
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
@@ -92,12 +95,32 @@ bool WhistleDetector::GetVoltageData(std::string input)
     for(int i=0; i<voltages.size(); i++){
       float volt = atof(voltages[i].c_str());
       
-//      if(m_voltage_data.size() >= sample_number)
-//        m_voltage_data.pop_front();
-//
-        
       m_voltage_data.push_back(volt);
     }
+}
+
+bool WhistleDetector::Analysis(float* input_data)
+{
+
+    mat P;
+//set up window
+    int win_number;
+    if(m_window_type == "rectagular")
+        win_number = 0;
+    else 
+        win_number = 1; 
+//STFT
+    P = STFT_with_FFTW3f(input_data,m_fs,m_window_length,m_overlap,win_number,m_access_data_number);
+
+//Whistle detection
+            detect_whistle(P,m_fs,m_window_length,m_overlap);
+//check if there is whistle in the matrix
+            m_whistle_exist = any(vectorise(P));
+
+        if(m_whistle_exist)
+            Notify("WHISTLE_EXIST","true");
+        else 
+            Notify("WHISTLE_EXIST","false");
 }
 
 //---------------------------------------------------------
@@ -109,57 +132,26 @@ bool WhistleDetector::Iterate()
   AppCastingMOOSApp::Iterate();
 
 //Access data -> "m_iterate_data" seconds data per Iterate loop
-  std::string   input_str_voltage;
-  int           access_data_number = round(m_fs*m_iterate_data);
-
-
-  vector<float> input_x(access_data_number,0);
-  mat           P; 
-//Get String data and transfer to voltage buffer
-  if(!m_input_data.empty()){
-    input_str_voltage = m_input_data.front();
-    GetVoltageData(input_str_voltage); 
-    m_input_data.pop_front();
+  if(m_first_time){
+    m_access_data_number = round(m_fs*m_iterate_data);
+    m_first_time = false;
   }
-
-//set up window
-    int win_number;
-    if(m_window_type == "rectagular")
-        win_number = 0;
-    else 
-        win_number = 1; 
+  float input_x[m_access_data_number];
 
     if(!m_voltage_data.empty()){
-        stringstream ss;
-        ss<<m_voltage_data.size();
-//        reportEvent("m_voltage_data size:" + ss.str());
-//fft   
-            if(m_voltage_data.size() >= access_data_number){
-                for(int i=0;i<access_data_number;i++)
-                    input_x[i] = m_voltage_data[i];
-//save data to check
-              
-            P = STFT_with_FFTW3f(input_x,m_fs,m_window_length,m_overlap,win_number);
-// detect_whistle algorithm
-            detect_whistle(P,m_fs,m_window_length,m_overlap);
-//check if there is whistle in the matrix
-            m_whistle_exist = any(vectorise(P));
-            stringstream ss_exist;
-            ss_exist<<m_whistle_exist;
-  //          reportEvent("m_whistle_exist:" + ss_exist.str());
 
+// Get input 
+            if(m_voltage_data.size() >= m_access_data_number){
+                for(int i=0;i<m_access_data_number;i++)
+                    input_x[i] = m_voltage_data[i];
+// Analysis (detection algorithm) 
+            Analysis(input_x);
 //remove calculated data 
-            m_voltage_data.erase(m_voltage_data.begin(),m_voltage_data.begin()+round(access_data_number*1));
+            m_voltage_data.erase(m_voltage_data.begin(),m_voltage_data.begin()+round(m_access_data_number*1));
            
             }         
     }
-        if(m_whistle_exist){
-            Notify("WHISTLE_EXIST","true");
-            Notify("SOUND_VOLTAGE_DATA_WITH_WHISTLE",input_str_voltage);
-        }
-        else 
-            Notify("WHISTLE_EXIST","false");
-                 
+
     AppCastingMOOSApp::PostReport();
     return(true);
 }
@@ -250,6 +242,7 @@ void WhistleDetector::registerVariables()
   // Register("FOOBAR", 0);
    Register("ACOUSTIC_DATA", 0);
    Register("SOUND_VOLTAGE_DATA_CH_ONE", 0);
+   Register("TEST_MESSAGE",0);
 }
 
 

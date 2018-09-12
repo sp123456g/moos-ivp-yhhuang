@@ -34,7 +34,7 @@ void save_data(std::string filename, FILE *fpp, mat P){
 }
 
 
-mat STFT_with_FFTW3f(std::vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
+mat STFT_with_FFTW3f(float* x,int fs,unsigned int N,float overlap_percent,int win,int data_size)
 {
 //STEP_1 set up window function 
     float   W;
@@ -82,13 +82,13 @@ mat STFT_with_FFTW3f(std::vector<float> x,int fs,unsigned int N,float overlap_pe
     plan = fftwf_plan_r2r_1d(N, in,after_fft,FFTW_R2HC,FFTW_MEASURE);
 
 //Get the loop number to set up the size of the output matrice
-    for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap)
+    for(int start_index=0;start_index<=data_size-N;start_index+=no_overlap)
         loop_num +=1;
 
     mat spectrogram_mat(N+1,loop_num);
     mat output(fs/2,loop_num);
 //STEP_3 doing fftw loop
-    for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap){
+    for(int start_index=0;start_index<=data_size-N;start_index+=no_overlap){
 //get data by window function 
         for(int i=start_index,j=0;i<start_index+N;i++,j++){
             in[j] = x[i]*window_func[j];    
