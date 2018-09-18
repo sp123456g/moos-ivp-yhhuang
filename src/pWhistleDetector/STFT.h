@@ -73,7 +73,7 @@ class whistle{
 };
 
 
-void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap);
+void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap,float SNR_threshold=10,float frq_low=3000,float frq_high=10000);
 
 std::vector<whistle> check_result(arma::mat P,int fs, unsigned int N,float overlap);
 #endif

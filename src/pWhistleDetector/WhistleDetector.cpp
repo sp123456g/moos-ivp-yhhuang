@@ -30,6 +30,9 @@ WhistleDetector::WhistleDetector()
     m_update_percent= 0.5;
     m_window_type   = "hanning";
     m_whistle_exist = false;
+    m_SNR_threshold = 10;
+    m_frq_low       = 3000;
+    m_frq_high      = 10000;
 }
 
 
@@ -113,14 +116,32 @@ bool WhistleDetector::Analysis(float* input_data)
     P = STFT_with_FFTW3f(input_data,m_fs,m_window_length,m_overlap,win_number,m_access_data_number);
 
 //Whistle detection
-            detect_whistle(P,m_fs,m_window_length,m_overlap);
+    detect_whistle(P,m_fs,m_window_length,m_overlap,m_SNR_threshold,m_frq_low,m_frq_high);
 //check if there is whistle in the matrix
-            m_whistle_exist = any(vectorise(P));
+    m_whistle_exist = any(vectorise(P));
+// Check properties of whistles
+// ----------------------------------------------------------------
+    if(m_whistle_exist){
 
-        if(m_whistle_exist)
-            Notify("WHISTLE_EXIST","true");
-        else 
-            Notify("WHISTLE_EXIST","false");
+        Notify("WHISTLE_EXIST","true");
+
+        vector<whistle> whistle_list;
+        whistle_list = check_result(P,m_fs,m_window_length,m_overlap);
+        for(int i=0;i<whistle_list.size();i++){
+            stringstream ss_1, ss_2,ss_3,ss_4;
+            ss_1<<i;
+            ss_2<<whistle_list[i].start_frq;
+            ss_3<<whistle_list[i].end_frq;
+            ss_4<<whistle_list[i].duration;
+            reportEvent("whistle_"+ ss_1.str());
+            reportEvent("start frq = " + ss_2.str());
+            reportEvent("end frq = " + ss_3.str());
+            reportEvent("duration = " + ss_4.str());
+        }
+    }
+//-----------------------------------------------------------------
+    else 
+        Notify("WHISTLE_EXIST","false");
 }
 
 //---------------------------------------------------------
@@ -146,6 +167,7 @@ bool WhistleDetector::Iterate()
                     input_x[i] = m_voltage_data[i];
 // Analysis (detection algorithm) 
             Analysis(input_x);
+
 //remove calculated data 
             m_voltage_data.erase(m_voltage_data.begin(),m_voltage_data.begin()+round(m_access_data_number*1));
            
@@ -218,7 +240,28 @@ bool WhistleDetector::OnStartUp()
       m_window_type = value;
       handled = true;
     }
-    else if(param == "data_update_second"){
+    else if(param == "snr_threshold"){
+        stringstream ss;
+        ss<<value;
+        ss>>m_SNR_threshold;
+
+        handled = true;
+    }
+    else if(param == "band_pass_frq_low"){
+        stringstream ss;
+        ss<<value;
+        ss>>m_frq_low;
+
+        handled = true;
+    }
+    else if(param == "band_pass_frq_high"){
+    stringstream ss;
+        ss<<value;
+        ss>>m_frq_high;
+
+        handled = true;
+    }
+    else if(param == "data_update_percent"){
         stringstream ss;
         ss<<value;
         ss>>m_update_percent;

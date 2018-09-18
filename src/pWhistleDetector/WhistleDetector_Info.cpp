@@ -79,13 +79,21 @@ void showExampleConfigAndExit()
   blk("        sample_rate      = 96000                                 ");
   blk("        iterate_data     = 1                                     ");
   blk("        window_type      = hanning (or rectangular)              ");
+  blk("        bits             = 16                                    ");
+  blk("        SNR_threshold    = 10                                    ");
+  blk("        band_pass_frq_low= 3000                                  ");
+  blk("        band_pass_frq_high= 10000                                ");
   blk("}                                                                ");
   blk("                                                                 ");
-  blk(" overlap:        STFT overlap between each window                ");
-  blk(" window_length:  samples, must be power of two to be faster      ");
-  blk(" sample_rate:    how many sample per second                      ");
-  blk(" iterate_data:   how many seconds data each iterate              ");
-  blk(" window_type:    STFT window type, hanning or rectagular         ");
+  blk(" overlap:            STFT overlap between each window            ");
+  blk(" window_length:      samples, must be power of two to be faster  ");
+  blk(" sample_rate:        how many sample per second                  ");
+  blk(" iterate_data:       how many seconds data each iterate          ");
+  blk(" window_type:        STFT window type, hanning or rectagular     ");
+  blk(" bits:               resolution for recording                    ");
+  blk(" SNR_threshold:      SNR threshold for edge detector             ");
+  blk(" band_pass_frq_low:  lower  freqeuncy for band pass filter       ");
+  blk(" band_pass_frq_high: higher freqeuncy for band pass filter       ");
   blk("                                                                 ");
   exit(0);
 }

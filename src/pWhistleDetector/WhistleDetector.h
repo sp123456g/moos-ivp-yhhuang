@@ -49,6 +49,9 @@ class WhistleDetector : public AppCastingMOOSApp
     bool        m_whistle_exist;
     bool        m_first_time;
 
+    float       m_SNR_threshold;
+    float       m_frq_low;
+    float       m_frq_high;
     std::string m_window_type;   // Window type: "hanning" or "rectangular" window
     std::string m_testing_message;
     

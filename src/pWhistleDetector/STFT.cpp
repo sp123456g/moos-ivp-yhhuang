@@ -8,7 +8,6 @@
 using namespace arma;
 using namespace std;
 
-
 //-------------------------------------------------------------------------
 
 
@@ -322,6 +321,10 @@ void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,floa
 
     for(int x=0;x<P.n_cols-time_width_sample;x++){
         for(int y=inv_freq_map(frq,fs,N);y<inv_freq_map(frq_two,fs,N);y+=bandwidth_sample){
+
+            if(y > fs/2)
+                break;
+            
             P_sub = P.submat(y,x,y+bandwidth_sample,x+time_width_sample);
             sum=accu(P_sub);             
 
@@ -334,7 +337,7 @@ void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,floa
     P = P_new;
 }
 // detect_whistle algorithm
-void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap){
+void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high){
         
     FILE *fp_first, *fp_second, *fp_third, *fp_fourth, *fp_fifth;
     save_data("original_P",fp_first,P);
@@ -343,12 +346,14 @@ void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap){
 //step2: median filter
     median_filter(P);
 //step3: edge_detector
-    edge_detector(P,10,5);
+//    edge_detector(P,10,5);
+    edge_detector(P,SNR_threshold,5);
 //step4: using moving square for narrow band checking 
 //slower edition
 //    moving_square(P,fs,N,overlap,3000);
 //faster edition
-    moving_square_use_sub_mat(P,fs,N,3000,10000);
+//band-pass filter: 3000 ~ 10000 Hz is good
+    moving_square_use_sub_mat(P,fs,N,frq_low,frq_high);
     save_data("final_P",fp_fifth,P);
 }
 
