@@ -20,8 +20,11 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pWhistleDetector application is used for analysis acoustics");
+  blk("  The pWhistleDetector is used for analysis acoustics           ");
   blk("  data and check if there are whistle or chirp signal exist.    ");
+  blk("                                                                ");
+  blk("  You can use SpectrogramViewer.m file to check real-time       ");
+  blk("  spectrogram and result after algorithm every time             ");
   blk("                                                                ");
   blk("  Installation Package:                                         ");
   blk("     armadillo, fftw3f                                          ");

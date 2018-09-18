@@ -11,10 +11,9 @@ using namespace std;
 //-------------------------------------------------------------------------
 
 
-void save_data(std::string filename, FILE *fpp, mat P){
+void save_data(std::string filename, FILE *fpp, mat P, string filepath="./Spectrogram_data/"){
 
     stringstream ss;
-    string filepath = "/home/yhhuang/thesis/Matlab/MOOS_DATA/";
     string filepath_name;
     ss<<filepath<<filename;
     ss>>filepath_name;

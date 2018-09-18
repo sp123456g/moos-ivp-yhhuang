@@ -31,8 +31,8 @@ ProcessConfig = pWhistleDetector
     iterate_data        = 1 
     window_type         = hanning
     bits                = 16;
-    SNR_threshold       = 20;
-    band_pass_frq_low   = 10000;
+    SNR_threshold       = 10;
+    band_pass_frq_low   = 3000;
     band_pass_frq_high  = 20000;
 }
 
