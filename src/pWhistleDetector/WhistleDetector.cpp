@@ -4,15 +4,12 @@
 /*    FILE: WhistleDetector.cpp                                */
 /*    DATE: Aug 17th 2018                                   */
 /************************************************************/
-
 #include <iterator>
 #include "MBUtils.h"
 #include "ACTable.h"
 #include "WhistleDetector.h"
-#include <armadillo>
 #include "STFT.h"
 using namespace std;
-using namespace arma;
 
 //---------------------------------------------------------
 // Constructor
@@ -102,10 +99,10 @@ bool WhistleDetector::GetVoltageData(std::string input)
     }
 }
 
-bool WhistleDetector::Analysis(float* input_data)
+bool WhistleDetector::Analysis(vector<float> input_data)
 {
 
-    mat P;
+    vector<vector<float> > P;
 //set up window
     int win_number;
     if(m_window_type == "rectagular")
@@ -113,20 +110,20 @@ bool WhistleDetector::Analysis(float* input_data)
     else 
         win_number = 1; 
 //STFT
-    P = STFT_with_FFTW3f(input_data,m_fs,m_window_length,m_overlap,win_number,m_access_data_number);
+    P = STFT_with_FFTW3f(input_data,m_fs,m_window_length,m_overlap,win_number);
 
 //Whistle detection
     detect_whistle(P,m_fs,m_window_length,m_overlap,m_SNR_threshold,m_frq_low,m_frq_high);
 //check if there is whistle in the matrix
-    m_whistle_exist = any(vectorise(P));
+        vector<whistle> whistle_list;
+        whistle_list = check_result(P,m_fs,m_window_length,m_overlap);
+    m_whistle_exist = !whistle_list.empty();
 // Check properties of whistles
 // ----------------------------------------------------------------
     if(m_whistle_exist){
 
         Notify("WHISTLE_EXIST","true");
 
-        vector<whistle> whistle_list;
-        whistle_list = check_result(P,m_fs,m_window_length,m_overlap);
         for(int i=0;i<whistle_list.size();i++){
             stringstream ss_1, ss_2,ss_3,ss_4;
             ss_1<<i;
@@ -157,7 +154,7 @@ bool WhistleDetector::Iterate()
     m_access_data_number = round(m_fs*m_iterate_data);
     m_first_time = false;
   }
-  float input_x[m_access_data_number];
+  vector<float> input_x(m_access_data_number,0);
 
     if(!m_voltage_data.empty()){
 

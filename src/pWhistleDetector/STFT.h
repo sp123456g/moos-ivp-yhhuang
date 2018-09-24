@@ -6,17 +6,17 @@
 //Date:   Aug 17th 2018
 //***********************************************************************
 #include <iostream>
-#include <armadillo>
 #include <cmath>
 #include <math.h>
 #include <stdio.h>
 #include <vector>
 #include <deque>
 #include <iomanip>
+#include <sstream>
 
 
 const float pi = 3.1415926;
-const std::complex<float> i(0,1);
+//const std::complex<float> i(0,1);
 
 
 //Function list:
@@ -27,7 +27,7 @@ const std::complex<float> i(0,1);
 //5. void detect_click();
 //-------------------------------------------------------------------------
 
-arma::mat STFT_with_FFTW3f(float* x, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1, int data_size=96000);
+std::vector<std::vector<float> > STFT_with_FFTW3f(std::vector<float>, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1);
 //Use fft in FFTW package, is faster than arma package
 //------------------------------------------------------------------------
 // output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)
@@ -73,7 +73,7 @@ class whistle{
 };
 
 
-void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap,float SNR_threshold=10,float frq_low=3000,float frq_high=10000);
+void detect_whistle(std::vector<std::vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold=10,float frq_low=3000,float frq_high=10000);
 
-std::vector<whistle> check_result(arma::mat P,int fs, unsigned int N,float overlap);
+std::vector<whistle> check_result(std::vector<std::vector<float> > P,int fs, unsigned int N,float overlap);
 #endif

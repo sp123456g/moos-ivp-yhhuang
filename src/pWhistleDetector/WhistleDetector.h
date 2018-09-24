@@ -25,7 +25,7 @@ class WhistleDetector : public AppCastingMOOSApp
  protected: // Standard AppCastingMOOSApp function to overload 
    bool buildReport();
    bool GetVoltageData(std::string);
-   bool Analysis(float*);
+   bool Analysis(std::vector<float>);
 
  protected:
    void registerVariables();

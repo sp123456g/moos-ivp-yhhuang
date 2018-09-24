@@ -5,13 +5,10 @@
 //***********************************************************************
 #include "STFT.h"
 #include <fftw3.h>
-using namespace arma;
 using namespace std;
-
 //-------------------------------------------------------------------------
 
-
-void save_data(std::string filename, FILE *fpp, mat P, string filepath="./Spectrogram_data/"){
+void save_data(std::string filename, FILE *fpp, vector<vector<float> > P, string filepath="./Spectrogram_data/"){
 
     stringstream ss;
     string filepath_name;
@@ -21,9 +18,9 @@ void save_data(std::string filename, FILE *fpp, mat P, string filepath="./Spectr
     
     fpp = fopen(filepath_name.c_str(),"w");
     float value;
-    for(unsigned int i=0;i<P.n_rows;i++){
-        for(unsigned int j=0;j<P.n_cols;j++){
-            value = P(i,j);
+    for(unsigned int i=0;i<P.size();i++){
+        for(unsigned int j=0;j<P[0].size();j++){
+            value = P[i][j];
         fprintf(fpp,"%f %s",value,"  ");    
         }
         fprintf(fpp,"%s","\n");
@@ -32,7 +29,7 @@ void save_data(std::string filename, FILE *fpp, mat P, string filepath="./Spectr
 }
 
 
-mat STFT_with_FFTW3f(float* x,int fs,unsigned int N,float overlap_percent,int win,int data_size)
+vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
 {
 //STEP_1 set up window function 
     float   W;
@@ -47,7 +44,6 @@ mat STFT_with_FFTW3f(float* x,int fs,unsigned int N,float overlap_percent,int wi
 
 // 0 is Rectangular 
 // 1 is Hann 
-// 2 is Gassian
 
     int i;
     switch (win) {
@@ -80,13 +76,18 @@ mat STFT_with_FFTW3f(float* x,int fs,unsigned int N,float overlap_percent,int wi
     plan = fftwf_plan_r2r_1d(N, in,after_fft,FFTW_R2HC,FFTW_MEASURE);
 
 //Get the loop number to set up the size of the output matrice
-    for(int start_index=0;start_index<=data_size-N;start_index+=no_overlap)
+    for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap)
         loop_num +=1;
 
-    mat spectrogram_mat(N+1,loop_num);
-    mat output(fs/2,loop_num);
+//arma matrix    
+//    mat spectrogram_mat(N+1,loop_num);
+//    mat output(fs/2,loop_num);
+
+//Eigen matrix
+    vector<vector<float> > spectrogram_mat(N+1,vector<float>(loop_num));
+    vector<vector<float> > output((N/2)+1,vector<float>(loop_num));
 //STEP_3 doing fftw loop
-    for(int start_index=0;start_index<=data_size-N;start_index+=no_overlap){
+    for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap){
 //get data by window function 
         for(int i=start_index,j=0;i<start_index+N;i++,j++){
             in[j] = x[i]*window_func[j];    
@@ -97,7 +98,7 @@ mat STFT_with_FFTW3f(float* x,int fs,unsigned int N,float overlap_percent,int wi
         for(int k=0 ;k<=N;k++){
             power[k+1] = sqrt(pow(after_fft[k],2)+pow(after_fft[N-k],2));
 //Save in the 2 dimensional array
-            spectrogram_mat(k,time_index) = power[k];
+            spectrogram_mat[k][time_index] = power[k];
         }
         time_index++;
     }
@@ -112,9 +113,13 @@ mat STFT_with_FFTW3f(float* x,int fs,unsigned int N,float overlap_percent,int wi
         fftwf_cleanup();
 //output: row is frequency and column is time, just means x is time and y is frequency
 //But remember to change the index to exact frequency and time 
-        spectrogram_mat = spectrogram_mat.submat(0,0,N/2,time_index-1);
 
-    return(spectrogram_mat);
+//arma edition
+//        spectrogram_mat = spectrogram_mat.submat(0,0,N/2,time_index-1);
+//Eigen edition 
+        for(int i=0;i<=N/2;i++)
+                output[i] = spectrogram_mat[i];
+    return(output);
 }
 
 unsigned int frequency_mapping(unsigned int input_index, int fs,int N){
@@ -153,39 +158,39 @@ unsigned int inv_time_map(float input_time,int fs, int N,float overlap_percent){
 //--------------------------------------------------------------------------------------
 
 
-void simple_mov_avg(arma::mat &P, int n_avg=10){
+void simple_mov_avg(vector<vector<float> > &P, int n_avg=10){
 
     
-    mat     avg_P(P.n_rows,P.n_cols); 
+    vector<vector<float> >     avg_P(P.size(),vector<float>(P[0].size())); 
 
-    for(int m=0;m<P.n_rows;m++){
+    for(int m=0;m<P.size();m++){
         int start_index = 0;
         
-        while(start_index!=(P.n_cols-1)){
+        while(start_index!=(P[0].size()-1)){
             float  temp    = 0;   //temperary sum
             for(int n=(start_index-n_avg/2);n<(start_index+n_avg/2);n++){
-                if(!(n<0 || n>=P.n_cols))
-                    temp += P(m,n); 
+                if(!(n<0 || n>=P[0].size()))
+                    temp += P[m][n]; 
                 
             }
-            avg_P(m,start_index) = temp/n_avg; 
+            avg_P[m][start_index] = temp/n_avg; 
             start_index++;
         }
     }
     P = avg_P;
 }
 
-void median_filter(arma::mat &P){
+void median_filter(vector<vector<float> > &P){
 // 3*3 median filter
 
-    for(unsigned int x = 1 ; x < P.n_rows-1 ; x++) {
-        for(unsigned int y = 1; y < P.n_cols-1 ; y++) {
+    for(unsigned int x = 1 ; x < P.size()-1 ; x++) {
+        for(unsigned int y = 1; y < P[0].size()-1 ; y++) {
 
             unsigned int k = 0;  
             float window[9];  
             for(unsigned int xx = x - 1; xx < x + 2; ++xx){  
                 for(unsigned int yy = y - 1; yy < y + 2; ++yy)  
-                    window[k++] = P(xx,yy);  
+                    window[k++] = P[xx][yy];  
             }
             //   Order elements (only half of them)  
             for (unsigned int m = 0; m < 5; ++m)  
@@ -199,30 +204,31 @@ void median_filter(arma::mat &P){
                 window[m] = window[min];  
                 window[min] = temp;  
             }  
-            P(x,y)= window[4]; 
+            P[x][y]= window[4]; 
         }
     }
 }
 
 
-
-void edge_detector(arma::mat &P,float SNR_threshold,unsigned int jump_num){
+void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int jump_num){
 
     float SNR=0;
-    mat P_new(P.n_rows,P.n_cols); 
-    P_new.zeros();
+    vector<vector<float> > P_new(P.size(),vector<float>(P[0].size())); 
+    for(int i=0;i<P[0].size();i++){
 
-    for(int i=0;i<P.n_cols;i++){
-
-        vec time_column = P.col(i);
-        for(int j=jump_num;j<time_column.n_elem;j++){
-            if(j>=time_column.n_elem-jump_num)
-                P(j,i) = 0;
+        vector<float> time_column(P.size(),0);
+        for(int k=0;k<P.size();k++){
+            time_column[k] = P[k][i];
+        }
+             
+        for(int j=jump_num;j<time_column.size();j++){
+            if(j>=time_column.size()-jump_num)
+                P[j][i] = 0;
             else{
-                if(time_column(j-jump_num)!=0 || time_column(j+jump_num)!=0)    
-                    SNR= 10*log(time_column(j)/(time_column(j-jump_num)*0.5+time_column(j+jump_num)*0.5));
+                 if(time_column[j-jump_num]!=0 || time_column[j+jump_num]!=0)    
+                    SNR= 10*log(time_column[j]/(time_column[j-jump_num]*0.5+time_column[j+jump_num]*0.5));
                 if(SNR > SNR_threshold){
-                    P_new(j,i) = 1;
+                    P_new[j][i] = 1;
                 }
             }
         }
@@ -231,10 +237,9 @@ void edge_detector(arma::mat &P,float SNR_threshold,unsigned int jump_num){
 }
 
 //narrow band checking 
-void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,float frq){
+void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, float overlap,float frq){
 //moving square and high pass filter with frq Hz
-    mat     P_new(P.n_rows,P.n_cols);
-    P_new.zeros();
+    vector<vector<float> >     P_new(P.size(),vector<float>(P[0].size()));
     
     vector<int> x_buf;
     vector<int> y_buf;
@@ -244,12 +249,6 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
     float  percent_threshold=0.5;
     unsigned int bandwidth_sample = 5;
     unsigned int time_width_sample = 11;
-//    unsigned int bandwidth  = 200;
-//    float       dt = time_mapping(1,fs,N,overlap)-time_mapping(0,fs,N,overlap);
-//    unsigned int bandwidth_sample = inv_freq_map(bandwidth,fs,N);
-//    unsigned int time_width_sample= round(time_width/dt);
-//    cout<<"bandwidth_sample="<<bandwidth_sample<<endl;
-//    cout<<"time_width_sample="<<time_width_sample<<endl;
 
     if(bandwidth_sample%2==0)
         bandwidth_sample-=1;
@@ -257,8 +256,8 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
         time_width_sample+=1;
  //   unsigned int time_width_sample= inv_time_map(time_width,fs,N,overlap);
     
-    for(int x = (bandwidth_sample-1)/2 ; x < P.n_rows-((bandwidth_sample-1)/2) ; x++) {
-        for(int y = (time_width_sample-1)/2; y < P.n_cols-((time_width_sample-1)/2) ; y++) {
+    for(int x = (bandwidth_sample-1)/2 ; x < P.size()-((bandwidth_sample-1)/2) ; x++) {
+        for(int y = (time_width_sample-1)/2; y < P[0].size()-((time_width_sample-1)/2) ; y++) {
 
             float percent = 0;
             int k = 0;  
@@ -267,7 +266,7 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
 
             for(int xx = x-(bandwidth_sample-1)/2; xx < x +((bandwidth_sample-1)/2)+1; ++xx){  
                 for(int yy = y-(time_width_sample-1)/2;yy<y+((time_width_sample-1)/2)+1;++yy){  
-                    if(P(xx,yy)==1){
+                    if(P[xx][yy]==1){
                         k++;  
                         x_buf.push_back(xx);
                         y_buf.push_back(yy);
@@ -276,11 +275,6 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
                 }
             }
            if(k>30){
-//               cout<<"k="<<k<<endl;
-//               cout<<"x="<<x<<endl;
-//               cout<<"y="<<y<<endl;
-//                   percent =float(k)/float(bandwidth_sample*time_width_sample);
-//                   cout<<"percent:"<<percent<<endl;
 
             }
             percent =float(k)/float(bandwidth_sample*time_width_sample);
@@ -288,7 +282,7 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
             if(percent >= percent_threshold){ 
                 if(x>N*frq/fs){     //high pass filter (frq Hz)
                     for(int i=0;i<x_buf.size();i++){
-                        P_new(x_buf[i],y_buf[i]) = 1;
+                        P_new[x_buf[i]][y_buf[i]] = 1;
                     } 
                 }
             }
@@ -298,45 +292,7 @@ void moving_square(arma::mat &P,unsigned int fs, unsigned int N, float overlap,f
     P = P_new;
 }
 
-
-void moving_square_use_sub_mat(arma::mat &P,unsigned int fs, unsigned int N,float frq,float frq_two){
-//moving square and high pass filter with frq Hz
-    mat     P_new(P.n_rows,P.n_cols);
-    P_new.zeros();
-
-    unsigned int    last_time_index;
-    unsigned int    last_frq_index;
-
-    float  time_width = 0.01;
-    float  percent_threshold=0.5;
-
-    unsigned int bandwidth_sample = 5;
-    unsigned int time_width_sample = 11;
-
-    unsigned int threshold_num = round(percent_threshold*bandwidth_sample*time_width_sample);
-    unsigned int sum=0;    
-
-    mat P_sub(bandwidth_sample,time_width_sample);
-
-    for(int x=0;x<P.n_cols-time_width_sample;x++){
-        for(int y=inv_freq_map(frq,fs,N);y<inv_freq_map(frq_two,fs,N);y+=bandwidth_sample){
-
-            if(y > fs/2)
-                break;
-            
-            P_sub = P.submat(y,x,y+bandwidth_sample,x+time_width_sample);
-            sum=accu(P_sub);             
-
-            if(sum>=threshold_num){
-                P_new.submat(y,x,y+bandwidth_sample,x+time_width_sample) = P_sub;
-            }
-        }
-    }
-    
-    P = P_new;
-}
-// detect_whistle algorithm
-void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high){
+void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high){
         
     FILE *fp_first, *fp_second, *fp_third, *fp_fourth, *fp_fifth;
     save_data("original_P",fp_first,P);
@@ -346,18 +302,18 @@ void detect_whistle(arma::mat &P,int fs,unsigned int N,float overlap,float SNR_t
     median_filter(P);
 //step3: edge_detector
 //    edge_detector(P,10,5);
-    edge_detector(P,SNR_threshold,5);
+   edge_detector(P,SNR_threshold,5);
 //step4: using moving square for narrow band checking 
 //slower edition
-//    moving_square(P,fs,N,overlap,3000);
+    moving_square(P,fs,N,overlap,3000);
 //faster edition
 //band-pass filter: 3000 ~ 10000 Hz is good
-    moving_square_use_sub_mat(P,fs,N,frq_low,frq_high);
+//    moving_square_use_sub_mat(P,fs,N,frq_low,frq_high);
     save_data("final_P",fp_fifth,P);
 }
 
 
-std::vector<whistle> check_result(mat P, int fs,unsigned int N,float overlap){
+std::vector<whistle> check_result(vector<vector<float> > P, int fs,unsigned int N,float overlap){
 // this is the function for checking result of the algorithm, but only work
 // when there is only one chirp signal   
     
@@ -378,9 +334,9 @@ std::vector<whistle> check_result(mat P, int fs,unsigned int N,float overlap){
     int     checking_bandwidth = 300;  //Hz
     int     checking_bandwidth_sample = inv_freq_map(checking_bandwidth,fs,N);
     
-    for(int i=0;i<P.n_cols;i++){
-        for(int j=0;j<P.n_rows;j++){
-            if(P(j,i)==1){
+    for(int i=0;i<P[0].size();i++){
+        for(int j=0;j<P.size();j++){
+            if(P[j][i]==1){
                 if(first_node){
                     last_node.x = i;
                     last_node.y = j;

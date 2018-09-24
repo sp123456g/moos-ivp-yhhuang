@@ -15,7 +15,6 @@ ADD_EXECUTABLE(pWhistleDetector ${SRC})
 TARGET_LINK_LIBRARIES(pWhistleDetector
    ${MOOS_LIBRARIES}
    apputil
-   armadillo
    fftw3f
    mbutil
    m
