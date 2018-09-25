@@ -6,7 +6,7 @@
 SET(SRC
   WhistleDetector.cpp
   WhistleDetector_Info.cpp
-  STFT.cpp
+  detection_algorithm.cpp
   main.cpp
 )
 

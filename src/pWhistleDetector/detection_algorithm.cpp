@@ -2,8 +2,10 @@
 //Author: Yen-Hsiang Huang(yhhuang)
 //Origin: National Taiwan University
 //Date:   Aug 17th, 2018
+
+//Library: fftw3 library
 //***********************************************************************
-#include "STFT.h"
+#include "detection_algorithm.h"
 #include <fftw3.h>
 using namespace std;
 //-------------------------------------------------------------------------
@@ -79,11 +81,7 @@ vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,fl
     for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap)
         loop_num +=1;
 
-//arma matrix    
-//    mat spectrogram_mat(N+1,loop_num);
-//    mat output(fs/2,loop_num);
-
-//Eigen matrix
+//vector<vector<float> > matrix
     vector<vector<float> > spectrogram_mat(N+1,vector<float>(loop_num));
     vector<vector<float> > output((N/2)+1,vector<float>(loop_num));
 //STEP_3 doing fftw loop
@@ -103,22 +101,16 @@ vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,fl
         time_index++;
     }
 // the spectrogram_mat variable is now x:time sample, y:frequency   
-//STEP_4 mapping frequency from N sample(spectrogram_mat) to fs sample (output)
-// but this step spend too many times
-//    for(int i=0;i<fs/2;i++){
-//       output.row(i) = spectrogram_mat.row(round(i*N/fs)); 
-//       cout<<"round(i*N/fs)="<<round(i*N/fs)<<endl;
-//    }
+
         fftwf_destroy_plan(plan);
         fftwf_cleanup();
 //output: row is frequency and column is time, just means x is time and y is frequency
 //But remember to change the index to exact frequency and time 
 
-//arma edition
-//        spectrogram_mat = spectrogram_mat.submat(0,0,N/2,time_index-1);
-//Eigen edition 
+// only use date from 0 Hz ~ fs/2 Hz (Nyquist frequency)
         for(int i=0;i<=N/2;i++)
                 output[i] = spectrogram_mat[i];
+
     return(output);
 }
 
@@ -151,7 +143,7 @@ unsigned int inv_time_map(float input_time,int fs, int N,float overlap_percent){
 }
 //--------------------------------------------------------------------------------------
 //function for detect algorithm
-//1. simple moving average 
+//1. simple moving average (not neccessary)
 //2. median filter
 //3. edge detector
 //4. moving_square  
@@ -236,29 +228,32 @@ void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int ju
     P = P_new;
 }
 
-//narrow band checking 
-void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, float overlap,float frq){
-//moving square and high pass filter with frq Hz
+//narrow band checking and time continuous properties checking 
+void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, float overlap,float frq1,float frq2){
+//moving square and band pass filter with frq1 ~ frq2 Hz
     vector<vector<float> >     P_new(P.size(),vector<float>(P[0].size()));
     
     vector<int> x_buf;
     vector<int> y_buf;
     int last_time_x;
 
-    float  time_width = 0.01;
-    float  percent_threshold=0.5;
-    unsigned int bandwidth_sample = 5;
-    unsigned int time_width_sample = 11;
+    float  percent_threshold=0.5;       // threshold for decide if it need to be left or delete
+    unsigned int bandwidth_sample = 5;  // 215 Hz band width checking
+    unsigned int time_width_sample = 11; // 0.0234 second time width checking
 
     if(bandwidth_sample%2==0)
         bandwidth_sample-=1;
     if(time_width_sample%2==0)
         time_width_sample+=1;
- //   unsigned int time_width_sample= inv_time_map(time_width,fs,N,overlap);
-    
-    for(int x = (bandwidth_sample-1)/2 ; x < P.size()-((bandwidth_sample-1)/2) ; x++) {
+
+// using band pass filter frq1 ~ frq2   
+    for(int x = N*frq1/fs ; x < N*frq2/fs-((bandwidth_sample-1)/2) ; x++) {
         for(int y = (time_width_sample-1)/2; y < P[0].size()-((time_width_sample-1)/2) ; y++) {
 
+//over Nyquist frequency , break the loop1. 
+            if(x>=N/2)
+                break;
+            
             float percent = 0;
             int k = 0;  
             x_buf.clear();
@@ -274,19 +269,16 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
                         
                 }
             }
-           if(k>30){
-
-            }
             percent =float(k)/float(bandwidth_sample*time_width_sample);
 
             if(percent >= percent_threshold){ 
-                if(x>N*frq/fs){     //high pass filter (frq Hz)
-                    for(int i=0;i<x_buf.size();i++){
+                    for(int i=0;i<x_buf.size();i++)
                         P_new[x_buf[i]][y_buf[i]] = 1;
-                    } 
-                }
             }
         }
+//over Nyquist frequency , break the loop2. 
+        if(x>=N/2)
+            break;
     }
   
     P = P_new;
@@ -295,20 +287,17 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
 void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high){
         
     FILE *fp_first, *fp_second, *fp_third, *fp_fourth, *fp_fifth;
+//step5: save data before detection    
     save_data("original_P",fp_first,P);
-//step1: simple moving average for each frequency(not good, take it off)
+//step1: simple moving average for each frequency(not neccessary)
 //    simple_mov_avg(P,10);
 //step2: median filter
     median_filter(P);
 //step3: edge_detector
-//    edge_detector(P,10,5);
    edge_detector(P,SNR_threshold,5);
 //step4: using moving square for narrow band checking 
-//slower edition
-    moving_square(P,fs,N,overlap,3000);
-//faster edition
-//band-pass filter: 3000 ~ 10000 Hz is good
-//    moving_square_use_sub_mat(P,fs,N,frq_low,frq_high);
+    moving_square(P,fs,N,overlap,frq_low,frq_high);
+//step5: save data after detection    
     save_data("final_P",fp_fifth,P);
 }
 

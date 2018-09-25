@@ -8,7 +8,7 @@
 #include "MBUtils.h"
 #include "ACTable.h"
 #include "WhistleDetector.h"
-#include "STFT.h"
+#include "detection_algorithm.h"
 using namespace std;
 
 //---------------------------------------------------------
