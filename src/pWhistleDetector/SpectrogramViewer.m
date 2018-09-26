@@ -3,7 +3,7 @@ clear all;clc;
 % Real-time plotting 
 % device setting
 %----------------------------------------------------
-    fs        = 48000;
+    fs        = 96000;
     duration  = 1;
     time_buff = 10;
 %----------------------------------------------------
@@ -51,7 +51,7 @@ title("Original spectrogram");
 xlabel('Time (sec)');     
 ylabel('Frequency (kHz)');     
 % set(hbar,'ytick',[0:5:50]);
-caxis([0 10]);
+caxis([0 5]);
 colormap(jet);
 
 

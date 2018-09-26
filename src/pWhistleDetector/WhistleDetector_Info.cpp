@@ -27,7 +27,7 @@ void showSynopsis()
   blk("  spectrogram and result after algorithm every time             ");
   blk("                                                                ");
   blk("  Installation Package:                                         ");
-  blk("     armadillo, fftw3f                                          ");
+  blk("     fftw3                                                      ");
 }
 
 //----------------------------------------------------------------
@@ -74,18 +74,18 @@ void showExampleConfigAndExit()
   blk("                                                                 ");
   blk("ProcessConfig = pWhistleDetector                                 ");
   blk("{                                                                ");
-  blk("        AppTick          = 4                                     ");
-  blk("        CommsTick        = 4                                     ");
+  blk("        AppTick            = 4                                   ");
+  blk("        CommsTick          = 4                                   ");
   blk("                                                                 ");
-  blk("        overlap          = 0.9                                   ");
-  blk("        window_length    = 2048                                  ");
-  blk("        sample_rate      = 96000                                 ");
-  blk("        iterate_data     = 1                                     ");
-  blk("        window_type      = hanning (or rectangular)              ");
-  blk("        bits             = 16                                    ");
-  blk("        SNR_threshold    = 10                                    ");
-  blk("        band_pass_frq_low= 3000                                  ");
-  blk("        band_pass_frq_high= 10000                                ");
+  blk("        overlap            = 0.9                                 ");
+  blk("        window_length      = 2048                                ");
+  blk("        sample_rate        = 96000                               ");
+  blk("        iterate_data       = 1                                   ");
+  blk("        window_type        = hanning (or rectangular)            ");
+  blk("        bits               = 16                                  ");
+  blk("        SNR_threshold      = 10                                  ");
+  blk("        band_pass_frq_low  = 3000                                ");
+  blk("        band_pass_frq_high = 10000                               ");
   blk("}                                                                ");
   blk("                                                                 ");
   blk(" overlap:            STFT overlap between each window            ");

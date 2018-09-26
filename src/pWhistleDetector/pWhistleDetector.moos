@@ -27,13 +27,13 @@ ProcessConfig = pWhistleDetector
     CommsTick = 10
     
     overlap             = 0.9 
-    sample_rate         = 48000
+    sample_rate         = 96000
     iterate_data        = 1 
     window_type         = hanning
-    bits                = 16;
-    SNR_threshold       = 20;
-    band_pass_frq_low   = 3000;
-    band_pass_frq_high  = 20000;
+    bits                = 32;
+    SNR_threshold       = 10;
+    band_pass_frq_low   = 9000;
+    band_pass_frq_high  = 40000;
 }
 
 
