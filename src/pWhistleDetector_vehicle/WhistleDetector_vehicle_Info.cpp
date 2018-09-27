@@ -1,13 +1,13 @@
 /****************************************************************/
 /*   NAME: yhhuang                                              */
 /*   ORGN: NTU Taiwan                                           */
-/*   FILE: WhistleDetector_Info.cpp                                */
+/*   FILE: WhistleDetector_vehicle_Info.cpp                                */
 /*   DATE: Aug 17th 2018                                        */
 /****************************************************************/
 
 #include <cstdlib>
 #include <iostream>
-#include "WhistleDetector_Info.h"
+#include "WhistleDetector_vehicle_Info.h"
 #include "ColorParse.h"
 #include "ReleaseInfo.h"
 
@@ -20,14 +20,13 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pWhistleDetector is used for analysis acoustics           ");
-  blk("  data and check if there are whistle or chirp signal exist,    ");
+  blk("  The pWhistleDetector_vehicle is used for analysis acoustics   ");
+  blk("  data and check if there are whistle or chirp signal exist.    ");
   blk("                                                                ");
   blk("  pWhistleDetector is used at shoreside, and                    ");
   blk("  pWhistleDetector_vehicle is used at vehicle                   ");
   blk("                                                                ");
-  blk("  You can use SpectrogramViewer.m file to check real-time       ");
-  blk("  spectrogram and result after algorithm every time             ");
+  blk("  Remember to set up pShare to send the Sound data back         ");
   blk("                                                                ");
   blk("  Installation Package:                                         ");
   blk("     fftw3                                                      ");
@@ -40,15 +39,15 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: pWhistleDetector file.moos [OPTIONS]                   ");
+  blu("Usage: pWhistleDetector_vehicle file.moos [OPTIONS]                   ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pWhistleDetector with the given process name         ");
-  blk("      rather than pWhistleDetector.                           ");
+  blk("      Launch pWhistleDetector_vehicle with the given process name         ");
+  blk("      rather than pWhistleDetector_vehicle.                           ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -56,7 +55,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pWhistleDetector.        ");
+  blk("      Display the release version of pWhistleDetector_vehicle.        ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -72,10 +71,10 @@ void showExampleConfigAndExit()
 {
   blk("                                                                 ");
   blu("===============================================================  ");
-  blu("pWhistleDetector Example MOOS Configuration                      ");
+  blu("pWhistleDetector_vehicle Example MOOS Configuration                      ");
   blu("===============================================================  ");
   blk("                                                                 ");
-  blk("ProcessConfig = pWhistleDetector                                 ");
+  blk("ProcessConfig = pWhistleDetector_vehicle                                 ");
   blk("{                                                                ");
   blk("        AppTick            = 4                                   ");
   blk("        CommsTick          = 4                                   ");
@@ -112,7 +111,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pWhistleDetector INTERFACE                                      ");
+  blu("pWhistleDetector_vehicle INTERFACE                                      ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -138,7 +137,7 @@ void showInterfaceAndExit()
 
 void showReleaseInfoAndExit()
 {
-  showReleaseInfo("pWhistleDetector", "gpl");
+  showReleaseInfo("pWhistleDetector_vehicle", "gpl");
   exit(0);
 }
 

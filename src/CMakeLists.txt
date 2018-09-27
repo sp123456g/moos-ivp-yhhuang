@@ -32,7 +32,8 @@ ADD_SUBDIRECTORY(uFldHazardMgrX)
 ADD_SUBDIRECTORY(pHazardPath)
 ADD_SUBDIRECTORY(pFrontEstimateX)
 ADD_SUBDIRECTORY(pWhistleDetector)
-ADD_SUBDIRECTORY(pSpectrogramMonitor)
+ADD_SUBDIRECTORY(pWhistleDetector_vehicle)
+#ADD_SUBDIRECTORY(pSpectrogramMonitor)
 ADD_SUBDIRECTORY(pStoreSoundX)
 ##############################################################################
 #                           END of CMakeLists.txt

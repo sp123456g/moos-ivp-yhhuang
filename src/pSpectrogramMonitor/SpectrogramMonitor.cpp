@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME: yhhuang                                              */
-/*    ORGN: NTU Taipei, Taiwan                                             */
-/*    FILE: SpectrogramMonitor.cpp                                        */
-/*    DATE: July 16th, 2018                                                */
+/*    NAME: yhhuang                                         */
+/*    ORGN: NTU Taipei, Taiwan                              */
+/*    FILE: SpectrogramMonitor.cpp                          */
+/*    DATE: July 16th, 2018                                 */
 /************************************************************/
 
 #include <iterator>

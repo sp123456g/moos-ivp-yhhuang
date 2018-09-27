@@ -1,20 +1,20 @@
 /************************************************************/
 /*    NAME: yhhuang                                         */
 /*    ORGN: NTU, Taiwan                                     */
-/*    FILE: WhistleDetector.cpp                                */
+/*    FILE: WhistleDetector_vehicle.cpp                                */
 /*    DATE: Aug 17th 2018                                   */
 /************************************************************/
 #include <iterator>
 #include "MBUtils.h"
 #include "ACTable.h"
-#include "WhistleDetector.h"
+#include "WhistleDetector_vehicle.h"
 #include "detection_algorithm.h"
 using namespace std;
 
 //---------------------------------------------------------
 // Constructor
 
-WhistleDetector::WhistleDetector()
+WhistleDetector_vehicle::WhistleDetector_vehicle()
 {
     m_input_data.clear();
 
@@ -36,14 +36,14 @@ WhistleDetector::WhistleDetector()
 //---------------------------------------------------------
 // Destructor
 
-WhistleDetector::~WhistleDetector()
+WhistleDetector_vehicle::~WhistleDetector_vehicle()
 {
 }
 
 //---------------------------------------------------------
 // Procedure: OnNewMail
 
-bool WhistleDetector::OnNewMail(MOOSMSG_LIST &NewMail)
+bool WhistleDetector_vehicle::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   AppCastingMOOSApp::OnNewMail(NewMail);
 
@@ -81,13 +81,13 @@ bool WhistleDetector::OnNewMail(MOOSMSG_LIST &NewMail)
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 
-bool WhistleDetector::OnConnectToServer()
+bool WhistleDetector_vehicle::OnConnectToServer()
 {
    registerVariables();
    return(true);
 }
 
-bool WhistleDetector::GetVoltageData(std::string input)
+bool WhistleDetector_vehicle::GetVoltageData(std::string input)
 {
 
     vector<string> voltages = parseString(input,',');
@@ -99,7 +99,7 @@ bool WhistleDetector::GetVoltageData(std::string input)
     }
 }
 
-bool WhistleDetector::Analysis(vector<float> input_data)
+bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 {
 
     vector<vector<float> > P;
@@ -129,11 +129,9 @@ bool WhistleDetector::Analysis(vector<float> input_data)
             ss_1<<i;
             ss_2<<whistle_list[i].start_frq;
             ss_3<<whistle_list[i].end_frq;
-            ss_4<<whistle_list[i].duration;
             reportEvent("whistle_"+ ss_1.str());
             reportEvent("start frq = " + ss_2.str());
             reportEvent("end frq = " + ss_3.str());
-            reportEvent("duration = " + ss_4.str());
         }
     }
 //-----------------------------------------------------------------
@@ -145,7 +143,7 @@ bool WhistleDetector::Analysis(vector<float> input_data)
 // Procedure: Iterate()
 //            happens AppTick times per second
 
-bool WhistleDetector::Iterate()
+bool WhistleDetector_vehicle::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
@@ -155,9 +153,8 @@ bool WhistleDetector::Iterate()
 
     if(m_frq_high>=m_fs/2){
         m_frq_high = m_fs/2;
-        reportEvent("Frequency high for band-pass filter is over fs/2, change to fs/2");
+        reportEvent("Frequency high for band-pass filter is too high, change to fs/2");
     }
-
     m_first_time = false;
   }
   vector<float> input_x(m_access_data_number,0);
@@ -185,7 +182,7 @@ bool WhistleDetector::Iterate()
 // Procedure: OnStartUp()
 //            happens before connection is open
 
-bool WhistleDetector::OnStartUp()
+bool WhistleDetector_vehicle::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
@@ -262,6 +259,11 @@ bool WhistleDetector::OnStartUp()
         ss<<value;
         ss>>m_frq_high;
 
+        if(m_frq_high>=(double)m_fs/2){
+            m_frq_high = (double)m_fs/2;
+            reportEvent("Higher Frequency for band-pass filter is too high, set up to fs/2");
+        }
+
         handled = true;
     }
     else if(param == "data_update_percent"){
@@ -282,7 +284,7 @@ bool WhistleDetector::OnStartUp()
 //---------------------------------------------------------
 // Procedure: registerVariables
 
-void WhistleDetector::registerVariables()
+void WhistleDetector_vehicle::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   // Register("FOOBAR", 0);
@@ -295,7 +297,7 @@ void WhistleDetector::registerVariables()
 //------------------------------------------------------------
 // Procedure: buildReport()
 
-bool WhistleDetector::buildReport() 
+bool WhistleDetector_vehicle::buildReport() 
 {
   m_msgs << "============================================ \n";
   m_msgs << "File:                                        \n";

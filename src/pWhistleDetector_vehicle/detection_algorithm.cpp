@@ -10,26 +10,6 @@
 using namespace std;
 //-------------------------------------------------------------------------
 
-void save_data(std::string filename, FILE *fpp, vector<vector<float> > P, string filepath="./Spectrogram_data/"){
-
-    stringstream ss;
-    string filepath_name;
-    ss<<filepath<<filename;
-    ss>>filepath_name;
-    
-    
-    fpp = fopen(filepath_name.c_str(),"w");
-    float value;
-    for(unsigned int i=0;i<P.size();i++){
-        for(unsigned int j=0;j<P[0].size();j++){
-            value = P[i][j];
-        fprintf(fpp,"%f %s",value,"  ");    
-        }
-        fprintf(fpp,"%s","\n");
-    }
-    fclose(fpp);
-}
-
 
 vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
 {
@@ -246,13 +226,12 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
     if(time_width_sample%2==0)
         time_width_sample+=1;
 
+//check band pass filter frequency limit, must less than Nyquist frequency 
+    
 // using band pass filter frq1 ~ frq2   
     for(int x = N*frq1/fs ; x < N*frq2/fs-((bandwidth_sample-1)/2) ; x++) {
         for(int y = (time_width_sample-1)/2; y < P[0].size()-((time_width_sample-1)/2) ; y++) {
 
-//over Nyquist frequency , break the loop1. 
-            if(x>=N/2)
-                break;
             
             float percent = 0;
             int k = 0;  
@@ -276,9 +255,6 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
                         P_new[x_buf[i]][y_buf[i]] = 1;
             }
         }
-//over Nyquist frequency , break the loop2. 
-        if(x>=N/2)
-            break;
     }
   
     P = P_new;
@@ -287,8 +263,6 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
 void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high){
         
     FILE *fp_first, *fp_second, *fp_third, *fp_fourth, *fp_fifth;
-//step0: save data before detection    
-    save_data("original_P",fp_first,P);
 //step1: simple moving average for each frequency(not neccessary)
 //    simple_mov_avg(P,10);
 //step2: median filter
@@ -298,7 +272,6 @@ void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overla
 //step4: using moving square for narrow band checking 
     moving_square(P,fs,N,overlap,frq_low,frq_high);
 //step5: save data after detection    
-    save_data("final_P",fp_fifth,P);
 }
 
 

@@ -13,15 +13,15 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB           @ NewConsole = false
   Run = pLogger          @ NewConsole = false     
-  Run = pWhistleDetector @ NewConsole = false
-  Run = pStoreSoundX     @ NewConsole = true
+  Run = pWhistleDetector_vehicle @ NewConsole = false
+//  Run = pStoreSoundX     @ NewConsole = true
 }
 
 
 //------------------------------------------------
-// pWhistleDetector config block
+// pWhistleDetector_vehicle config block
 
-ProcessConfig = pWhistleDetector
+ProcessConfig = pWhistleDetector_vehicle
 {
     AppTick   = 10
     CommsTick = 10
@@ -30,10 +30,10 @@ ProcessConfig = pWhistleDetector
     sample_rate         = 48000
     iterate_data        = 1 
     window_type         = hanning
-    bits                = 32;
-    SNR_threshold       = 10;
+    bits                = 16;
+    SNR_threshold       = 20;
     band_pass_frq_low   = 9000;
-    band_pass_frq_high  = 40000;
+    band_pass_frq_high  = 30000;
 }
 
 
@@ -61,8 +61,8 @@ ProcessConfig = pStoreSoundX
 ProcessConfig = pLogger
 {
 
-    AppTick   = 1000
-    CommsTick = 1000
+    AppTick   = 10
+    CommsTick = 10
 
     AsyncLog = true 
     WildCardLogging = true
