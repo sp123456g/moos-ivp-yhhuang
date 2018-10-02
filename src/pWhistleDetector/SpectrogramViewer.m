@@ -3,7 +3,7 @@ clear all;clc;
 % Real-time plotting 
 % device setting
 %----------------------------------------------------
-    fs        = 96000;
+    fs        = 48000;
     duration  = 1;
     time_buff = 10;
 %----------------------------------------------------
@@ -53,10 +53,13 @@ ylabel('Frequency (kHz)');
 % set(hbar,'ytick',[0:5:50]);
 caxis([0 5]);
 colormap(jet);
+yticks([0:2:fs/2000]);
+
 
 
 subplot(2,1,2);
 imagesc(T,F/1000,detection_plot);
+
 % imagesc(A);
 
 colormap(jet);
@@ -72,6 +75,7 @@ ylabel('Frequency (kHz)');
 % set(hbar,'ytick',[0:5:50]);
 caxis([0 2]);
 colormap(jet);
+yticks([0:2:fs/2000]);
 pause(0.5);
 end
 end

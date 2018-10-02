@@ -153,6 +153,7 @@ bool WhistleDetector::Iterate()
   if(m_first_time){
     m_access_data_number = round(m_fs*m_iterate_data);
 
+//check if upper limit for band-pass filter is over fs/2
     if(m_frq_high>=m_fs/2){
         m_frq_high = m_fs/2;
         reportEvent("Frequency high for band-pass filter is over fs/2, change to fs/2");

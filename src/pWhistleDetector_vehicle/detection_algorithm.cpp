@@ -83,7 +83,10 @@ vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,fl
 // the spectrogram_mat variable is now x:time sample, y:frequency   
 
         fftwf_destroy_plan(plan);
-        fftwf_cleanup();
+
+// don't use it in raspberry pi
+//        fftwf_cleanup();
+
 //output: row is frequency and column is time, just means x is time and y is frequency
 //But remember to change the index to exact frequency and time 
 

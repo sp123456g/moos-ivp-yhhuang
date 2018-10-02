@@ -14,7 +14,7 @@ ProcessConfig = ANTLER
   Run = MOOSDB           @ NewConsole = false
   Run = pLogger          @ NewConsole = false     
   Run = pWhistleDetector @ NewConsole = false
-  Run = pStoreSoundX     @ NewConsole = true
+//  Run = pStoreSoundX     @ NewConsole = true
 }
 
 
@@ -30,10 +30,10 @@ ProcessConfig = pWhistleDetector
     sample_rate         = 48000
     iterate_data        = 1 
     window_type         = hanning
-    bits                = 32;
-    SNR_threshold       = 10;
+    bits                = 16;
+    SNR_threshold       = 15;
     band_pass_frq_low   = 9000;
-    band_pass_frq_high  = 40000;
+    band_pass_frq_high  = 20000;
 }
 
 
