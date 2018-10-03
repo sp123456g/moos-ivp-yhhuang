@@ -73,8 +73,8 @@ vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,fl
 //fft 
         fftwf_execute(plan);
 // Calculate power and let index 0 = frequency = 1Hz
-        for(int k=0 ;k<=N;k++){
-            power[k+1] = sqrt(pow(after_fft[k],2)+pow(after_fft[N-k],2));
+        for(int k=0 ;k<N;k++){
+            power[k] = sqrt(pow(after_fft[k],2)+pow(after_fft[N-k],2));
 //Save in the 2 dimensional array
             spectrogram_mat[k][time_index] = power[k];
         }
