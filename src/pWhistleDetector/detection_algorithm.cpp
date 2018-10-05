@@ -220,11 +220,15 @@ void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int ju
             if(j>=time_column.size()-jump_num)
                 P[j][i] = 0;
             else{
-                 if(time_column[j-jump_num]!=0 || time_column[j+jump_num]!=0)    
+                 if(time_column[j-jump_num]!=0 || time_column[j+jump_num]!=0){    
                     SNR= 10*log(time_column[j]/(time_column[j-jump_num]*0.5+time_column[j+jump_num]*0.5));
-                if(SNR > SNR_threshold){
-                    P_new[j][i] = 1;
+                    if(SNR > SNR_threshold)
+                        P_new[j][i] = 1;
                 }
+                else if(time_column[j]!=0)
+                    P_new[j][i] = 1;
+                else 
+                    P_new[j][i] = 0;
             }
         }
     }

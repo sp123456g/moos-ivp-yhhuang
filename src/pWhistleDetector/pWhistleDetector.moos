@@ -27,7 +27,7 @@ ProcessConfig = pWhistleDetector
     CommsTick = 10
     
     overlap             = 0.9 
-    sample_rate         = 96000
+    sample_rate         = 48000
     iterate_data        = 1 
     window_type         = hanning
     bits                = 32;
