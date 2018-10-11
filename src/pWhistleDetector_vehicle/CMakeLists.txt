@@ -15,7 +15,7 @@ ADD_EXECUTABLE(pWhistleDetector_vehicle ${SRC})
 TARGET_LINK_LIBRARIES(pWhistleDetector_vehicle
    ${MOOS_LIBRARIES}
    apputil
-   fftw3f
+   fftw3
    mbutil
    m
    pthread)

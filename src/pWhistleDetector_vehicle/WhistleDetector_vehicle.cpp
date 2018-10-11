@@ -110,7 +110,7 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
     else 
         win_number = 1; 
 //STFT
-    P = STFT_with_FFTW3f(input_data,m_fs,m_window_length,m_overlap,win_number);
+    P = spectrogram_yhh(input_data,m_fs,m_window_length,m_overlap,win_number);
 
 //Whistle detection
     detect_whistle(P,m_fs,m_window_length,m_overlap,m_SNR_threshold,m_frq_low,m_frq_high);

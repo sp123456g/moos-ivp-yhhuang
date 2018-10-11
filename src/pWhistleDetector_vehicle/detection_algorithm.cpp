@@ -10,8 +10,28 @@
 using namespace std;
 //-------------------------------------------------------------------------
 
+void save_data(std::string filename, FILE *fpp, vector<vector<float> > P, string filepath="./Spectrogram_data/"){
 
-vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
+    stringstream ss;
+    string filepath_name;
+    ss<<filepath<<filename;
+    ss>>filepath_name;
+    
+    
+    fpp = fopen(filepath_name.c_str(),"w");
+    float value;
+    for(unsigned int i=0;i<P.size();i++){
+        for(unsigned int j=0;j<P[0].size();j++){
+            value = P[i][j];
+        fprintf(fpp,"%f %s",value,"  ");    
+        }
+        fprintf(fpp,"%s","\n");
+    }
+    fclose(fpp);
+}
+
+
+vector<vector<float> > spectrogram_yhh(vector<float> x,int fs,unsigned int N,float overlap_percent,int win)
 {
 //STEP_1 set up window function 
     float   W;
@@ -45,25 +65,24 @@ vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,fl
       fprintf(stderr, "unknown windowtype!\n");
     }
 //STEP_2 set up fftw plan 
-    float*  in;
-    float*  after_fft;
+    double*  in;
+    fftw_complex  *after_fft;
     float*  power;
     unsigned int loop_num = 0;
     int     time_index = 0;
  
-    in = new float[N];
-    after_fft = new float[N];
-    power = new float[N+1];
-    fftwf_plan plan;
-    plan = fftwf_plan_r2r_1d(N, in,after_fft,FFTW_R2HC,FFTW_MEASURE);
+    in = new double[N];
+    after_fft = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*(N/2+1));
+    power = new float[N/2+1];
+    fftw_plan plan;
+    plan = fftw_plan_dft_r2c_1d(N, in,after_fft,FFTW_ESTIMATE);
 
 //Get the loop number to set up the size of the output matrice
     for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap)
         loop_num +=1;
 
 //vector<vector<float> > matrix
-    vector<vector<float> > spectrogram_mat(N+1,vector<float>(loop_num));
-    vector<vector<float> > output((N/2)+1,vector<float>(loop_num));
+    vector<vector<float> > spectrogram_mat((N/2)+1,vector<float>(loop_num));
 //STEP_3 doing fftw loop
     for(int start_index=0;start_index<=x.size()-N;start_index+=no_overlap){
 //get data by window function 
@@ -71,10 +90,10 @@ vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,fl
             in[j] = x[i]*window_func[j];    
         }
 //fft 
-        fftwf_execute(plan);
-// Calculate power and let index 0 = frequency = 1Hz
-        for(int k=0 ;k<N;k++){
-            power[k] = sqrt(pow(after_fft[k],2)+pow(after_fft[N-k],2));
+        fftw_execute(plan);
+// Calculate power and let index 0 = frequency = 0Hz
+        for(int k=0 ;k<N/2;k++){
+            power[k] = sqrt(after_fft[k][0]*after_fft[k][0]+after_fft[k][1]*after_fft[k][1]);
 //Save in the 2 dimensional array
             spectrogram_mat[k][time_index] = power[k];
         }
@@ -82,19 +101,17 @@ vector<vector<float> > STFT_with_FFTW3f(vector<float> x,int fs,unsigned int N,fl
     }
 // the spectrogram_mat variable is now x:time sample, y:frequency   
 
-        fftwf_destroy_plan(plan);
+        fftw_destroy_plan(plan);
 
-// don't use it in raspberry pi
+// don't use "cleanup" in raspberry pi 
 //        fftwf_cleanup();
 
 //output: row is frequency and column is time, just means x is time and y is frequency
 //But remember to change the index to exact frequency and time 
 
 // only use date from 0 Hz ~ fs/2 Hz (Nyquist frequency)
-        for(int i=0;i<=N/2;i++)
-                output[i] = spectrogram_mat[i];
 
-    return(output);
+    return(spectrogram_mat);
 }
 
 unsigned int frequency_mapping(unsigned int input_index, int fs,int N){
@@ -202,8 +219,8 @@ void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int ju
             else{
                  if(time_column[j-jump_num]!=0 || time_column[j+jump_num]!=0){    
                     SNR= 10*log(time_column[j]/(time_column[j-jump_num]*0.5+time_column[j+jump_num]*0.5));
-                if(SNR > SNR_threshold)
-                    P_new[j][i] = 1;
+                    if(SNR > SNR_threshold)
+                        P_new[j][i] = 1;
                 }
                 else if(time_column[j]!=0)
                     P_new[j][i] = 1;
@@ -233,12 +250,13 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
     if(time_width_sample%2==0)
         time_width_sample+=1;
 
-//check band pass filter frequency limit, must less than Nyquist frequency 
-    
 // using band pass filter frq1 ~ frq2   
     for(int x = N*frq1/fs ; x < N*frq2/fs-((bandwidth_sample-1)/2) ; x++) {
         for(int y = (time_width_sample-1)/2; y < P[0].size()-((time_width_sample-1)/2) ; y++) {
 
+//over Nyquist frequency , break the loop1. 
+            if(x>=N/2)
+                break;
             
             float percent = 0;
             int k = 0;  
@@ -262,6 +280,9 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
                         P_new[x_buf[i]][y_buf[i]] = 1;
             }
         }
+//over Nyquist frequency , break the loop2. 
+        if(x>=N/2)
+            break;
     }
   
     P = P_new;

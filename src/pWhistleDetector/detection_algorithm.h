@@ -27,7 +27,7 @@ const float pi = 3.1415926;
 //5. void detect_click();
 //-------------------------------------------------------------------------
 
-std::vector<std::vector<float> > STFT_with_FFTW3f(std::vector<float>, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1);
+std::vector<std::vector<float> > spectrogram_yhh(std::vector<float>, int fs=96000,unsigned int N=2048,float overlap_percent=0.9, int win=1);
 //Use fft in FFTW package, is faster than arma package
 //------------------------------------------------------------------------
 // output: matrix with x:time(an element stand for a dt), y:frequency(an element stand for a df)

@@ -1,4 +1,4 @@
-This folder will contain two matrix data:
+This folder will contain two matrix data output from detection_algorithm.cpp file :
 
 1. original_P:
     spectrogram matrix after analysis for every one second
