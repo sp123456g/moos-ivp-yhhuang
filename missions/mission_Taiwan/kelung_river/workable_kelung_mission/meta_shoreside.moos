@@ -5,14 +5,7 @@ ServerHost = localhost
 ServerPort = 9000
 Community  = shoreside
 
-MOOSTimeWarp = 10
-//LatOrigin  = 43.825300 
-//LongOrigin = -70.330400 
-//LatOrigin  = 42.3584
-//LongOrigin = -71.08745
-LatOrigin  = 25.07588
-LongOrigin = 121.5444
-
+#include plug_origin_warp.moos
   
 //--------------------------------------------------------
 Processconfig = ANTLER
@@ -30,40 +23,8 @@ Processconfig = ANTLER
 
 }
 
-//--------------------------------------------------
-// pHostInfo configuration block from plugin
-
-ProcessConfig = pHostInfo
-{
-  AppTick 	= 1
-  CommsTick 	= 1
-
-//  DEFAULT_HOSTIP = localhost
-}
-
-
-//--------------------------------------------------
-// pLogger Configuration Block (Created from Plugin)
-
-ProcessConfig = pLogger
-{
-  AppTick 	= 5
-  CommsTick 	= 5
-  
-  File		= LOG_SHORESIDE
-  PATH		= ./
-  SyncLog 	= true @ 0.2
-  AsyncLog 	= true
-  FileTimeStamp = true
-
-  Log = IVPHELM_LIFE_EVENT @ 0 nosync
-
-  // Log it all!!!!!
-  WildCardLogging = true 
-  WildCardOmitPattern = *_STATUS
-  LogAuxSrc = true
-}
-
+#include plug_pHostInfo.moos
+#include plug_pLogger.moos
 //--------------------------------------------------
 // pShare Config Block
 
@@ -147,4 +108,3 @@ ProcessConfig = pMarineViewer
 //  button_four  = SHOW:both   # FGR_SHOW=both
   button_four = STATION # STATION_ALL=true
 }
-

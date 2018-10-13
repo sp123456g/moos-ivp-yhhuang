@@ -1,4 +1,4 @@
-ProcessConfig = pStoreSound
+ProcessConfig = pStoreSoundX
 {
     AppTick         = 10
     CommsTick       = 10

@@ -7,16 +7,19 @@
 //***********************************************************************
 #include "detection_algorithm.h"
 #include <fftw3.h>
+#include<sys/stat.h>
 using namespace std;
 //-------------------------------------------------------------------------
 
-void save_data(std::string filename, FILE *fpp, vector<vector<float> > P, string filepath="./Spectrogram_data/"){
+void save_data(std::string filename, FILE *fpp, vector<vector<float> > P){
 
+    string filepath = "./Spectrogram_data/";
     stringstream ss;
     string filepath_name;
     ss<<filepath<<filename;
     ss>>filepath_name;
-    
+
+    mkdir(filepath.c_str(), 0777);
     
     fpp = fopen(filepath_name.c_str(),"w");
     float value;

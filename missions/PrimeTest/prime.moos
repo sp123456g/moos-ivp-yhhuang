@@ -12,8 +12,8 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB		       @ NewConsole = false
   Run = uTimerScript       @ NewConsole = true
-  Run = pPrimeFactor       @ NewConsole  = true
-  Run = pPrimeFactorTester @ NewConsole  = true
+  Run = pPrimeFactor       @ NewConsole  = false
+//  Run = pPrimeFactorTester @ NewConsole  = true
 }
 
 //------------------------------------------

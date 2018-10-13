@@ -26,6 +26,7 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
    bool buildReport();
    bool GetVoltageData(std::string);
    bool Analysis(std::vector<float>);
+   bool SendData_back(std::vector<float>);
 
  protected:
    void registerVariables();
@@ -34,7 +35,7 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
 
  private: // State variables
 
-   std::deque<float>       m_voltage_data;
+   std::deque<float>        m_voltage_data;
    std::deque<std::string>  m_input_data;
 
  private: // STFT variables
@@ -54,7 +55,6 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
     float       m_frq_high;
     std::string m_window_type;   // Window type: "hanning" or "rectangular" window
     std::string m_testing_message;
-    
 };
 
 #endif 

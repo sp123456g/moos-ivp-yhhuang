@@ -97,6 +97,20 @@ bool WhistleDetector_vehicle::GetVoltageData(std::string input)
       
       m_voltage_data.push_back(volt);
     }
+
+   return(true);
+}
+
+bool WhistleDetector_vehicle::SendData_back(vector<float> input){
+    
+    stringstream msg_back;
+
+    for(int i=0;i<input.size();i++)
+        msg_back << input[i]<<",";
+
+    Notify("WHISTLE_VOLTAGE_DATA",msg_back.str());
+
+    return(true);
 }
 
 bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
@@ -124,6 +138,9 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 
         Notify("WHISTLE_EXIST","true");
 
+    //send data back to shoreside, using parameter CH_ONE_VOLTAGE_BACK
+        SendData_back(input_data);
+
         for(int i=0;i<whistle_list.size();i++){
             stringstream ss_1, ss_2,ss_3,ss_4;
             ss_1<<i;
@@ -137,6 +154,8 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 //-----------------------------------------------------------------
     else 
         Notify("WHISTLE_EXIST","false");
+
+    return(true);
 }
 
 //---------------------------------------------------------

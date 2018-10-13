@@ -81,7 +81,7 @@ bool StoreSoundX::OnNewMail(MOOSMSG_LIST &NewMail)
         m_filename = m_path + "/" + fileTime('f'); //filename = start_record_time.bin
         m_fp = fopen(m_filename.c_str(), "wb");
 
-        m_fp_checking = fopen("/home/yhhuang/thesis/cpp_code/transform/FFTW_edition/voltage_ch1_data.dat","w");
+//        m_fp_checking = fopen("check.dat","w");
 
         if(m_fp){
           reportEvent("Create file sucess: " + m_filename);

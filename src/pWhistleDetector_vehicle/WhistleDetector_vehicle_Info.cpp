@@ -80,12 +80,12 @@ void showExampleConfigAndExit()
   blk("        CommsTick          = 4                                   ");
   blk("                                                                 ");
   blk("        overlap            = 0.9                                 ");
-  blk("        window_length      = 2048                                ");
-  blk("        sample_rate        = 96000                               ");
+  blk("        window_length      = 1024                                ");
+  blk("        sample_rate        = 48000                               ");
   blk("        iterate_data       = 1                                   ");
   blk("        window_type        = hanning (or rectangular)            ");
   blk("        bits               = 16                                  ");
-  blk("        SNR_threshold      = 10                                  ");
+  blk("        SNR_threshold      = 12                                  ");
   blk("        band_pass_frq_low  = 3000                                ");
   blk("        band_pass_frq_high = 10000                               ");
   blk("}                                                                ");
@@ -111,7 +111,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pWhistleDetector_vehicle INTERFACE                                      ");
+  blu("pWhistleDetector_vehicle INTERFACE                              ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -125,6 +125,11 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  WHISTLE_EXIST:                                                ");
   blk("     string value, \"true\" or \"false\"                        ");
+  blk("                                                                ");
+  blk("  WHISTLE_VOLTAGE_DATA:                                         ");
+  blk("     string value, voltage data contains whistle in iterate     ");
+  blk("                   seconds voltage data seperate with comma     ");
+  blk("                                                                ");
   blk("                                                                ");
   blk("  SOUND_VOLTAGE_DATA_WITH_WHISTLE:                              ");
   blk("     string value, Voltage data seperate by comma               ");

@@ -6,7 +6,10 @@ clear all;clc;
     fs        = 48000;
     duration  = 1;
     time_buff = 10;
+    g = 0;
 %----------------------------------------------------
+while 1
+if exist('Spectrogram_data/original_P', 'file') == 2
 input = importdata("Spectrogram_data/original_P");
 input_matrix_size = size(input);
 
@@ -16,6 +19,7 @@ spectrogram_buff = zeros(input_frq_axis_size,input_time_axis_size);
 detection_plot = zeros(input_frq_axis_size,input_time_axis_size);
 
 while 1
+    
 
 A = importdata("Spectrogram_data/original_P");
 B = importdata("Spectrogram_data/final_P");
@@ -51,9 +55,9 @@ title("Original spectrogram");
 xlabel('Time (sec)');     
 ylabel('Frequency (kHz)');     
 % set(hbar,'ytick',[0:5:50]);
-caxis([0 5]);
+caxis([0 3]);
 colormap(jet);
-yticks([0:2:fs/2000]);
+yticks([0:1:fs/2000]);
 
 
 
@@ -75,7 +79,17 @@ ylabel('Frequency (kHz)');
 % set(hbar,'ytick',[0:5:50]);
 caxis([0 2]);
 colormap(jet);
-yticks([0:2:fs/2000]);
+yticks([0:1:fs/2000]);
 pause(0.3);
+    
+end
+end
+
+else
+    
+    msg = strcat('waiting for input :',num2str(g),' secs');
+    disp(msg);
+g = g+ 1;
+    pause(1);
 end
 end
