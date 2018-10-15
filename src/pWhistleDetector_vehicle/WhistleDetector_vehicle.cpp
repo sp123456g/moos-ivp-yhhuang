@@ -108,7 +108,7 @@ bool WhistleDetector_vehicle::SendData_back(vector<float> input){
     for(int i=0;i<input.size();i++)
         msg_back << input[i]<<",";
 
-    Notify("WHISTLE_VOLTAGE_DATA",msg_back.str());
+    Notify("WHISTLE_VOLTAGE_DATA_LOCAL",msg_back.str());
 
     return(true);
 }
