@@ -297,9 +297,9 @@ void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overla
 //step0: save data before detection    
     save_data("original_P",fp_first,P);
 //step1: simple moving average for each frequency(not neccessary)
-//    simple_mov_avg(P,10);
+    simple_mov_avg(P,10);
 //step2: median filter
-    median_filter(P);
+//    median_filter(P);
 //step3: edge_detector
    edge_detector(P,SNR_threshold,5);
 //step4: using moving square for narrow band checking 

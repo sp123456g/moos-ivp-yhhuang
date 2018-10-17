@@ -66,6 +66,7 @@ class StoreSoundX : public AppCastingMOOSApp
    int m_period_size;
    int m_bits;
    int m_send_size;
+   int m_total_ch;
    char *m_period_buffer;
    
 };

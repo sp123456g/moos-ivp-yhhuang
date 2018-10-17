@@ -3,7 +3,7 @@ clear all;clc;
 % Real-time plotting 
 % device setting
 %----------------------------------------------------
-    fs        = 48000;
+    fs        = 96000;
     duration  = 1;
     time_buff = 10;
     g = 0;
@@ -55,9 +55,9 @@ title("Original spectrogram");
 xlabel('Time (sec)');     
 ylabel('Frequency (kHz)');     
 % set(hbar,'ytick',[0:5:50]);
-caxis([0 3]);
+caxis([0 2]);
 colormap(jet);
-yticks([0:1:fs/2000]);
+% yticks([0:1:fs/2000]);
 
 
 
@@ -69,7 +69,7 @@ imagesc(T,F/1000,detection_plot);
 colormap(jet);
 hbar=colorbar();
 % xlabel(hbar,'PSD (dB re 1\muPa^2 per Hz)');
-% xlabel(hbar,'PSD');
+% xlabel(hbar,'PSD');dolphintest1.wav
 axis xy;
 title("Spectrogram after detection");
 % title("Spectrogram after median filter");
@@ -79,7 +79,7 @@ ylabel('Frequency (kHz)');
 % set(hbar,'ytick',[0:5:50]);
 caxis([0 2]);
 colormap(jet);
-yticks([0:1:fs/2000]);
+% yticks([0:1:fs/2000]);
 pause(0.3);
     
 end

@@ -41,6 +41,7 @@ StoreSoundX::StoreSoundX()
   m_start_record = 0;
   m_loops = 0;
   m_dir = 0;
+  m_total_ch = 2;
   m_repeat = "true";
   m_tem_buffer_ch1.clear();
   m_tem_buffer_ch2.clear();
@@ -193,6 +194,10 @@ bool StoreSoundX::OnStartUp()/*{{{*/
     }
     else if(param == "PASS_TIME"){
       m_passTime = atoi(value.c_str());
+      handled = true;
+    }
+    else if(param == "TOTAL_CHANNEL"){
+      m_total_ch = atoi(value.c_str());
       handled = true;
     }
     else if(param == "FRAMES"){
@@ -376,7 +381,7 @@ void StoreSoundX::Capture()
     switch(m_bits){
       case 16:
        if(m_channels == 1){
-          for(int i=0; i<m_period_size-3; i=i+4){
+          for(int i=0; i<m_period_size-3; i=i+m_total_ch*2){
             ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,16)));
             ch1_part2 = (float)(m_period_buffer[i+1])*(1/pow(2,8)); 
 
@@ -386,7 +391,7 @@ void StoreSoundX::Capture()
          }
        }
        else if(m_channels == 2){
-        for(int i=0; i<m_period_size-3; i=i+4){
+        for(int i=0; i<m_period_size-3; i=i+m_total_ch*2){
             ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,16)));
             ch1_part2 = (float)(m_period_buffer[i+1])*(1/pow(2,8)); 
 
@@ -408,7 +413,7 @@ void StoreSoundX::Capture()
 
       case 24:
        if(m_channels == 1){
-        for(int i=0; i<m_period_size-5; i=i+6){
+        for(int i=0; i<m_period_size-5; i=i+m_total_ch*3){
             ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,24)));
             ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,16)); 
             ch1_part3 = (float)(m_period_buffer[i+2])*(1/pow(2,8));
@@ -419,7 +424,7 @@ void StoreSoundX::Capture()
         }
        }
        else if(m_channels ==2){ 
-        for(int i=0; i<m_period_size-5; i=i+6){
+        for(int i=0; i<m_period_size-5; i=i+m_total_ch*3){
             ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,24)));
             ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,16)); 
             ch1_part3 = (float)(m_period_buffer[i+2])*(1/pow(2,8));
@@ -439,7 +444,7 @@ void StoreSoundX::Capture()
 
       case 32:
        if(m_channels == 1){
-        for(int i=0; i<m_period_size-7; i=i+8){
+        for(int i=0; i<m_period_size-7; i=i+m_total_ch*4){
             ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,32)));
             ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,24)); 
             ch1_part3 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
@@ -451,7 +456,7 @@ void StoreSoundX::Capture()
         }
        }
        else if(m_channels == 2){
-        for(int i=0; i<m_period_size-7; i=i+8){
+        for(int i=0; i<m_period_size-7; i=i+m_total_ch*4){
             ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,32)));
             ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,24)); 
             ch1_part3 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
