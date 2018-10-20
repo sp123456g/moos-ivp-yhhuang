@@ -1,0 +1,9 @@
+pDataSender Overview
+YHHuang
+
+
+1. check the file inside the folder if they have ending syntax "_pending"
+2. If they got _pending , change it from pending to sending
+3. send the file end up with sending
+4. rename the file end up with _sending from _sending to _done
+5. finish sending proccess

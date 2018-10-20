@@ -295,7 +295,7 @@ void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overla
         
     FILE *fp_first, *fp_second, *fp_third, *fp_fourth, *fp_fifth;
 //step0: save data before detection    
-    save_data("original_P",fp_first,P);
+//    save_data("original_P",fp_first,P);
 //step1: simple moving average for each frequency(not neccessary)
     simple_mov_avg(P,10);
 //step2: median filter
@@ -305,7 +305,7 @@ void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overla
 //step4: using moving square for narrow band checking 
     moving_square(P,fs,N,overlap,frq_low,frq_high);
 //step5: save data after detection    
-    save_data("final_P",fp_fifth,P);
+//    save_data("final_P",fp_fifth,P);
 }
 
 

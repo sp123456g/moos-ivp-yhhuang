@@ -9,6 +9,8 @@
 #define WhistleDetector_vehicle_HEADER
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+#include "detection_algorithm.h"
+//#include "detection_algorithm.h"
 #include <deque>
 class WhistleDetector_vehicle : public AppCastingMOOSApp
 {
@@ -27,6 +29,7 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
    bool GetVoltageData(std::string);
    bool Analysis(std::vector<float>);
    bool SendData_back(std::vector<float>);
+   bool NotifyResult(detectResult);
 
  protected:
    void registerVariables();
@@ -55,6 +58,10 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
     float       m_frq_high;
     std::string m_window_type;   // Window type: "hanning" or "rectangular" window
     std::string m_testing_message;
+
+
+    
+    
 };
 
 #endif 

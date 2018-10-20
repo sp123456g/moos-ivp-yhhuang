@@ -1,0 +1,28 @@
+//Configuration file: YHHuang
+ 
+ ServerHost = localhost
+ ServerPort = 9000
+ Community  = DataSender
+ 
+ 
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+   MSBetweenLaunches = 200
+ 
+   Run = MOOSDB           @ NewConsole = false
+   Run = pDataSender      @ NewConsole = false
+}
+
+ProcessConfig = pDataSender
+{
+    AppTick   = 4
+    CommsTick = 4
+
+    sender_filepath    = ~/practice/scp/test/
+    reciever_user           = ubuntu
+    reciever_machine        = 140.112.26.205
+    reciever_filepath  = ~/acoustic_tool/branches/forscp 
+}
+

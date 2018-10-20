@@ -143,7 +143,7 @@ unsigned int inv_time_map(float input_time,int fs, int N,float overlap_percent){
 }
 //--------------------------------------------------------------------------------------
 //function for detect algorithm
-//1. simple moving average (not neccessary)
+//1. simple moving average
 //2. median filter
 //3. edge detector
 //4. moving_square  
@@ -233,7 +233,7 @@ void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int ju
 }
 
 //narrow band checking and time continuous properties checking 
-void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, float overlap,float frq1,float frq2){
+void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, float overlap,float frq1,float frq2,detectResult &result_sp_mat){
 //moving square and band pass filter with frq1 ~ frq2 Hz
     vector<vector<float> >     P_new(P.size(),vector<float>(P[0].size()));
     
@@ -276,8 +276,12 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
             percent =float(k)/float(bandwidth_sample*time_width_sample);
 
             if(percent >= percent_threshold){ 
-                    for(int i=0;i<x_buf.size();i++)
-                        P_new[x_buf[i]][y_buf[i]] = 1;
+
+                for(int i=0;i<x_buf.size();i++){
+                    P_new[x_buf[i]][y_buf[i]] = 1;
+                    result_sp_mat.x_index_list.push_back(x_buf[i]);
+                    result_sp_mat.y_index_list.push_back(y_buf[i]);
+                }
             }
         }
 //over Nyquist frequency , break the loop2. 
@@ -285,20 +289,22 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
             break;
     }
   
+    result_sp_mat.x_length = P_new[0].size();
+    result_sp_mat.y_length = P_new.size();
     P = P_new;
 }
 
-void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high){
+void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high,detectResult &result_sp_mat){
         
     FILE *fp_first, *fp_second, *fp_third, *fp_fourth, *fp_fifth;
-//step1: simple moving average for each frequency(not neccessary)
+//step1: simple moving average for each frequency
     simple_mov_avg(P,10);
-//step2: median filter
+//step2: median filter (not fast)
 //    median_filter(P);
 //step3: edge_detector
    edge_detector(P,SNR_threshold,5);
 //step4: using moving square for narrow band checking 
-    moving_square(P,fs,N,overlap,frq_low,frq_high);
+    moving_square(P,fs,N,overlap,frq_low,frq_high,result_sp_mat);
 //step5: save data after detection    
 }
 

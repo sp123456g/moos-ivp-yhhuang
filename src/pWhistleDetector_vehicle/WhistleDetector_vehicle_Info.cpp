@@ -126,13 +126,9 @@ void showInterfaceAndExit()
   blk("  WHISTLE_EXIST:                                                ");
   blk("     string value, \"true\" or \"false\"                        ");
   blk("                                                                ");
-  blk("  WHISTLE_VOLTAGE_DATA_LOCAL:                                   ");
+  blk("  WHISTLE_VOLTAGE_DATA:                                   ");
   blk("     string value, voltage data contains whistle in iterate     ");
   blk("                   seconds voltage data seperate with comma     ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("  SOUND_VOLTAGE_DATA_WITH_WHISTLE:                              ");
-  blk("     string value, Voltage data seperate by comma               ");
   blk("                                                                ");
   exit(0);
 }

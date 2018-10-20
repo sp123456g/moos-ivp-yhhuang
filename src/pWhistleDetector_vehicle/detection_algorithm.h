@@ -1,3 +1,4 @@
+#pragma once
 #ifndef  STFT_H 
 #define  STFT_H
 //***********************************************************************
@@ -73,7 +74,16 @@ class whistle{
 };
 
 
-void detect_whistle(std::vector<std::vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold=10,float frq_low=3000,float frq_high=10000);
 
 std::vector<whistle> check_result(std::vector<std::vector<float> > P,int fs, unsigned int N,float overlap);
 #endif
+
+struct detectResult{
+
+    std::vector<int> x_index_list;
+    std::vector<int> y_index_list;
+    unsigned int x_length;
+    unsigned int y_length;
+};
+
+void detect_whistle(std::vector<std::vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high, detectResult &sp_mat);

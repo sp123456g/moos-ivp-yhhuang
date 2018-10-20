@@ -108,15 +108,33 @@ bool WhistleDetector_vehicle::SendData_back(vector<float> input){
     for(int i=0;i<input.size();i++)
         msg_back << input[i]<<",";
 
-    Notify("WHISTLE_VOLTAGE_DATA_LOCAL",msg_back.str());
+    Notify("WHISTLE_VOLTAGE_DATA",msg_back.str());
 
     return(true);
 }
+
+bool WhistleDetector_vehicle::NotifyResult(detectResult input){
+
+    stringstream ss_x_msg;
+    stringstream ss_y_msg;
+
+    for(int i=0;i<input.x_index_list.size();i++){
+        ss_x_msg<<input.x_index_list[i]<<",";
+        ss_y_msg<<input.y_index_list[i]<<",";
+    }
+    
+//    Notify("X_INDEX",ss_x_msg.str());
+//    Notify("Y_INDEX",ss_y_msg.str());
+    
+};
+
 
 bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 {
 
     vector<vector<float> > P;
+    detectResult result_mat;
+
 //set up window
     int win_number;
     if(m_window_type == "rectagular")
@@ -127,20 +145,24 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
     P = spectrogram_yhh(input_data,m_fs,m_window_length,m_overlap,win_number);
 
 //Whistle detection
-    detect_whistle(P,m_fs,m_window_length,m_overlap,m_SNR_threshold,m_frq_low,m_frq_high);
+    detect_whistle(P,m_fs,m_window_length,m_overlap,m_SNR_threshold,m_frq_low,m_frq_high,result_mat);
+
 //check if there is whistle in the matrix
-        vector<whistle> whistle_list;
-        whistle_list = check_result(P,m_fs,m_window_length,m_overlap);
+    vector<whistle> whistle_list;
+    whistle_list = check_result(P,m_fs,m_window_length,m_overlap);
     m_whistle_exist = !whistle_list.empty();
+
 // Check properties of whistles
 // ----------------------------------------------------------------
     if(m_whistle_exist){
 
         Notify("WHISTLE_EXIST","true");
 
-    //send data back to shoreside, using parameter CH_ONE_VOLTAGE_BACK
-        SendData_back(input_data);
+//send result data to MOOSDB
+        NotifyResult(result_mat);
+//        SendData_back(input_data);        
 
+// output result in event        
         for(int i=0;i<whistle_list.size();i++){
             stringstream ss_1, ss_2,ss_3,ss_4;
             ss_1<<i;
