@@ -30,6 +30,7 @@ WhistleDetector_vehicle::WhistleDetector_vehicle()
     m_SNR_threshold = 10;
     m_frq_low       = 3000;
     m_frq_high      = 10000;
+    m_first_time    = true;
 }
 
 

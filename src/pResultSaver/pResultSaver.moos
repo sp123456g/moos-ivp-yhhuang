@@ -17,7 +17,7 @@ ProcessConfig = ANTLER
   Run = pLogger          @ NewConsole = false
   Run = pResultSaver     @ NewConsole = false
   Run = uTimerScript     @ NewConsole = true 
-  Run = pDataSender      @ NewConsole = true 
+//  Run = pDataSender      @ NewConsole = true 
 }
 
 
@@ -28,8 +28,8 @@ ProcessConfig = pResultSaver
     AppTick   = 4
     CommsTick = 4
     
-    sending_variable_name = NUM_VALUE
-    filepath              = ./Data_for_scp/
+    sending_variable_name = SOUND_VOLTAGE_DATA_CH_ONE
+    filepath              = /home/yhhuang/thesis/google_drive/
     filename              = whistle_data.txt
     send_by_pDataSender   = true
     wait_number_of_line   = 10
