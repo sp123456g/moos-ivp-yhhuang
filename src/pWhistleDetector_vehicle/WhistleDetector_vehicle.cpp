@@ -9,6 +9,7 @@
 #include "ACTable.h"
 #include "WhistleDetector_vehicle.h"
 #include "detection_algorithm.h"
+#include <sstream>
 using namespace std;
 
 //---------------------------------------------------------
@@ -67,7 +68,13 @@ bool WhistleDetector_vehicle::OnNewMail(MOOSMSG_LIST &NewMail)
        cout << "great!";
      else if(key == "SOUND_VOLTAGE_DATA_CH_ONE"){
 //Get String data and transfer to voltage buffer
+        double tic = MOOSTime();
         GetVoltageData(msg.GetString()); 
+        double toc = MOOSTime();
+
+        stringstream ss;
+        ss<<(toc-tic);
+        Notify("GET_VOLTAGE_TIME",ss.str());
      }
      else if(key == "TEST_MESSAGE"){
         m_testing_message = msg.GetString();
@@ -133,6 +140,8 @@ bool WhistleDetector_vehicle::NotifyResult(detectResult input){
 bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 {
 
+    stringstream ss1, ss2, ss3;
+
     vector<vector<float> > P;
     detectResult result_mat;
 
@@ -143,14 +152,22 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
     else 
         win_number = 1; 
 //STFT
+    double tic_1 = MOOSTime();
     P = spectrogram_yhh(input_data,m_fs,m_window_length,m_overlap,win_number);
-
+    double toc_1 = MOOSTime();
+    
+    
 //Whistle detection
+    
+    double tic_2 = MOOSTime();
     detect_whistle(P,m_fs,m_window_length,m_overlap,m_SNR_threshold,m_frq_low,m_frq_high,result_mat);
-
+    double toc_2 = MOOSTime();
 //check if there is whistle in the matrix
     vector<whistle> whistle_list;
+    double tic_3 = MOOSTime();
     whistle_list = check_result(P,m_fs,m_window_length,m_overlap);
+    double toc_3 = MOOSTime();
+
     m_whistle_exist = !whistle_list.empty();
 
 // Check properties of whistles
@@ -177,6 +194,15 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 //-----------------------------------------------------------------
     else 
         Notify("WHISTLE_EXIST","false");
+   
+
+//Notify time use
+    ss1<<(toc_1-tic_1);
+    ss2<<(toc_2-tic_2);
+    ss3<<(toc_3-tic_3);
+    Notify("STFT_TIME",ss1.str());
+    Notify("DETECTION_TIME",ss2.str());
+    Notify("FRQ_ANALYSIS_TIME",ss3.str());
 
     return(true);
 }

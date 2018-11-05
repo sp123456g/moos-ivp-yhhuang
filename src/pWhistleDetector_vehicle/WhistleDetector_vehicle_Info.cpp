@@ -126,10 +126,20 @@ void showInterfaceAndExit()
   blk("  WHISTLE_EXIST:                                                ");
   blk("     string value, \"true\" or \"false\"                        ");
   blk("                                                                ");
-  blk("  WHISTLE_VOLTAGE_DATA:                                   ");
+  blk("  WHISTLE_VOLTAGE_DATA:                                         ");
   blk("     string value, voltage data contains whistle in iterate     ");
   blk("                   seconds voltage data seperate with comma     ");
+  blk("  GET_VOLTAGE_TIME:                                             ");
+  blk("     time spent in parse voltage string                         ");
   blk("                                                                ");
+  blk("  STFT_TIME:                                                    ");
+  blk("     time spent in STFT process                                 ");
+  blk("                                                                ");
+  blk("  DETECTION_TIME:                                               ");
+  blk("     time spent in detection process                            ");
+  blk("                                                                ");
+  blk("  FRQ_ANALYSIS_TIME:                                            ");
+  blk("     time spent in STFT process                                 ");
   exit(0);
 }
 
