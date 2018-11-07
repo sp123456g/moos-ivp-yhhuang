@@ -14,7 +14,7 @@ ProcessConfig = ANTLER
   Run = MOOSDB           @ NewConsole = false
   Run = pLogger          @ NewConsole = false     
   Run = pWhistleDetector_vehicle @ NewConsole = false
-//  Run = pStoreSoundX     @ NewConsole = true
+  Run = pStoreSoundX     @ NewConsole = true
 }
 
 
@@ -27,13 +27,15 @@ ProcessConfig = pWhistleDetector_vehicle
     CommsTick = 10
     
     overlap             = 0.9 
-    sample_rate         = 48000
-    iterate_data        = 1 
+    sample_rate         = 96000
+    iterate_data        = 0.5 
     window_type         = hanning
-    bits                = 16;
+    bits                = 32;
     SNR_threshold       = 17;
     band_pass_frq_low   = 3000;
     band_pass_frq_high  = 10000;
+    
+    channel_need        = 2
 }
 
 
@@ -45,15 +47,15 @@ ProcessConfig = pStoreSoundX
     AppTick     = 10 
     CommsTick   = 10 
     PATH = ./ 
-    SAMPLE_RATE = 48000
+    SAMPLE_RATE = 96000
     CHANNELS = 2
-    RECORD_DEVICE = hw:0,0
-    BITS = 16
+    RECORD_DEVICE = hw:1,0
+    BITS = 32
     RECORD_TIME = 2
     PASS_TIME = 20
-    FRAMES = 4800
+    FRAMES = 9600
     REPEAT = false
-    SEND_SIZE = 4800
+    SEND_SIZE = 9600
 }
 
 //------------------------------------------------

@@ -113,6 +113,8 @@ void showInterfaceAndExit()
   blk("  SOUND_VOLTAGE_DATA_CH_ONE = string type                       ");
   blk("  SOUND_VOLTAGE_DATA_CH_TWO = string type                       ");
   blk("  START_CHECK = false                                           ");
+  blk("  RECORD_FRAMES = 9600, \"string\" type                         ");
+  blk("                                                                ");
   blk("                                                                ");
   exit(0);
 }

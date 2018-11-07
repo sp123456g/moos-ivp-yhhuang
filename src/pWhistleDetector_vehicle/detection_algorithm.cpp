@@ -233,7 +233,7 @@ void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int ju
 }
 
 //narrow band checking and time continuous properties checking 
-void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, float overlap,float frq1,float frq2,detectResult &result_sp_mat){
+void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, float overlap,float frq1,float frq2){
 //moving square and band pass filter with frq1 ~ frq2 Hz
     vector<vector<float> >     P_new(P.size(),vector<float>(P[0].size()));
     
@@ -279,8 +279,6 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
 
                 for(int i=0;i<x_buf.size();i++){
                     P_new[x_buf[i]][y_buf[i]] = 1;
-                    result_sp_mat.x_index_list.push_back(x_buf[i]);
-                    result_sp_mat.y_index_list.push_back(y_buf[i]);
                 }
             }
         }
@@ -289,12 +287,10 @@ void moving_square(vector<vector<float> > &P,unsigned int fs, unsigned int N, fl
             break;
     }
   
-    result_sp_mat.x_length = P_new[0].size();
-    result_sp_mat.y_length = P_new.size();
     P = P_new;
 }
 
-void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high,detectResult &result_sp_mat){
+void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overlap,float SNR_threshold,float frq_low,float frq_high){
         
     FILE *fp_first, *fp_second, *fp_third, *fp_fourth, *fp_fifth;
 //step1: simple moving average for each frequency
@@ -304,7 +300,7 @@ void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overla
 //step3: edge_detector
    edge_detector(P,SNR_threshold,5);
 //step4: using moving square for narrow band checking 
-    moving_square(P,fs,N,overlap,frq_low,frq_high,result_sp_mat);
+    moving_square(P,fs,N,overlap,frq_low,frq_high);
 //step5: save data after detection    
 }
 

@@ -30,6 +30,9 @@ void showSynopsis()
   blk("                                                                ");
   blk("  Installation Package:                                         ");
   blk("     fftw3                                                      ");
+  blk("     If you build in ubuntu, use command:                       ");
+  blk("          sudo apt-get install libfftw3-dev libfftw3-doc        ");
+  blk("                                                                ");
 }
 
 //----------------------------------------------------------------
@@ -80,18 +83,18 @@ void showExampleConfigAndExit()
   blk("        CommsTick          = 4                                   ");
   blk("                                                                 ");
   blk("        overlap            = 0.9                                 ");
-  blk("        window_length      = 1024                                ");
-  blk("        sample_rate        = 48000                               ");
-  blk("        iterate_data       = 1                                   ");
+  blk("        sample_rate        = 96000                               ");
+  blk("        iterate_data       = 0.5                                 ");
   blk("        window_type        = hanning (or rectangular)            ");
-  blk("        bits               = 16                                  ");
-  blk("        SNR_threshold      = 12                                  ");
+  blk("        bits               = 32                                  ");
+  blk("        SNR_threshold      = 15                                  ");
   blk("        band_pass_frq_low  = 3000                                ");
   blk("        band_pass_frq_high = 10000                               ");
+  blk("                                                                 ");
+  blk("        channel_need = 2                                         ");
   blk("}                                                                ");
   blk("                                                                 ");
   blk(" overlap:            STFT overlap between each window            ");
-  blk(" window_length:      samples, must be power of two to be faster  ");
   blk(" sample_rate:        how many sample per second                  ");
   blk(" iterate_data:       how many seconds data each iterate          ");
   blk(" window_type:        STFT window type, hanning or rectagular     ");
@@ -99,6 +102,8 @@ void showExampleConfigAndExit()
   blk(" SNR_threshold:      SNR threshold for edge detector             ");
   blk(" band_pass_frq_low:  lower  freqeuncy for band pass filter       ");
   blk(" band_pass_frq_high: higher freqeuncy for band pass filter       ");
+  blk(" channel_need:       how many channel data you want to send      ");
+  blk("                     out when whistle is detected                ");
   blk("                                                                 ");
   exit(0);
 }
@@ -119,16 +124,35 @@ void showInterfaceAndExit()
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
   blk(" SOUND_VOLTAGE_DATA_CH_ONE:                                     ");
-  blk("     string value, Voltage data seperate by comma               ");
+  blk("     string value, Voltage seperate by \",\" in channel one     ");
+  blk("     string value, Voltage seperate by \",\" in channel two     ");
+  blk("     string value, Voltage seperate by \",\" in channel three   ");
+  blk("     string value, Voltage seperate by \",\" in channel four    ");
+  blk("                                                                ");
+  blk(" RECORD_FRAMES:                                                 ");
+  blk("     \"string\" value, variable pulished by pStoreSoundX        ");
+  blk("                       How many loops per frame                 ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  WHISTLE_EXIST:                                                ");
   blk("     string value, \"true\" or \"false\"                        ");
   blk("                                                                ");
-  blk("  WHISTLE_VOLTAGE_DATA:                                         ");
-  blk("     string value, voltage data contains whistle in iterate     ");
+  blk("  WHISTLE_VOLTAGE_DATA_CH_ONE:                                  ");
+  blk("     string value, voltage data contains whistle in  1/2 iterate");
   blk("                   seconds voltage data seperate with comma     ");
+  blk("                                                                ");
+  blk("  WHISTLE_VOLTAGE_DATA_CH_TWO:                                  ");
+  blk("     string value, same as ch one if you need                   ");
+  blk("                   Remember to check channel_need >=2           ");
+  blk("  WHISTLE_VOLTAGE_DATA_CH_THREE:                                ");
+  blk("     string value, same as ch one if you need                   ");
+  blk("                   Remember to check channel_need >=3           ");
+  blk("  WHISTLE_VOLTAGE_DATA_CH_FOUR:                                 ");
+  blk("     string value, same as ch one if you need                   ");
+  blk("                   Remember to check channel_need =4            ");
+  blk("                                                                ");
+  blk("                                                                ");
   blk("  GET_VOLTAGE_TIME:                                             ");
   blk("     time spent in parse voltage string                         ");
   blk("                                                                ");

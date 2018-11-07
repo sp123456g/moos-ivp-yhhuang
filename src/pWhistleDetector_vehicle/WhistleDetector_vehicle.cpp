@@ -18,6 +18,9 @@ using namespace std;
 WhistleDetector_vehicle::WhistleDetector_vehicle()
 {
     m_input_data.clear();
+    m_ch2_str_buff.clear();
+    m_ch3_str_buff.clear();
+    m_ch4_str_buff.clear();
 
     m_overlap       = 0.9;
     m_window_length = 2048;
@@ -27,11 +30,21 @@ WhistleDetector_vehicle::WhistleDetector_vehicle()
     m_iterate_data  = 1;   // 1 second
     m_update_percent= 0.5;
     m_window_type   = "hanning";
-    m_whistle_exist = false;
     m_SNR_threshold = 10;
     m_frq_low       = 3000;
     m_frq_high      = 10000;
+
     m_first_time    = true;
+    m_get_frames    = false;
+    m_whistle_exist = false;
+    m_ch1_full      = false;
+    m_ch2_full      = false;
+    m_ch3_full      = false;
+    m_ch4_full      = false;
+    m_all_get       = false;
+    m_active        = false;
+    
+    m_channel_need  = 1;
 }
 
 
@@ -76,8 +89,27 @@ bool WhistleDetector_vehicle::OnNewMail(MOOSMSG_LIST &NewMail)
         ss<<(toc-tic);
         Notify("GET_VOLTAGE_TIME",ss.str());
      }
+     else if(key == "SOUND_VOLTAGE_DATA_CH_TWO"){
+         if(m_channel_need !=1)
+            m_ch2_str_buff.push_back(msg.GetString()); 
+     }
+     else if(key == "SOUND_VOLTAGE_DATA_CH_THREE"){
+         if(m_channel_need ==3 || m_channel_need ==4)
+            m_ch3_str_buff.push_back(msg.GetString()); 
+     }
+     else if(key == "SOUND_VOLTAGE_DATA_CH_FOUR" ){
+         if(m_channel_need ==4)
+            m_ch4_str_buff.push_back(msg.GetString()); 
+
+     }
      else if(key == "TEST_MESSAGE"){
         m_testing_message = msg.GetString();
+     }
+     else if(key == "RECORD_FRAMES"){
+         stringstream ss;
+         ss<<msg.GetString();
+         m_frames = atoi((msg.GetString()).c_str());
+         m_get_frames = true;
      }
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
@@ -109,33 +141,47 @@ bool WhistleDetector_vehicle::GetVoltageData(std::string input)
    return(true);
 }
 
-bool WhistleDetector_vehicle::SendData_back(vector<float> input){
+bool WhistleDetector_vehicle::SendData(vector<float> input){
     
-    stringstream msg_back;
+    stringstream msg1_1, msg1_2, msg2_1, msg2_2, msg3_1, msg3_2, msg4_1, msg4_2;
+//devide data
+    for(int i=0,j=ceil(input.size()/2);i<floor(input.size()/2),j<input.size();i++,j++){
+        msg1_1 << input[i]<<",";
+        msg1_2 << input[j]<<",";
+    }
+    Notify("WHISTLE_VOLTAGE_DATA_CH_ONE",msg1_1.str());
+    Notify("WHISTLE_VOLTAGE_DATA_CH_ONE",msg1_2.str());
 
-    for(int i=0;i<input.size();i++)
-        msg_back << input[i]<<",";
+    if(!m_ch2_str_buff.empty()){
+       for(int i=0,k=ceil(m_other_ch_str_num/2);i<floor(m_other_ch_str_num/2),k<m_other_ch_str_num;i++,k++){
+           msg2_1 << m_ch2_str_buff[i];
+           msg2_2 << m_ch2_str_buff[k];
+       }
+    Notify("WHISTLE_VOLTAGE_DATA_CH_TWO",msg2_1.str());
+    Notify("WHISTLE_VOLTAGE_DATA_CH_TWO",msg2_2.str());
+    }
+    if(!m_ch3_str_buff.empty()){
+       for(int i=0,k=ceil(m_other_ch_str_num/2);i<floor(m_other_ch_str_num/2),k<m_other_ch_str_num;i++,k++){
+           msg3_1 << m_ch3_str_buff[i];
+           msg3_2 << m_ch3_str_buff[k];
+       }
+    Notify("WHISTLE_VOLTAGE_DATA_CH_THREE",msg3_1.str());
+    Notify("WHISTLE_VOLTAGE_DATA_CH_THREE",msg3_2.str());
+    }
+    if(!m_ch4_str_buff.empty()){
+       for(int i=0,k=ceil(m_other_ch_str_num/2);i<floor(m_other_ch_str_num/2),k<m_other_ch_str_num;i++,k++){
+           msg4_1 << m_ch4_str_buff[i];
+           msg4_2 << m_ch4_str_buff[k];
+       }
+    Notify("WHISTLE_VOLTAGE_DATA_CH_FOUR",msg4_1.str());
+    Notify("WHISTLE_VOLTAGE_DATA_CH_FOUR",msg4_2.str());
+    }
+  
 
-    Notify("WHISTLE_VOLTAGE_DATA",msg_back.str());
+
 
     return(true);
 }
-
-bool WhistleDetector_vehicle::NotifyResult(detectResult input){
-
-    stringstream ss_x_msg;
-    stringstream ss_y_msg;
-
-    for(int i=0;i<input.x_index_list.size();i++){
-        ss_x_msg<<input.x_index_list[i]<<",";
-        ss_y_msg<<input.y_index_list[i]<<",";
-    }
-    
-//    Notify("X_INDEX",ss_x_msg.str());
-//    Notify("Y_INDEX",ss_y_msg.str());
-    
-};
-
 
 bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 {
@@ -143,7 +189,6 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
     stringstream ss1, ss2, ss3;
 
     vector<vector<float> > P;
-    detectResult result_mat;
 
 //set up window
     int win_number;
@@ -160,7 +205,7 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 //Whistle detection
     
     double tic_2 = MOOSTime();
-    detect_whistle(P,m_fs,m_window_length,m_overlap,m_SNR_threshold,m_frq_low,m_frq_high,result_mat);
+    detect_whistle(P,m_fs,m_window_length,m_overlap,m_SNR_threshold,m_frq_low,m_frq_high);
     double toc_2 = MOOSTime();
 //check if there is whistle in the matrix
     vector<whistle> whistle_list;
@@ -177,8 +222,7 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
         Notify("WHISTLE_EXIST","true");
 
 //send result data to MOOSDB
-        NotifyResult(result_mat);
-//        SendData_back(input_data);        
+        SendData(input_data);        
 
 // output result in event        
         for(int i=0;i<whistle_list.size();i++){
@@ -186,7 +230,7 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
             ss_1<<i;
             ss_2<<whistle_list[i].start_frq;
             ss_3<<whistle_list[i].end_frq;
-            reportEvent("whistle_"+ ss_1.str());
+//            reportEvent("whistle_"+ ss_1.str());
             reportEvent("start frq = " + ss_2.str());
             reportEvent("end frq = " + ss_3.str());
         }
@@ -214,10 +258,14 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
 bool WhistleDetector_vehicle::Iterate()
 {
   AppCastingMOOSApp::Iterate();
-
+    
 //Access data -> "m_iterate_data" seconds data per Iterate loop
-  if(m_first_time){
+  if(m_first_time && m_get_frames){
     m_access_data_number = round(m_fs*m_iterate_data);
+    m_other_ch_str_num   = round(m_fs*m_iterate_data/m_frames);
+    stringstream ss;
+    ss<<m_other_ch_str_num;
+    reportEvent("other channel access data counting: "+ss.str());
 
     if(m_frq_high>=m_fs/2){
         m_frq_high = m_fs/2;
@@ -228,19 +276,59 @@ bool WhistleDetector_vehicle::Iterate()
   vector<float> input_x(m_access_data_number,0);
 
     if(!m_voltage_data.empty()){
-
 // Get input 
-            if(m_voltage_data.size() >= m_access_data_number){
+
+        if(m_voltage_data.size() >= m_access_data_number){ 
+
+            switch(m_channel_need){
+            case 1:
+                m_all_get = true;
+                break;
+            case 2:
+                if(m_ch2_str_buff.size() >= m_other_ch_str_num)
+                    m_all_get = true;
+
+                break;
+            case 3:
+                if(m_ch2_str_buff.size() >= m_other_ch_str_num && m_ch3_str_buff.size() >= m_other_ch_str_num)
+                    m_all_get = true;
+                break;
+            case 4:
+                if(m_ch2_str_buff.size() >= m_other_ch_str_num && m_ch3_str_buff.size() >= m_other_ch_str_num && m_ch4_str_buff.size() >= m_other_ch_str_num)
+                    m_all_get = true;
+                break;
+            }                
+        }  
+        
+            if(m_all_get){
+                m_active = true;
                 for(int i=0;i<m_access_data_number;i++)
                     input_x[i] = m_voltage_data[i];
-// Analysis (detection algorithm) 
-            Analysis(input_x);
+                // Analysis (detection algorithm) 
+                Analysis(input_x);
+                //remove calculated data 
+                m_voltage_data.erase(m_voltage_data.begin(),m_voltage_data.begin()+round(m_access_data_number*1));
 
-//remove calculated data 
-            m_voltage_data.erase(m_voltage_data.begin(),m_voltage_data.begin()+round(m_access_data_number*1));
-           
+                if(m_channel_need == 2){
+                    m_ch2_str_buff.erase(m_ch2_str_buff.begin(),m_ch2_str_buff.begin()+round(m_other_ch_str_num*1));
+                }
+                else if(m_channel_need == 3){
+                    m_ch2_str_buff.erase(m_ch2_str_buff.begin(),m_ch2_str_buff.begin()+round(m_other_ch_str_num*1));
+                    m_ch3_str_buff.erase(m_ch3_str_buff.begin(),m_ch3_str_buff.begin()+round(m_other_ch_str_num*1));
+                }
+                else if(m_channel_need == 4){
+                    m_ch2_str_buff.erase(m_ch2_str_buff.begin(),m_ch2_str_buff.begin()+round(m_other_ch_str_num*1));
+                    m_ch3_str_buff.erase(m_ch3_str_buff.begin(),m_ch3_str_buff.begin()+round(m_other_ch_str_num*1));
+                    m_ch4_str_buff.erase(m_ch4_str_buff.begin(),m_ch4_str_buff.begin()+round(m_other_ch_str_num*1));
+                }
+
+                m_all_get = false;
             }         
+            else 
+                m_active = false;
     }
+    else 
+        m_active = false;
 
     AppCastingMOOSApp::PostReport();
     return(true);
@@ -340,6 +428,10 @@ bool WhistleDetector_vehicle::OnStartUp()
         ss>>m_update_percent;
         handled = true;
     }
+    else if(param == "channel_need"){
+        m_channel_need = atoi(value.c_str());
+        handled = true;
+    }
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
@@ -356,9 +448,11 @@ void WhistleDetector_vehicle::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   // Register("FOOBAR", 0);
-   Register("ACOUSTIC_DATA", 0);
    Register("SOUND_VOLTAGE_DATA_CH_ONE", 0);
-   Register("TEST_MESSAGE",0);
+   Register("SOUND_VOLTAGE_DATA_CH_TWO", 0);
+   Register("SOUND_VOLTAGE_DATA_CH_THREE", 0);
+   Register("SOUND_VOLTAGE_DATA_CH_FOUR", 0);
+   Register("RECORD_FRAMES",0);
 }
 
 
@@ -367,9 +461,12 @@ void WhistleDetector_vehicle::registerVariables()
 
 bool WhistleDetector_vehicle::buildReport() 
 {
-  m_msgs << "============================================ \n";
-  m_msgs << "File:                                        \n";
-  m_msgs << "============================================ \n";
+  m_msgs << "============================================   \n";
+  if(m_active)
+      m_msgs << "pWhistleDetecor status:    Active          \n";
+  else 
+      m_msgs << "pWhistleDetecor status:  Waiting for data  \n";
+  m_msgs << "=============================================  \n";
 
   stringstream ss;
   string    iterate_data_second;

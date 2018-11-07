@@ -95,8 +95,12 @@ bool StoreSoundX::OnNewMail(MOOSMSG_LIST &NewMail)
       }
     }else if(key == "SET_PARAMS"){
       string sval = msg.GetString();
-      if(sval == "true")
+      if(sval == "true"){
         setRecordParams();
+        stringstream ss;
+        ss<<m_frames;
+        Notify("RECORD_FRAMES",ss.str());
+      }
     }else if(key == "START_CHECK"){
       string sval = msg.GetString();
       if(sval == "true"){

@@ -28,8 +28,7 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
    bool buildReport();
    bool GetVoltageData(std::string);
    bool Analysis(std::vector<float>);
-   bool SendData_back(std::vector<float>);
-   bool NotifyResult(detectResult);
+   bool SendData(std::vector<float>);
 
  protected:
    void registerVariables();
@@ -40,6 +39,9 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
 
    std::deque<float>        m_voltage_data;
    std::deque<std::string>  m_input_data;
+   std::deque<std::string>  m_ch2_str_buff;
+   std::deque<std::string>  m_ch3_str_buff;
+   std::deque<std::string>  m_ch4_str_buff;
 
  private: // STFT variables
 
@@ -47,11 +49,24 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
     int         m_window_length;    // window length
     int         m_bits;
     int         m_access_data_number;
+    int         m_other_ch_str_num;   // other channel store str in the buffer
+    int         m_channel_need;     // how many channel is used
+    int         m_frames;
+
     double      m_iterate_data;   // "m_iterate_data" seconds per iterate loop  
     double      m_overlap;
     double      m_update_percent;
+
+    bool        m_ch1_full;
+    bool        m_ch2_full;
+    bool        m_ch3_full;
+    bool        m_ch4_full;
+    bool        m_all_get;
+    bool        m_active;
+    
     bool        m_whistle_exist;
     bool        m_first_time;
+    bool        m_get_frames;
 
     float       m_SNR_threshold;
     float       m_frq_low;
