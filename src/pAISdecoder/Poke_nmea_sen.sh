@@ -1,5 +1,5 @@
 #!/bin/bash
-filename='nmea-sample'
+filename='nmea-sample-2'
 exec < $filename
 
 while read line
