@@ -1,13 +1,13 @@
 /****************************************************************/
-/*   NAME: yhhuang                                              */
-/*   ORGN: Naational Taiwan University                          */
-/*   FILE: DataSender_Info.cpp                                  */
-/*   DATE: Oct 20th 2018                                        */
+/*   NAME:                                              */
+/*   ORGN: MIT Cambridge MA                                     */
+/*   FILE: DataReceiver_Info.cpp                               */
+/*   DATE: Dec 29th 1963                                        */
 /****************************************************************/
 
 #include <cstdlib>
 #include <iostream>
-#include "DataSender_Info.h"
+#include "DataReceiver_Info.h"
 #include "ColorParse.h"
 #include "ReleaseInfo.h"
 
@@ -20,20 +20,11 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pDataSender application is used for sending the file      ");
-  blk("  between the machine and user by using scp command             ");
+  blk("  The pDataReceiver application is used for               ");
   blk("                                                                ");
-  blk("  If data is sent successfully, filename will add _done at the end");
   blk("                                                                ");
-  blk("  Make sure you have already put your public ssh key into       ");
-  blk("  destination machine                                           ");
   blk("                                                                ");
-  blk("  System command need:                                          ");
-  blk("         \"rename\" and \"scp\" , use apt-get to install those  ");
   blk("                                                                ");
-  blk("  If you can ssh your machine without typing password,          ");
-  blk("  and you can use \"scp\" and \"rename\" command,               ");
-  blk("  you are all setted  !!                                        ");
 }
 
 //----------------------------------------------------------------
@@ -43,15 +34,15 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: pDataSender file.moos [OPTIONS]                   ");
+  blu("Usage: pDataReceiver file.moos [OPTIONS]                   ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pDataSender with the given process name         ");
-  blk("      rather than pDataSender.                           ");
+  blk("      Launch pDataReceiver with the given process name         ");
+  blk("      rather than pDataReceiver.                           ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -59,20 +50,11 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pDataSender.        ");
+  blk("      Display the release version of pDataReceiver.        ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
   blk("      to support pAntler launching conventions.                 ");
-  blk("                                                                ");
-  blk("SetUp:                                                          ");
-  blk(" Put your public key into the machine you want to send to:  ");
-  blk("     step 1: type \"ssh-keygen\" in command line            ");
-  blk("     step 2: type \"cat ~/.ssh/id_rsa.pub | ssh user@IP \"cat >> ~/.ssh/authorized_keys\"\"");
-  blk("     step 3: If fail, check if the file in destination machine can be modified");
-  blk("     step 4: Check if you can ssh into machine without typing password, ");
-  blk("             If it work fine, you are all set, if not, type \"ssh-add\" if needed");
-  blk("                                                                ");
   blk("                                                                ");
   exit(0);
 }
@@ -84,24 +66,16 @@ void showExampleConfigAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pDataSender Example MOOS Configuration                   ");
+  blu("pDataReceiver Example MOOS Configuration                   ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = pDataSender                              ");
+  blk("ProcessConfig = pDataReceiver                              ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
-  blk("     sender_filepath    = ./TestApp/                        ");
-  blk("     reciever_user           = yhhuang                          ");
-  blk("     reciever_machine        = 140.113.34.123                   ");
-  blk("     reciever_filepath  = ~/folder_name                         ");
+  blk("                                                                ");
   blk("}                                                               ");
   blk("                                                                ");
-  blk("  sender_filepath:   the path of the file you want to send(remember to add / in the end)");
-  blk("                     and folder must exist                      ");
-  blk("  reciever_user:     the user name you want to send to          ");
-  blk("  reciever_machine:  the IP address or machine of destination   ");
-  blk("  reciever_filepath: the directory you want to store files      ");
   exit(0);
 }
 
@@ -113,15 +87,15 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pDataSender INTERFACE                                    ");
+  blu("pDataReceiver INTERFACE                                    ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("     SEND_DATA_BY_DATASENDER = true or false                    ");
-  blk("         true: send data immediately                            ");
+  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
+  blk("                 string_val=BAR                                 ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
@@ -135,7 +109,7 @@ void showInterfaceAndExit()
 
 void showReleaseInfoAndExit()
 {
-  showReleaseInfo("pDataSender", "gpl");
+  showReleaseInfo("pDataReceiver", "gpl");
   exit(0);
 }
 

@@ -1,0 +1,12 @@
+//------------------------------------------------
+// pDataReceiver config block
+
+ProcessConfig = pDataReceiver
+{
+    AppTick   = 4
+    CommsTick = 4
+
+    file_path = ./Data/
+    file_name = *_pending
+}
+

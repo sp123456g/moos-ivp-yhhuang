@@ -35,6 +35,7 @@ ADD_SUBDIRECTORY(pWhistleDetector_vehicle)
 ADD_SUBDIRECTORY(pStoreSoundX)
 ADD_SUBDIRECTORY(pResultSaver)
 ADD_SUBDIRECTORY(pDataSender)
+ADD_SUBDIRECTORY(pDataReceiver)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################
