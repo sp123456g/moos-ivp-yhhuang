@@ -137,8 +137,10 @@ bool DataSender::Iterate()
                 reportConfigWarning("Check ssh key by typing pDataSender -h for help");
             }
         }
-        else
+        else{
             reportConfigWarning("check if file need to be send is end up with _pending");
+            reportConfigWarning("check if rename and scp command installed");
+        }
           
       
     m_send_data = "false";

@@ -1,8 +1,8 @@
 /****************************************************************/
-/*   NAME:                                              */
-/*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: DataReceiver_Info.h                                      */
-/*   DATE: Dec 29th 1963                                        */
+/*   NAME: yhhuang                                              */
+/*   ORGN: NTU                                                  */
+/*   FILE: DataReceiver_Info.h                                  */
+/*   DATE: Nov 8th, 2018                                        */
 /****************************************************************/
 
 #ifndef DataReceiver_INFO_HEADER

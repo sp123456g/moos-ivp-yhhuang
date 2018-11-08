@@ -55,7 +55,7 @@ ProcessConfig = pDataSender
     CommsTick = 4                                                 
 
      sender_filepath    = ./Data_for_scp/                        
-     reciever_user           = ual                          
-     reciever_machine        = 192.168.1.98                 
+     reciever_user           = yhh                          
+     reciever_machine        = localhost                 
      reciever_filepath       = ~/acoustic_tool/branches/forscp/                               
 } 

@@ -15,7 +15,7 @@ ProcessConfig = ANTLER
 //------------------------------------------------
 // pStoreSoundX config block
 
-//Set 60 Frames per second
+//Set 10 Frames per second
 
 ProcessConfig = pStoreSoundX
 {

@@ -1,8 +1,8 @@
 /****************************************************************/
-/*   NAME:                                              */
-/*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: DataReceiver_Info.cpp                               */
-/*   DATE: Dec 29th 1963                                        */
+/*   NAME: yhhuang                                              */
+/*   ORGN: NTU                                                  */
+/*   FILE: DataReceiver_Info.cpp                                */
+/*   DATE: Nov 9th, 2018                                        */
 /****************************************************************/
 
 #include <cstdlib>
@@ -20,9 +20,8 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pDataReceiver application is used for               ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The pDataReceiver application is used for read the file       ");
+  blk("  which contain MOOS variable inside it and Notify to MOOSDB    ");
   blk("                                                                ");
   blk("                                                                ");
 }
@@ -74,8 +73,25 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
+  blk("  file_path        = ./                                         ");
+  blk("  file_name        = variable.txt                               ");
+  blk("  file_order       = true                                       ");
+  blk("  from_pDataSender = true                                       ");
   blk("}                                                               ");
   blk("                                                                ");
+  blk("  file_path: path of the file you want with \"/\" in the last   ");
+  blk("                                                                ");
+  blk("  file_name: file name, if it sent by pDataSender, here just    ");
+  blk("   need main part, ex: 0_test.txt_sending, just need test.txt   ");
+  blk("                                                                ");
+  blk("  file_order: if you have more than one file and you want to    ");
+  blk("  have correct order, try to add index before file name,        ");
+  blk("        filename ex: 0_test.txt, 1_test.txt 2_test.txt ...      ");
+  blk("        string value: true or false                             ");
+  blk("                                                                ");
+  blk("  from_pDataSender: If your data is from pDataSender,           ");
+  blk("      and your filename will be all set by pDataSender          ");
+  blk("        string value: true or false                             ");
   exit(0);
 }
 
@@ -99,8 +115,10 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk("  Notify string value of the variable in the file               ");
   blk("                                                                ");
+  blk("  File format: one line contain variable and value without space");
+  blk("     ex:  FACING_ANGLE=40,20,70,                                ");
   exit(0);
 }
 
