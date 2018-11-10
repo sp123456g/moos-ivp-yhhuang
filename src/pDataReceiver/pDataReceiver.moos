@@ -14,16 +14,16 @@ ProcessConfig = ANTLER
 
     Run = MOOSDB        @ NewConsole = false
     Run = pDataReceiver @ NewConsole = false
-    Run = pLogger       @ NewConsole = false
+//    Run = pLogger       @ NewConsole = false
 }
 
 //--------------------------------------------
 ProcessConfig = pDataReceiver
 {
-    AppTick   = 4
-    CommsTick = 4
+    AppTick   = 1
+    CommsTick = 1
 
-    file_path        = ./DataTest/
+    file_path        = /home/yhh/moos-ivp-yhhuang/branches/logfile/whistle_data/
     file_name        = whistle_data.txt
     file_order       = true
     from_pDataSender = true
