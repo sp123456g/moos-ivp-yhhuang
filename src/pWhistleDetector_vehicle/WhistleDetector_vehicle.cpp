@@ -107,8 +107,13 @@ bool WhistleDetector_vehicle::OnNewMail(MOOSMSG_LIST &NewMail)
      }
      else if(key == "RECORD_FRAMES"){
          stringstream ss;
-         ss<<msg.GetString();
-         m_frames = atoi((msg.GetString()).c_str());
+         if(msg.IsString()){
+            ss<<msg.GetString();
+            m_frames = atoi((msg.GetString()).c_str());
+         }
+         else 
+            m_frames = (double)msg.GetDouble();
+
          m_get_frames = true;
      }
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
