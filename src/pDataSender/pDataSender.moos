@@ -1,30 +1,62 @@
 //Configuration file: YHHuang
- 
- ServerHost = localhost
- ServerPort = 9000
- Community  = DataSender
- 
- 
+//pResultSaver config block
+
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = Result_saver
+
+
 //------------------------------------------
 // Antler configuration  block
 ProcessConfig = ANTLER
 {
-   MSBetweenLaunches = 200
- 
-   Run = MOOSDB           @ NewConsole = false
-   Run = pDataSender      @ NewConsole = false
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB           @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = pResultSaver     @ NewConsole = false
+  Run = uTimerScript     @ NewConsole = true 
+  Run = pDataSender      @ NewConsole = false 
 }
 
-//-----------------------------------------
-// DataSender configuration block
-ProcessConfig = pDataSender
+
+
+
+ProcessConfig = pResultSaver
+{
+    AppTick   = 4
+    CommsTick = 4
+    
+    sending_variable_name = NUM_VALUE
+    filepath              = ./Data_for_scp/
+    filename              = whistle_data.txt
+    send_by_pDataSender   = true
+    wait_number_of_line   = 10
+}
+
+ProcessConfig = uTimerScript
 {
     AppTick   = 4
     CommsTick = 4
 
-    sender_filepath    = ~/practice/scp/test/
-    reciever_user           = ubuntu
-    reciever_machine        = 140.112.26.205
-    reciever_filepath  = ~/acoustic_tool/branches/forscp 
+    event = var=NUM_VALUE, val="$(15)" , time=0.1
+    event = var=NUM_VALUE, val="$(9)"  , time=0.2
+    event = var=NUM_VALUE, val="$(7)"  , time=0.3
+    event = var=NUM_VALUE, val="$(5)"  , time=0.4
+    event = var=NUM_VALUE, val="$(5)"  , time=0.5
+
+    reset_max  = 20
+    reset_time = all-posted
 }
 
+ProcessConfig = pDataSender                              
+{                                                               
+    AppTick   = 4                                                 
+    CommsTick = 4                                                 
+
+     sender_filepath    = ./Data_for_scp/                        
+     reciever_user           = ual                          
+     reciever_machine        = 192.168.1.98                 
+     reciever_filepath       = /home/ual/                               
+} 

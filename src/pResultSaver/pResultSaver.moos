@@ -17,7 +17,7 @@ ProcessConfig = ANTLER
   Run = pLogger          @ NewConsole = false
   Run = pResultSaver     @ NewConsole = false
   Run = uTimerScript     @ NewConsole = true 
-  Run = pDataSender      @ NewConsole = false 
+//  Run = pDataSender      @ NewConsole = false 
 }
 
 
@@ -28,7 +28,7 @@ ProcessConfig = pResultSaver
     AppTick   = 4
     CommsTick = 4
     
-    sending_variable_name = SOUND_VOLTAGE_DATA_CH_ONE
+    sending_variable_name = NUM_VALUE
     filepath              = ./Data_for_scp/
     filename              = whistle_data.txt
     send_by_pDataSender   = true
@@ -40,10 +40,11 @@ ProcessConfig = uTimerScript
     AppTick   = 4
     CommsTick = 4
 
-    event = var=NUM_VALUE, val="$(15)" , time=0.25
-    event = var=NUM_VALUE, val="$(9)"  , time=0.5
-    event = var=NUM_VALUE, val="$(7)"  , time=0.75
-    event = var=NUM_VALUE, val="$(5)"  , time=1.00
+    event = var=NUM_VALUE, val="$(15)" , time=0.1
+    event = var=NUM_VALUE, val="$(9)"  , time=0.2
+    event = var=NUM_VALUE, val="$(7)"  , time=0.3
+    event = var=NUM_VALUE, val="$(5)"  , time=0.4
+    event = var=NUM_VALUE, val="$(5)"  , time=0.5
 
     reset_max  = 20
     reset_time = all-posted
@@ -55,7 +56,7 @@ ProcessConfig = pDataSender
     CommsTick = 4                                                 
 
      sender_filepath    = ./Data_for_scp/                        
-     reciever_user           = yhh                          
-     reciever_machine        = dell-7572.local                 
-     reciever_filepath       = /home/yhh/moos-ivp-yhhuang/branches/logfile/whistle_data/                               
+     reciever_user           = ual                          
+     reciever_machine        = 192.168.1.98                
+     reciever_filepath       = /home/ual/                              
 } 

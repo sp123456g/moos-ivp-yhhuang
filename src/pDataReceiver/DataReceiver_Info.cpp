@@ -77,6 +77,7 @@ void showExampleConfigAndExit()
   blk("  file_name        = variable.txt                               ");
   blk("  file_order       = true                                       ");
   blk("  from_pDataSender = true                                       ");
+  blk("  sound_data_fps   = 10                                         ");
   blk("}                                                               ");
   blk("                                                                ");
   blk("  file_path: path of the file you want with \"/\" in the last   ");
@@ -92,6 +93,10 @@ void showExampleConfigAndExit()
   blk("  from_pDataSender: If your data is from pDataSender,           ");
   blk("      and your filename will be all set by pDataSender          ");
   blk("        string value: true or false                             ");
+  blk("                                                                ");
+  blk("  sound_data_fps: if message is sound data, please add          ");
+  blk("                  frames per second here                        ");
+  blk("                                                                ");
   exit(0);
 }
 

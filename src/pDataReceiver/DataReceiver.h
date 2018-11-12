@@ -42,6 +42,8 @@ class DataReceiver : public AppCastingMOOSApp
     std::string m_file_index_need;
     std::string m_from_data_sender;
     std::string m_full_filename;
+
+    int m_fps;
     
     unsigned int m_index;
 
@@ -49,6 +51,7 @@ class DataReceiver : public AppCastingMOOSApp
     std::deque<std::string> m_value_buff;
 
     bool m_start;
+    bool m_sound_data;
 
  private: // State variables
 };

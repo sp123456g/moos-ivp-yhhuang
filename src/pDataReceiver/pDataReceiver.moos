@@ -28,6 +28,8 @@ ProcessConfig = pDataReceiver
     file_order       = true
     from_pDataSender = true
     
+    sound_data_fps = 10
+    
 }
 
 //--------------------------------------------

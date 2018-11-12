@@ -27,6 +27,8 @@ DataReceiver::DataReceiver()
 
     m_start = false;
     m_index = 0;
+    m_fps = 10;
+    m_sound_data = false;
 }
 
 //---------------------------------------------------------
@@ -123,12 +125,13 @@ bool DataReceiver::readfile(){
     if(!fp)
         reportConfigWarning("Warning ----> Can't open file!!!");
     else{
-        while(fp.getline(buffer,sizeof(buffer))){
+        while(fp.getline(buffer,sizeof(buffer),'\n')){
             string line_str;
             line_str = buffer;
-            
             m_variable_buff.push_back(biteString(line_str,'='));
-            m_value_buff.push_back(line_str);
+
+            string line_str_sub = line_str.substr(0,line_str.size()-1);
+            m_value_buff.push_back(line_str_sub);
 
         }
         reportEvent("Read "+ m_full_filename + " success!");
@@ -153,6 +156,9 @@ bool DataReceiver::NotifyResult(){
 
         m_variable_buff.pop_front();
         m_value_buff.pop_front();
+
+        if(m_sound_data)
+            usleep((1/m_fps)*1000*1000);
     }
         m_index++;
 }
@@ -228,6 +234,12 @@ bool DataReceiver::OnStartUp()
     
       m_from_data_sender = value;
       handled = true;
+    }
+    else if(param == "sound_data_fps"){
+        
+        m_fps = atoi(value.c_str());
+        m_sound_data = true;
+        handled = true;
     }
 
     if(!handled)
