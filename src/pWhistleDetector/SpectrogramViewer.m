@@ -55,7 +55,7 @@ title("Original spectrogram");
 xlabel('Time (sec)');     
 ylabel('Frequency (kHz)');     
 % set(hbar,'ytick',[0:5:50]);
-caxis([0 2]);
+caxis([0 50]);
 colormap(jet);
 % yticks([0:1:fs/2000]);
 

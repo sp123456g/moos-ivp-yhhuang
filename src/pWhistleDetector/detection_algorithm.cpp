@@ -205,14 +205,24 @@ void median_filter(vector<vector<float> > &P){
 }
 
 
-void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int jump_num){
+void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int jump_num, unsigned int N, int fs, float frq1, float frq2){
 
     float SNR=0;
     vector<vector<float> > P_new(P.size(),vector<float>(P[0].size())); 
+
+    int low_bound   = round(N*frq1/fs) - 5;
+    int high_bound  = round(N*frq2/fs) + 5;
+    
+    if(low_bound < 0 )
+        low_bound = 0;
+    if(high_bound > P.size())
+        high_bound = P.size();
+
+
     for(int i=0;i<P[0].size();i++){
 
         vector<float> time_column(P.size(),0);
-        for(int k=0;k<P.size();k++){
+        for(int k=low_bound;k<high_bound;k++){
             time_column[k] = P[k][i];
         }
              
@@ -301,7 +311,7 @@ void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overla
 //step2: median filter
 //    median_filter(P);
 //step3: edge_detector
-   edge_detector(P,SNR_threshold,5);
+   edge_detector(P,SNR_threshold,5,N,fs,frq_low,frq_high);
 //step4: using moving square for narrow band checking 
     moving_square(P,fs,N,overlap,frq_low,frq_high);
 //step5: save data after detection    

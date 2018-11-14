@@ -98,3 +98,16 @@ TARGET_LINK_LIBRARIES(BHV_SearchFront_yhh
    mbutil
    geometry 
    ${SYSTEM_LIBS} )
+
+ADD_LIBRARY(BHV_TrackChirp SHARED 
+    BHV_TrackChirp.cpp AOF_SimpleWaypoint)
+TARGET_LINK_LIBRARIES(BHV_TrackChirp
+   helmivp
+   behaviors 
+   ivpbuild 
+   logic 
+   ivpcore 
+   bhvutil 
+   mbutil
+   geometry 
+   ${SYSTEM_LIBS} )
