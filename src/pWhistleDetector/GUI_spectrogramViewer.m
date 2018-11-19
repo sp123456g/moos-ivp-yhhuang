@@ -58,7 +58,7 @@ handles.colorbarmax = '50';
 handles.colorbarmin = '0';
 handles.fs = '96000';
 handles.style = 'jet';
-handles.filepath = './Spectrogram_figure/';
+handles.filepath = '~/moos-ivp-yhhuang/trunk/src/pWhistleDetector/Spectrogram_figure/';
 % Update handles structure
 set(gcf, 'color', [0.1 0.1 0.13]);
 guidata(hObject, handles);
@@ -150,8 +150,8 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 %----------------------------------------------------
 
 while 1
-if exist('./Spectrogram_data/original_P', 'file') == 2
-input = importdata("./Spectrogram_data/original_P");
+if exist('~/moos-ivp-yhhuang/trunk/src/pWhistleDetector/Spectrogram_data/original_P', 'file') == 2
+input = importdata("~/moos-ivp-yhhuang/trunk/src/pWhistleDetector/Spectrogram_data/original_P");
 input_matrix_size = size(input);
 
 input_time_axis_size = input_matrix_size(1,2);
@@ -163,8 +163,8 @@ detection_plot = zeros(input_frq_axis_size,input_time_axis_size*(time_buff-1));
 while 1
     
 set(handles.text4,'String','Plotting...');
-A = importdata("./Spectrogram_data/original_P");
-B = importdata("./Spectrogram_data/final_P");
+A = importdata("~/moos-ivp-yhhuang/trunk/src/pWhistleDetector/Spectrogram_data/original_P");
+B = importdata("~/moos-ivp-yhhuang/trunk/src/pWhistleDetector/Spectrogram_data/final_P");
 
 A_matrix_size = size(A);
 B_matrix_size = size(B);
