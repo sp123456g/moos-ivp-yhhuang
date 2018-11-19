@@ -57,7 +57,7 @@ handles.output = hObject;
 handles.colorbarmax = '50';
 handles.colorbarmin = '0';
 handles.fs = '96000';
-handles.style = 'Jet';
+handles.style = 'jet';
 handles.filepath = './Spectrogram_figure/';
 % Update handles structure
 set(gcf, 'color', [0.1 0.1 0.13]);
@@ -156,8 +156,8 @@ input_matrix_size = size(input);
 
 input_time_axis_size = input_matrix_size(1,2);
 input_frq_axis_size = input_matrix_size(1,1);
-spectrogram_buff = zeros(input_frq_axis_size,input_time_axis_size);
-detection_plot = zeros(input_frq_axis_size,input_time_axis_size);
+spectrogram_buff = zeros(input_frq_axis_size,input_time_axis_size*(time_buff-1));
+detection_plot = zeros(input_frq_axis_size,input_time_axis_size*(time_buff-1));
 
 
 while 1
@@ -445,3 +445,4 @@ function axes5_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: place code in OpeningFcn to populate axes5
+
