@@ -36,6 +36,8 @@ ADD_SUBDIRECTORY(pStoreSoundX)
 ADD_SUBDIRECTORY(pResultSaver)
 ADD_SUBDIRECTORY(pDataSender)
 ADD_SUBDIRECTORY(pDataReceiver)
+ADD_SUBDIRECTORY(pDirectionCalculator)
+ADD_SUBDIRECTORY(pLinearApproximator)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################
