@@ -10,6 +10,7 @@
 #include "MBUtils.h"
 #include "ACTable.h"
 #include "DirectionCalculator.h"
+#include <sstream>
 
 using namespace std;
 
@@ -32,6 +33,7 @@ DirectionCalculator::DirectionCalculator()
     m_low_fq            = 3;
     m_up_fq             = 10;
     m_filt_order        = 5;
+    m_index             = 0;
 
     m_output_angle      = 0;
 
@@ -109,6 +111,7 @@ bool DirectionCalculator::Band_Filter(vector<float> &input){
             output.push_back(out_data);
         }
         input = output;
+        output.clear();
     }
 }
 
@@ -189,6 +192,22 @@ float DirectionCalculator::CalTDOA_by_cc(std::vector<float> ch1, std::vector<flo
 }
 float DirectionCalculator::CalTDOA_by_peak(std::vector<float> ch1, std::vector<float> ch2){
 }
+
+bool DirectionCalculator::Save_data(string filename, vector<float> in, string filepath){
+    
+    stringstream ss;
+    string filepath_name;
+    ss<<filepath<<filename;
+    ss>>filepath_name;
+
+    FILE *fp = fopen(filepath_name.c_str(),"w");
+
+    float value;
+    for(unsigned int i=0;i<in.size();i++)
+            fprintf(fp,"%f %s",in[i],"\n");
+
+    fclose(fp);
+}
 //---------------------------------------------------------
 // Procedure: Iterate()
 //            happens AppTick times per second
@@ -218,10 +237,28 @@ bool DirectionCalculator::Iterate()
                     ch1_data[i] = m_ch1[i];
                 for(int j=0;j<m_access_data_num;j++)
                     ch2_data[j] = m_ch2[j];
+// save data
+                stringstream ss_file1, ss_file2, ss_file3,ss_file4;
+                ss_file1<<m_index<<"before_filter_ch1.csv"; 
+                Save_data(ss_file1.str(),ch1_data,"./csv_file/");
+                
+                ss_file2<<m_index<<"before_filter_ch2.csv"; 
+                Save_data(ss_file2.str(),ch2_data,"./csv_file/");
 
 //filtering
                Band_Filter(ch1_data);
                Band_Filter(ch2_data);
+
+// save data
+                ss_file3<<m_index<<"after_filter_ch1.csv"; 
+                Save_data(ss_file3.str(),ch1_data,"./csv_file/");
+
+                ss_file4<<m_index<<"after_filter_ch2.csv"; 
+                Save_data(ss_file4.str(),ch2_data,"./csv_file/");
+
+
+                m_index ++;
+
                 if(m_use_cc)
                     TDOA = CalTDOA_by_cc(ch1_data,ch2_data);
                 
@@ -242,9 +279,10 @@ bool DirectionCalculator::Iterate()
                     cout<< "Invalid calculation"<<endl;
                     Notify("SOURCE_ANGLE","NAN");
                 }
-                else
+                else{
                     m_output_angle = asin(before_asin)*(180/PI);
                     Notify("SOURCE_ANGLE",m_output_angle);
+                }
             }  
             break;
         case 3:
@@ -253,9 +291,6 @@ bool DirectionCalculator::Iterate()
             break;
     }
     
-    
-    
-
     AppCastingMOOSApp::PostReport();
     return(true);
 }

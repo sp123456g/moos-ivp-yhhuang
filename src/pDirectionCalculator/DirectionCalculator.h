@@ -37,6 +37,8 @@ class DirectionCalculator : public AppCastingMOOSApp
     float   CalTDOA_by_cc(std::vector<float> ch1, std::vector<float> ch2);
     float   CalTDOA_by_peak(std::vector<float> ch1, std::vector<float> ch2);
 
+    bool    Save_data(std::string filename, std::vector<float> in, std::string filepath);
+
  private: // Configuration variables
     
     float   m_fs;
@@ -50,6 +52,7 @@ class DirectionCalculator : public AppCastingMOOSApp
     int     m_low_fq;
     int     m_up_fq;
     int     m_filt_order;
+    int     m_index;
     
     bool    m_use_cc; 
     
