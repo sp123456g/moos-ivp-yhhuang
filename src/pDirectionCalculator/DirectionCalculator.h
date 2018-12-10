@@ -32,6 +32,7 @@ class DirectionCalculator : public AppCastingMOOSApp
 
     bool    GetVoltageData_ch1(std::string);
     bool    GetVoltageData_ch2(std::string);
+    bool    GetVoltageData_both(std::string,std::string);
     bool    Band_Filter(std::vector<float> &input);
 
     float   CalTDOA_by_cc(std::vector<float> ch1, std::vector<float> ch2);
@@ -60,6 +61,9 @@ class DirectionCalculator : public AppCastingMOOSApp
     std::deque<float> m_ch1;
     std::deque<float> m_ch2;
     std::deque<float> m_ch3;
+    std::deque<std::string> m_ch1_str;
+    std::deque<std::string> m_ch2_str;
+    std::deque<std::string> m_ch3_str;
 
     Filter *m_band_filter;
     

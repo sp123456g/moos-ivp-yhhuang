@@ -27,6 +27,7 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
  protected: // Standard AppCastingMOOSApp function to overload 
    bool buildReport();
    bool GetVoltageData(std::string);
+   bool GetVoltageData_ch2(std::string);
    bool Analysis(std::vector<float>);
    bool SendData(std::vector<float>);
 
@@ -38,6 +39,7 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
  private: // State variables
 
    std::deque<float>        m_voltage_data;
+   std::deque<float>        m_voltage_data_ch2;
    std::deque<std::string>  m_input_data;
    std::deque<std::string>  m_ch2_str_buff;
    std::deque<std::string>  m_ch3_str_buff;

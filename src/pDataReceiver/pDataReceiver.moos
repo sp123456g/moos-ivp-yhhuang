@@ -23,7 +23,7 @@ ProcessConfig = pDataReceiver
     AppTick   = 1
     CommsTick = 1
 
-    file_path        = /home/yhh/google_drive_UALyhhuang/logfiles/TestDataSender/2018_11_13/voltage_data/
+    file_path        = /home/yhh/google_drive_UALyhhuang/logfiles/TestDataSender/2018_12_07/
     file_name        = whistle_data.txt
     file_order       = true
     from_pDataSender = true

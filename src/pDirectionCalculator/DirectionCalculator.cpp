@@ -41,6 +41,8 @@ DirectionCalculator::DirectionCalculator()
     m_ch2.clear();
     m_ch3.clear();
     
+    m_ch1_str.clear();
+    m_ch2_str.clear();
     m_band_filter = new Filter(BPF,60,m_fs/1000,m_low_fq,m_up_fq);
 }
 
@@ -77,10 +79,12 @@ bool DirectionCalculator::OnNewMail(MOOSMSG_LIST &NewMail)
      if(key == "FOO") 
        cout << "great!";
      else if(key == "WHISTLE_VOLTAGE_DATA_CH_ONE"){
-         GetVoltageData_ch1(msg.GetString());
+//        GetVoltageData_ch1(msg.GetString());
+        m_ch1_str.push_back(msg.GetString());
      }
      else if(key == "WHISTLE_VOLTAGE_DATA_CH_TWO"){
-         GetVoltageData_ch2(msg.GetString());
+//        GetVoltageData_ch2(msg.GetString());
+        m_ch2_str.push_back(msg.GetString());
      }
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
@@ -138,6 +142,26 @@ bool DirectionCalculator::GetVoltageData_ch2(string input)
       m_ch2.push_back(volt);
     }
 }
+
+bool DirectionCalculator::GetVoltageData_both(string ch1,string ch2)
+{
+
+    vector<string> voltages = parseString(ch1,',');
+    vector<string> voltages_ch2 = parseString(ch2,',');
+
+    reportEvent("voltages size:"+doubleToString(voltages.size()));
+    reportEvent("voltages_ch2 size:"+doubleToString(voltages_ch2.size()));
+    if(voltages.size() == voltages_ch2.size()){
+        for(int i=0; i<voltages.size(); i++){
+          float volt = atof(voltages[i].c_str());
+          float volt_ch2 = atof(voltages_ch2[i].c_str());
+
+          m_ch1.push_back(volt);
+          m_ch2.push_back(volt_ch2);
+        }
+    }
+}
+
 
 float DirectionCalculator::CalTDOA_by_cc(std::vector<float> ch1, std::vector<float> ch2){
 //ch1 is left and ch2 is right
@@ -224,11 +248,20 @@ bool DirectionCalculator::Iterate()
     vector<float> ch1_data(m_access_data_num,0);
     vector<float> ch2_data(m_access_data_num,0);
     
-    stringstream ss;
+    stringstream ss, ss2;
     switch(m_mic_num){
         case 2:
             ss<<m_ch1.size()<<","<<m_ch2.size();
             reportEvent("size of ch1 and ch2:" +ss.str());
+            ss2<<m_ch1_str.size()<<","<<m_ch2_str.size();
+            reportEvent("size of ch1 and ch2 str:" +ss2.str());
+// get voltage data in both ch, from ch1 ch2 str buff
+            if(!m_ch1_str.empty() && !m_ch2_str.empty()){
+                GetVoltageData_both(m_ch1_str.front(),m_ch2_str.front());
+
+                m_ch1_str.pop_front();
+                m_ch2_str.pop_front();
+            }
             if(m_ch1.size() >=m_access_data_num && m_ch2.size() >= m_access_data_num){
 // Step 2. Calculate TDOA
 // cross-correlation
@@ -276,8 +309,9 @@ bool DirectionCalculator::Iterate()
 
                 float before_asin = TDOA*m_c/m_mic_dis;
                 if(before_asin > 1){
-                    cout<< "Invalid calculation"<<endl;
-                    Notify("SOURCE_ANGLE","NAN");
+                    cout<< "Invalid calculation, output 0"<<endl;
+                    float angle = 0;
+                    Notify("SOURCE_ANGLE",angle);
                 }
                 else{
                     m_output_angle = asin(before_asin)*(180/PI);

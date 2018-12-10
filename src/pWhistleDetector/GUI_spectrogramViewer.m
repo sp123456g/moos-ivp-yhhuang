@@ -54,7 +54,7 @@ function GUI_spectrogramViewer_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for GUI_spectrogramViewer
 handles.output = hObject;
-handles.colorbarmax = '50';
+handles.colorbarmax = '3';
 handles.colorbarmin = '0';
 handles.fs = '96000';
 handles.style = 'jet';

@@ -82,6 +82,7 @@ bool WhistleDetector_vehicle::OnNewMail(MOOSMSG_LIST &NewMail)
      else if(key == "SOUND_VOLTAGE_DATA_CH_ONE"){
 //Get String data and transfer to voltage buffer
         double tic = MOOSTime();
+        m_input_data.push_back(msg.GetString());
         GetVoltageData(msg.GetString()); 
         double toc = MOOSTime();
 
@@ -92,6 +93,7 @@ bool WhistleDetector_vehicle::OnNewMail(MOOSMSG_LIST &NewMail)
      else if(key == "SOUND_VOLTAGE_DATA_CH_TWO"){
          if(m_channel_need !=1)
             m_ch2_str_buff.push_back(msg.GetString()); 
+            GetVoltageData_ch2(msg.GetString());
      }
      else if(key == "SOUND_VOLTAGE_DATA_CH_THREE"){
          if(m_channel_need ==3 || m_channel_need ==4)
@@ -146,17 +148,42 @@ bool WhistleDetector_vehicle::GetVoltageData(std::string input)
    return(true);
 }
 
+bool WhistleDetector_vehicle::GetVoltageData_ch2(std::string input)
+{
+
+    vector<string> voltages = parseString(input,',');
+
+    for(int i=0; i<voltages.size(); i++){
+      float volt = atof(voltages[i].c_str());
+      
+      m_voltage_data_ch2.push_back(volt);
+    }
+
+   return(true);
+}
+
 bool WhistleDetector_vehicle::SendData(vector<float> input){
     
     stringstream msg1_1, msg1_2, msg2_1, msg2_2, msg3_1, msg3_2, msg4_1, msg4_2;
 //devide data
-    for(int i=0,j=ceil(input.size()/2);i<floor(input.size()/2),j<input.size();i++,j++){
-        msg1_1 << input[i]<<",";
-        msg1_2 << input[j]<<",";
-    }
-    Notify("WHISTLE_VOLTAGE_DATA_CH_ONE",msg1_1.str());
-    Notify("WHISTLE_VOLTAGE_DATA_CH_ONE",msg1_2.str());
+//    for(int i=0,j=ceil(input.size()/2);i<floor(input.size()/2),j<input.size();i++,j++){
+//        msg1_1 << input[i]<<",";
+//        msg1_2 << input[j]<<",";
+//    }
+//    Notify("WHISTLE_VOLTAGE_DATA_CH_ONE",msg1_1.str());
+//    Notify("WHISTLE_VOLTAGE_DATA_CH_ONE",msg1_2.str());
 
+// ch1 data back
+    if(!m_input_data.empty()){
+    
+        for(int i=0,k=ceil(m_other_ch_str_num/2);i<floor(m_other_ch_str_num/2),k<m_other_ch_str_num;i++,k++){
+           msg1_1 << m_input_data[i];
+           msg1_2 << m_input_data[k];
+        }
+        Notify("WHISTLE_VOLTAGE_DATA_CH_ONE",msg1_1.str());
+        Notify("WHISTLE_VOLTAGE_DATA_CH_ONE",msg1_2.str());
+    }
+// ch2 data back
     if(!m_ch2_str_buff.empty()){
        for(int i=0,k=ceil(m_other_ch_str_num/2);i<floor(m_other_ch_str_num/2),k<m_other_ch_str_num;i++,k++){
            msg2_1 << m_ch2_str_buff[i];
@@ -165,6 +192,7 @@ bool WhistleDetector_vehicle::SendData(vector<float> input){
     Notify("WHISTLE_VOLTAGE_DATA_CH_TWO",msg2_1.str());
     Notify("WHISTLE_VOLTAGE_DATA_CH_TWO",msg2_2.str());
     }
+// ch3 data back
     if(!m_ch3_str_buff.empty()){
        for(int i=0,k=ceil(m_other_ch_str_num/2);i<floor(m_other_ch_str_num/2),k<m_other_ch_str_num;i++,k++){
            msg3_1 << m_ch3_str_buff[i];
@@ -307,12 +335,14 @@ bool WhistleDetector_vehicle::Iterate()
         
             if(m_all_get){
                 m_active = true;
+                reportEvent("Analysing!");
                 for(int i=0;i<m_access_data_number;i++)
                     input_x[i] = m_voltage_data[i];
                 // Analysis (detection algorithm) 
                 Analysis(input_x);
                 //remove calculated data 
                 m_voltage_data.erase(m_voltage_data.begin(),m_voltage_data.begin()+round(m_access_data_number*1));
+                m_input_data.erase(m_input_data.begin(),m_input_data.begin()+round(m_other_ch_str_num*1));
 
                 if(m_channel_need == 2){
                     m_ch2_str_buff.erase(m_ch2_str_buff.begin(),m_ch2_str_buff.begin()+round(m_other_ch_str_num*1));
@@ -470,7 +500,8 @@ bool WhistleDetector_vehicle::buildReport()
   if(m_active)
       m_msgs << "pWhistleDetecor status:    Active          \n";
   else 
-      m_msgs << "pWhistleDetecor status:  Waiting for data  \n";
+      m_msgs << "pWhistleDetecor status:  Waiting for data \n";
+  m_msgs << "       (Remember to poke RECORD_FRAMES in str format if use pDataReceiver to get data)\n";
   m_msgs << "=============================================  \n";
 
   stringstream ss;
@@ -484,6 +515,10 @@ bool WhistleDetector_vehicle::buildReport()
     m_msgs << "Whistle exist!!";
   else
     m_msgs << "No whistle in this "<<iterate_data_second<<" seconds\n";
+    m_msgs << "Ch1 size:"<<m_voltage_data.size()<<"\n";
+    m_msgs << "Ch2 size:"<<m_voltage_data_ch2.size()<<"\n";
+    m_msgs << "Ch1 str size:"<<m_input_data.size()<<"\n";
+    m_msgs << "Ch2 str size:"<<m_ch2_str_buff.size()<<"\n";
 
     m_msgs << actab.getFormattedString();
 

@@ -89,7 +89,8 @@ void showExampleConfigAndExit()
   blk("  hyd_dis    : distance between two hydrophones (meter)         ");
   blk("  use_cc     : true if you want to use cross-correlation methond");
   blk("               false for using peak finding method              ");
-  blk("  interval   : set up interval for calculating per time         ");
+  blk("  interval   : set up signal duration for calculating TDOA      ");
+  blk("               AppTick and CommsTick suggest to be 1/interval   ");
   blk("  band_pass  : band-pass filter from lower to higher frq (kHz)  ");
   blk("                                                                ");
   exit(0);
