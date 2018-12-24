@@ -19,6 +19,14 @@ using namespace std;
 
 AmbientCalculate::AmbientCalculate()
 {
+    m_gain          = 0;
+    m_sen           = 0;
+    m_duration      = 2;
+    m_avg_spl1      = 0;
+    m_avg_voltage1  = 0;
+    m_avg_spl2      = 0;
+    m_avg_voltage2  = 0;
+    m_fs            = 96000;
 }
 
 //---------------------------------------------------------
@@ -108,46 +116,47 @@ bool AmbientCalculate::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-    deque<float> ch1, ch2;
     float total1 = 0,total2 = 0;
 
-  int access_data_num = round(m_fs * m_duration);
+    int access_data_num = round(m_fs * m_duration);
+    deque<float> ch1(access_data_num,0), ch2(access_data_num,0);
+
 // check ch1
-  if(m_ch1.size() >= access_data_num){
+    if(m_ch1.size() >= access_data_num){
       
-    for(int i=0;i<m_access_data_num;i++)
-        ch1[i] = m_ch1[i];
+        for(int i=0;i<access_data_num;i++)
+            ch1[i] = m_ch1[i];
 
-    for(int i=0;i<ch1.size();i++)
-        total1 +=abs(ch1[i]);
+        for(int i=0;i<ch1.size();i++)
+            total1 +=abs(ch1[i]);
 
-    m_avg_voltage1 = total1/access_data_num;
-    m_avg_spl1 = 20*log(m_avg_voltage1) - m_sen + m_gain;
+        m_avg_voltage1 = total1/access_data_num;
+        m_avg_spl1 = 20*log10(m_avg_voltage1) - m_sen + m_gain;
 
-    Notify("AVG_SPL_CH_ONE", m_avg_spl1);
-    Notify("AVG_VOLTAGE_CH_ONE", m_avg_voltage1);
+        Notify("AVG_SPL_CH_ONE", m_avg_spl1);
+        Notify("AVG_VOLTAGE_CH_ONE", m_avg_voltage1);
 
-    m_ch1.erase(m_ch1.begin(),m_ch1.begin()+round(m_access_data_num*1));
-  }
+        m_ch1.erase(m_ch1.begin(),m_ch1.begin()+round(access_data_num*1));
+    }
 
 
 // check ch2
-  if(m_ch2.size() >= access_data_num){
+    if(m_ch2.size() >= access_data_num){
+    
+       for(int i=0;i<access_data_num;i++)
+           ch2[i] = m_ch2[i];
+   
+       for(int i=0;i<ch2.size();i++)
+           total2 +=abs(ch2[i]);
+ 
+       m_avg_voltage2 = total2/access_data_num;
+       m_avg_spl2 = 20*log10(m_avg_voltage2) - m_sen + m_gain;
 
-    for(int i=0;i<m_access_data_num;i++)
-        ch2[i] = m_ch2[i];
+       Notify("AVG_SPL_CH_TWO", m_avg_spl2);
+       Notify("AVG_VOLTAGE_CH_TWO", m_avg_voltage2);
 
-    for(int i=0;i<ch2.size();i++)
-        total2 +=abs(ch2[i]);
-
-      m_avg_voltage2 = total2/access_data_num;
-      m_avg_spl2 = 20*log(m_avg_voltage2) - m_sen + m_gain;
-
-      Notify("AVG_SPL_CH_TWO", m_avg_spl2);
-      Notify("AVG_VOLTAGE_CH_TWO", m_avg_voltage2);
-
-      m_ch2.erase(m_ch2.begin(),m_ch2.begin()+round(m_access_data_num*1));
-  }
+       m_ch2.erase(m_ch2.begin(),m_ch2.begin()+round(access_data_num*1));
+    }
     
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -193,7 +202,7 @@ bool AmbientCalculate::OnStartUp()
         handled = true;
     }  
     else if( param == "fs"){
-        m_gain = atoi(value.c_str());
+        m_fs = atoi(value.c_str());
         handled = true;
     }
     if(!handled)

@@ -36,7 +36,6 @@ class AmbientCalculate : public AppCastingMOOSApp
    std::deque<float> m_ch2;
 
    int      m_fs;
-   int      m_access_data_num;
 
    float    m_gain;
    float    m_sen;

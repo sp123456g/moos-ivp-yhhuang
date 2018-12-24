@@ -90,16 +90,20 @@ bool DirectionCalculator::OnNewMail(MOOSMSG_LIST &NewMail)
         m_ch2_str.push_back(msg.GetString());
      }
      else if(key == "AVG_VOLTAGE_CH_ONE"){
-        if(msg.IsDouble())
+        if(msg.IsDouble()){
             m_avg_vol_ch1 = msg.GetDouble();
+            m_get_avg_ch1 = true;
+        }
         else{
             m_avg_vol_ch1 = atof(msg.GetString().c_str());
             m_get_avg_ch1 = true;
         }
      }
      else if(key == "AVG_VOLTAGE_CH_TWO"){
-        if(msg.IsDouble())
+        if(msg.IsDouble()){
             m_avg_vol_ch2 = msg.GetDouble();
+            m_get_avg_ch2 = true;
+        }
         else{
             m_avg_vol_ch2 = atof(msg.GetString().c_str());
             m_get_avg_ch2 = true;

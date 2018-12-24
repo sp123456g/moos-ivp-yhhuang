@@ -13,9 +13,10 @@ ProcessConfig = ANTLER
     MSBetweenLaunches = 200
 
     Run = MOOSDB                @ NewConsole = false
-//    Run = pDataReceiver         @ NewConsole = true
+    Run = pDataReceiver         @ NewConsole = true
     Run = pLogger               @ NewConsole = false
     Run = pDirectionCalculator  @ NewConsole = false
+    Run = pAmbientCalculate     @ NewConsole = true
 }
 
 //--------------------------------------------
@@ -55,5 +56,6 @@ ProcessConfig = pDirectionCalculator
     hyd_number  = 2 
     use_cc      = true
     interval    = 0.1
-    band_pass   = 3:10;
+    band_pass   = 3:11;
+    threshold_time  = 50;
 }

@@ -37,7 +37,6 @@ ADD_SUBDIRECTORY(pResultSaver)
 ADD_SUBDIRECTORY(pDataSender)
 ADD_SUBDIRECTORY(pDataReceiver)
 ADD_SUBDIRECTORY(pDirectionCalculator)
-ADD_SUBDIRECTORY(pLinearApproximator)
 ADD_SUBDIRECTORY(pAmbientCalculate)
 ##############################################################################
 #                           END of CMakeLists.txt
