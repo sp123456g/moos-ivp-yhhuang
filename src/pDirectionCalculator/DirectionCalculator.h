@@ -47,6 +47,8 @@ class DirectionCalculator : public AppCastingMOOSApp
     float   m_mic_dis;
     float   m_interval;
     float   m_output_angle;
+    float   m_avg_vol_ch1;
+    float   m_avg_vol_ch2;
 
     int     m_access_data_num;
     int     m_mic_num;
@@ -54,6 +56,7 @@ class DirectionCalculator : public AppCastingMOOSApp
     int     m_up_fq;
     int     m_filt_order;
     int     m_index;
+    int     m_threshold_time;
     
     bool    m_use_cc; 
     
@@ -69,6 +72,10 @@ class DirectionCalculator : public AppCastingMOOSApp
     
  private: // State variables
     bool    m_first_time;
+    bool    m_get_avg_vol;
+    bool    m_get_avg_ch1;
+    bool    m_get_avg_ch2;
+
 };
 
 #endif 

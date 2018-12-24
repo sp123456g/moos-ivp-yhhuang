@@ -23,12 +23,15 @@ DirectionCalculator::DirectionCalculator()
     m_c             = 1500;
     m_mic_dis       = 1;
     m_mic_num       = 2;
-    m_interval      = 0.5;
+    m_interval      = 0.1;
 
     m_use_cc        = true;
     m_first_time    = true;
+    m_get_avg_ch1   = false;
+    m_get_avg_ch2   = false;
+    m_get_avg_vol   = false;
 
-    m_access_data_num   = 48000;
+    m_access_data_num   = 9600;
     m_mic_num           = 2;
     m_low_fq            = 3;
     m_up_fq             = 10;
@@ -85,6 +88,22 @@ bool DirectionCalculator::OnNewMail(MOOSMSG_LIST &NewMail)
      else if(key == "WHISTLE_VOLTAGE_DATA_CH_TWO"){
 //        GetVoltageData_ch2(msg.GetString());
         m_ch2_str.push_back(msg.GetString());
+     }
+     else if(key == "AVG_VOLTAGE_CH_ONE"){
+        if(msg.IsDouble())
+            m_avg_vol_ch1 = msg.GetDouble();
+        else{
+            m_avg_vol_ch1 = atof(msg.GetString().c_str());
+            m_get_avg_ch1 = true;
+        }
+     }
+     else if(key == "AVG_VOLTAGE_CH_TWO"){
+        if(msg.IsDouble())
+            m_avg_vol_ch2 = msg.GetDouble();
+        else{
+            m_avg_vol_ch2 = atof(msg.GetString().c_str());
+            m_get_avg_ch2 = true;
+        }
      }
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
@@ -214,7 +233,85 @@ float DirectionCalculator::CalTDOA_by_cc(std::vector<float> ch1, std::vector<flo
 
     return(true_TDOA);
 }
-float DirectionCalculator::CalTDOA_by_peak(std::vector<float> ch1, std::vector<float> ch2){
+float DirectionCalculator::CalTDOA_by_peak(vector<float> ch1,vector<float> ch2){
+// return 0 if no answer
+
+    int peak_idx_ch1;
+    int peak_idx_ch2;
+    int first_over_idx1;
+    int first_over_idx2;
+
+    bool ch1_over = false;
+    bool ch2_over = false;
+
+    float thr1;
+    float thr2;
+    float tdoa;
+    
+// threshold adjustor
+    while(1){
+        thr1 = m_threshold_time * m_avg_vol_ch1;
+        thr2 = m_threshold_time * m_avg_vol_ch2;
+// check ch1
+// find first over threshold index
+        for(int i=0;i<ch1.size();i++){
+            if(ch1[i] >= thr1){
+                first_over_idx1 = i;
+                ch1_over = true;
+                break;
+            }
+        }
+// check ch2
+// find first over threshold index
+        for(int i=0;i<ch2.size();i++){
+            if(ch2[i] >= thr2){
+                first_over_idx2 = i;
+                ch2_over = true;
+                break;
+            }
+        }
+
+//calculate tdoa if both channel over threshold
+        if(ch1_over && ch2_over){
+// find peak 
+            for(int i=first_over_idx1;i<ch1.size();i++){
+                if(ch1[i+1] >= ch1[i])
+                    peak_idx_ch1 = i+1;
+                else{ 
+                    peak_idx_ch1 = i;
+                    break;
+                }
+            } 
+
+           for(int i=first_over_idx2;i<ch2.size();i++){
+                if(ch2[i+1] >= ch2[i])
+                    peak_idx_ch2 = i+1;
+                else{ 
+                    peak_idx_ch2 = i;
+                    break;
+                }
+           }
+           tdoa = (peak_idx_ch1-peak_idx_ch2)/m_fs; 
+
+           if(tdoa > m_mic_dis/m_c){
+                m_threshold_time -=1;
+                if(m_threshold_time == 0){
+                    reportRunWarning("Invalid calculation, output 0\n");
+                    return(0);
+                }
+           }
+           else 
+               return(tdoa);
+        }
+//reduce threshold time if didn't find peak over threshold 
+        else{
+            m_threshold_time -= 1;
+            if(m_threshold_time == 0){
+                reportRunWarning("Invalid calculation, output 0\n");
+                return(0);
+            }
+        }
+    }
 }
 
 bool DirectionCalculator::Save_data(string filename, vector<float> in, string filepath){
@@ -246,9 +343,13 @@ bool DirectionCalculator::Iterate()
     } 
     float TDOA;
     vector<float> ch1_data(m_access_data_num,0);
-    vector<float> ch2_data(m_access_data_num,0);
-    
+    vector<float> ch2_data(m_access_data_num,0);    
+
     stringstream ss, ss2;
+// get both channel vol avg   
+    if(m_get_avg_ch1 && m_get_avg_ch2)
+        m_get_avg_vol = true;
+
     switch(m_mic_num){
         case 2:
             ss<<m_ch1.size()<<","<<m_ch2.size();
@@ -262,9 +363,8 @@ bool DirectionCalculator::Iterate()
                 m_ch1_str.pop_front();
                 m_ch2_str.pop_front();
             }
-            if(m_ch1.size() >=m_access_data_num && m_ch2.size() >= m_access_data_num){
+            if(m_ch1.size() >=m_access_data_num && m_ch2.size() >= m_access_data_num && m_get_avg_vol){
 // Step 2. Calculate TDOA
-// cross-correlation
 //copy_data: 
                 for(int i=0;i<m_access_data_num;i++)
                     ch1_data[i] = m_ch1[i];
@@ -292,10 +392,11 @@ bool DirectionCalculator::Iterate()
 
                 m_index ++;
 
+// cross-correlation
                 if(m_use_cc)
                     TDOA = CalTDOA_by_cc(ch1_data,ch2_data);
                 
-                // find peak
+// find peak
                 else
                     TDOA = CalTDOA_by_peak(ch1_data,ch2_data);
 
@@ -309,7 +410,7 @@ bool DirectionCalculator::Iterate()
 
                 float before_asin = TDOA*m_c/m_mic_dis;
                 if(before_asin > 1){
-                    cout<< "Invalid calculation, output 0"<<endl;
+                    reportRunWarning("Invalid calculation, output 0\n");
                     float angle = 0;
                     Notify("SOURCE_ANGLE",angle);
                 }
@@ -400,6 +501,10 @@ bool DirectionCalculator::OnStartUp()
         else
             handled = true;
     }
+    else if(param == "threshold_time"){
+        m_threshold_time = atoi(value.c_str());
+        handled = true;
+    }
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
@@ -419,6 +524,8 @@ void DirectionCalculator::registerVariables()
    Register("WHISTLE_VOLTAGE_DATA_CH_ONE", 0);
    Register("WHISTLE_VOLTAGE_DATA_CH_TWO", 0);
    Register("WHISTLE_VOLTAGE_DATA_CH_THREE", 0);
+   Register("AVG_VOLTAGE_CH_ONE",0);
+   Register("AVG_VOLTAGE_CH_TWO",0);
 }
 
 
