@@ -82,7 +82,7 @@ ProcessConfig = pMarineViewer
   CommsTick  = 4
 
 //  TIFF_FILE            = AerialMIT.tif
-  TIFF_FILE            = kelung_river2.tif
+  TIFF_FILE            = keelung_river.tif
   set_pan_x            = -30
   set_pan_y            = 60
   zoom                 = 2.3

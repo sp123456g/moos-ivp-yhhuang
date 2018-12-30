@@ -1,0 +1,11 @@
+ProcessConfig = pAmbientCalculate
+{
+    AppTick     = 4;
+    CommsTick   = 4;
+
+    duration    = 2
+    fs          = 96000
+    sen         = -204
+    gain        = 0
+}
+

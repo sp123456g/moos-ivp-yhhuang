@@ -9,8 +9,8 @@ Community    = alpha
 MOOSTimeWarp = 1
 
 // Kelung river
-   LatOrigin = 25.07588
-   LongOrigin = 121.5444
+   LatOrigin = 25.0756722
+   LongOrigin = 121.54459
 
 // Forest Lake
 //    LatOrigin  = 43.825300 
@@ -150,7 +150,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-    tiff_file    = kelung_river2.tif
+    tiff_file    = keelung_river.tif
 //  tiff_file    = forrest19.tif
 //	tiff_file  = MIT_SP.tif
 //    tiff_file = swimming_pool2.tif
