@@ -11,6 +11,11 @@ set MODE = ACTIVE{
     DEPLOY = true
 } INACTIVE
 
+set MODE = STATION-KEEPING{
+    MODE = ACTIVE 
+    STATION = true
+}
+
 set MODE = RETURNING{
     MODE = ACTIVE 
     RETURN= true
@@ -23,10 +28,6 @@ set MODE = SURVEYING{
     STATION = false
 }
 
-set MODE = STATION-KEEPING{
-    MODE = ACTIVE 
-    STATION = true
-}
 
 Behavior = BHV_Waypoint
 { 
@@ -47,7 +48,7 @@ Behavior = BHV_Waypoint
          slip_radius = 15.0
 	efficiency_measure = all
 
-             polygon = 53,-15 : 132,-13 : 160,27 : 134,60 : 54,60
+        polygon = 30,25 : 70,25 : 110,25 : 150,25 : 190,25 : 190,45 : 190,65 : 190,85 : 190,105 : 150,105 :110,105 : 70,105 : 30,105 
 
                order = normal
              repeat  = 1
@@ -75,7 +76,7 @@ Behavior=BHV_Waypoint
   capture_radius = 2.0
      slip_radius = 8.0
           points = 0,-20
- }
+}
 
 //----------------------------------------------
 Behavior=BHV_ConstantSpeed
@@ -101,7 +102,7 @@ Behavior = BHV_OpRegion
     condition   = MODE==ACTIVE
     condition   = OPREGION=true
     
-        polygon = pts={11,-30 : 227,-30 : 227,80 : 11,80}
+        polygon = pts={11,15 : 207,15 : 207,125 : 11,125}
     
     trigger_entry_time = 1
     trigger_exit_time  = 1
@@ -123,4 +124,3 @@ Behavior = BHV_StationKeep
          swing_time = 7
        visual_hints = vertex_size=0, edge_size=1, edge_color=light_blue
 }
-

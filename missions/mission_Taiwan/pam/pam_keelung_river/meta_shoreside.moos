@@ -15,11 +15,13 @@ Processconfig = ANTLER
   Run = MOOSDB              @ NewConsole = false
   Run = pMarineViewer       @ NewConsole = false
   Run = pLogger             @ NewConsole = false
+  Run = uTimerScript        @ NewConsole = false
 
   Run = pShare              @ NewConsole = false
   Run = pHostInfo           @ NewConsole = false
   Run = uFldShoreBroker     @ NewConsole = false
   Run = uFldNodeComms       @ NewConsole = false
+
   Run = pWhistleDetector    @ NewConsole = false
   Run = pDataReceiver       @ NewConsole = false
 }
@@ -104,6 +106,7 @@ ProcessConfig = pMarineViewer
   button_one   = RETURN_ALL=false
   button_one   = FRONT_SURVEY=true
   button_two   = RETURN_ALL  # RETURN_ALL=true 
+  button_two   = STATION_ALL=false 
 
   button_three = ALLSTOP  # DEPLOY_ALL=false # MOOS_MANUAL_OVERRIDE_ALL=true
 //  button_four  = SHOW:both   # FGR_SHOW=both
@@ -125,7 +128,7 @@ ProcessConfig = pWhistleDetector
     band_pass_frq_high  = 11000;
 }
 
-Processconfig = pDataReceiver
+ProcessConfig = pDataReceiver
 {
     AppTick   = 1 
     CommsTick = 1 
@@ -135,4 +138,15 @@ Processconfig = pDataReceiver
     file_order          = true
     from_pDataSender    = true
 
+}
+
+ProcessConfig = uTimerScript
+{
+    AppTick   = 1
+    CommsTick = 1
+
+    event = var=VIEW_RANGE_PULSE, val="x=123,y=67,radius=15,duration=1,fill=0.5,label=sound_source,edge_color=blue,fill_color=pink,edge_size=1" , time=0.25
+
+    reset_max  = 1000 
+    reset_time = all-posted
 }

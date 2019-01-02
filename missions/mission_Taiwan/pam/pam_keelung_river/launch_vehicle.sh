@@ -1,7 +1,7 @@
 #!/bin/bash
 TIME_WARP=1
 JUST_MAKE="no"
-SHORE_IP="192.168.1.145"
+SHORE_IP="192.168.66.15"
 SHORE_LISTEN="9300"
 
 HELP="no"
@@ -11,7 +11,7 @@ VNAME=""
 VMODEL="M300"
 
 #strat point
-START_POS="0,0"
+START_POS="-18,44"
 #return point
 RETURN_POS="39,2"
 LOITER_POS="x=100,y=-180"
