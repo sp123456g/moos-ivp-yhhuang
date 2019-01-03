@@ -98,3 +98,16 @@ TARGET_LINK_LIBRARIES(BHV_SearchFront_yhh
    mbutil
    geometry 
    ${SYSTEM_LIBS} )
+
+ADD_LIBRARY(BHV_SourceTracking SHARED 
+   BHV_SourceTracking.cpp AOF_SimpleWaypoint)
+TARGET_LINK_LIBRARIES(BHV_SourceTracking
+   helmivp
+   behaviors 
+   ivpbuild 
+   logic 
+   ivpcore 
+   bhvutil 
+   mbutil
+   geometry 
+   ${SYSTEM_LIBS} )

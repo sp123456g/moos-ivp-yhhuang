@@ -1,0 +1,17 @@
+ProcessConfig = pDirectionCalculator
+{
+
+    AppTick     = 10;
+    CommsTick   = 10;
+
+    sample_rate = 96000
+    sound_speed = 1500
+    hyd_dis     = 0.1
+    hyd_number  = 2
+    use_cc      = true
+    interval    = 0.1
+    band_pass   = 3:11
+    threshold_time  = 50
+
+
+}

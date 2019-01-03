@@ -1,0 +1,11 @@
+ProcessConfig = pDataSender
+{ 
+     AppTick   = 4
+     CommsTick = 4
+ 
+      sender_filepath    = ./Data_for_scp/
+      reciever_user           = yhh
+      reciever_machine        = 192.168.1.145
+      reciever_filepath       = /home/yhh/google_drive_UALyhhuang/logfiles/keelung_river/data/
+ } 
+
