@@ -88,7 +88,7 @@ for ARGI; do
         SHARE_LISTEN="9312"
         echo "KIRK vehicle selected."
     elif [ "${ARGI}" = "--money" -o "${ARGI}" = "-m" ] ; then
-        M200_IP=192.168.1.134 #money
+        M200_IP=192.168.2.1 #money
         VNAME="money"
 	VMODEL="M300"
         VPORT="9013"

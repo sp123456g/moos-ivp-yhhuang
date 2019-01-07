@@ -1,0 +1,35 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+# rename the file as interfaces and put it in /etc/network/ in payload computer
+
+# Please note that this file is written to be used with dhcpcd
+# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+  address 192.168.2.100
+  netmask 255.255.255.0
+  broadcast 192.168.2.255
+
+allow-hotplug wlan0
+iface wlan0 inet manual
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+allow-hotplug wlan1
+iface wlan1 inet manual
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+
+#========================================================
+# A backup debugging interface, added by mikerb 4/24/17
+#========================================================
+auto eth0:DBM
+iface eth0:DBM inet static
+address 192.168.100.99
+broadcast 192.168.255.255
+netmask 255.255.0.0
