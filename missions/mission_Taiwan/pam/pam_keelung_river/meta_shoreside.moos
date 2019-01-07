@@ -60,6 +60,7 @@ ProcessConfig = uFldShoreBroker
   bridge   = src=UP_LOITER_$N,alias=UP_LOITER
   bridge   = src=UCTD_MSMNT_REPORT_$V,alias=UCTD_MSMNT_REPORT
   bridge   = src=APPCAST_REQ
+  bridge   = src=START_RECORD_ALL,alias=START_RECORD
 }
 
 //--------------------------------------------------
@@ -105,6 +106,7 @@ ProcessConfig = pMarineViewer
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false # STATION_ALL=false 
   button_one   = RETURN_ALL=false
   button_one   = FRONT_SURVEY=true
+  button_one   = START_RECORD_ALL=true
   button_two   = RETURN_ALL  # RETURN_ALL=true 
   button_two   = STATION_ALL=false 
 

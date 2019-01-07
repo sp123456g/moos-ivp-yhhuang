@@ -1,0 +1,10 @@
+folder for saving figure (.fig and .png file) from spectrogram viewer
+
+Note: 
+
+.fig file is unable to open by double clicking because it's set to visible off, try the command in 
+matlab command line:
+
+        openfig('figurename.fig','new','visible')
+
+
