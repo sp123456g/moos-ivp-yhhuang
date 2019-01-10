@@ -9,7 +9,7 @@ ProcessConfig = pWhistleDetector_vehicle
 
     overlap             = 0.9
     sample_rate         = 96000
-    iterate_data        = 0.1
+    iterate_data        = 1
     window_type         = hanning
     bits                = 32
     SNR_threshold       = 10 

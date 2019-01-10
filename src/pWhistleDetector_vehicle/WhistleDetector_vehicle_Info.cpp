@@ -163,7 +163,7 @@ void showInterfaceAndExit()
   blk("     time spent in detection process                            ");
   blk("                                                                ");
   blk("  FRQ_ANALYSIS_TIME:                                            ");
-  blk("     time spent in STFT process                                 ");
+  blk("     time spent in getting exact freqeuncy                      ");
   exit(0);
 }
 

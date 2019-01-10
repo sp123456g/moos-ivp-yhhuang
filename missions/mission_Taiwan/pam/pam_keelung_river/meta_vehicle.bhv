@@ -5,6 +5,7 @@ initialize  RETURN      = false
 initialize  OPREGION    = true	
 initialize  STATION     = false
 initialize  SURVEY      = true
+initialize  SET_PARAMS  = true
 //----------------------------------------------
 
 set MODE = ACTIVE{
@@ -46,11 +47,12 @@ Behavior = BHV_Waypoint
       capture_radius = 5.0
          slip_radius = 15.0
 	efficiency_measure = all
-
-        polygon = 30,25 : 70,25 : 110,25 : 150,25 : 190,25 : 190,45 : 190,65 : 190,85 : 190,105 : 150,105 :110,105 : 70,105 : 30,105 
+            polygon = -4,20 : 25,20 : 25,35 : -4,35 
+            
+    //    polygon = 30,25 : 70,25 : 110,25 : 150,25 : 190,25 : 190,45 : 190,65 : 190,85 : 190,105 : 150,105 :110,105 : 70,105 : 30,105 
 
                order = normal
-             repeat  = 1
+             repeat  = 3
 
     visual_hints = nextpt_color=yellow
     visual_hints = nextpt_vertex_size=8
@@ -74,7 +76,7 @@ Behavior=BHV_Waypoint
            speed = 1.3
   capture_radius = 2.0
      slip_radius = 8.0
-          points = 0,-20
+          points = -30,30
 }
 
 //----------------------------------------------
@@ -101,7 +103,7 @@ Behavior = BHV_OpRegion
     condition   = MODE==ACTIVE
     condition   = OPREGION=true
     
-        polygon = pts={11,15 : 207,15 : 207,125 : 11,125}
+        polygon = pts={-30,50 : -30,10 : 37,10 : 37,50}
     
     trigger_entry_time = 1
     trigger_exit_time  = 1
