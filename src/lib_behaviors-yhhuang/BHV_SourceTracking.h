@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME: yhhuang                                              */
-/*    ORGN: MIT                                             */
-/*    FILE: BHV_SourceTracking.h                                      */
-/*    DATE:                                                 */
+/*    NAME: yhhuang                                         */
+/*    ORGN: NTU, Taipei                                     */
+/*    FILE: BHV_SourceTracking.h                            */
+/*    DATE: Jan 11, 2019                                    */
 /************************************************************/
 
 #ifndef SourceTracking_HEADER
@@ -10,6 +10,8 @@
 
 #include <string>
 #include "IvPBehavior.h"
+#include <ZAIC_PEAK.h>
+#include "XYPoint.h"
 
 class BHV_SourceTracking : public IvPBehavior {
 public:
@@ -25,12 +27,19 @@ public:
   void         onRunToIdleState();
   void         onIdleToRunState();
   IvPFunction* onRunState();
+  IvPFunction* buildFunctionWithZAIC();
 
 protected: // Local Utility functions
 
 protected: // Configuration parameters
 
 protected: // State variables
+
+  double    m_desired_speed;
+  double    m_osx;
+  double    m_osy;
+  XYPoint   m_nextpt;
+
 };
 
 #define IVP_EXPORT_FUNCTION

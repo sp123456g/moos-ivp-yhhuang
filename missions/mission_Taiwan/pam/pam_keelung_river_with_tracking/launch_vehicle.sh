@@ -1,7 +1,7 @@
 #!/bin/bash
 TIME_WARP=1
 JUST_MAKE="no"
-SHORE_IP="192.168.1.145"
+SHORE_IP="192.168.66.15"
 SHORE_LISTEN="9300"
 
 HELP="no"
@@ -31,69 +31,20 @@ for ARGI; do
         HELP="yes"
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--evan" -o "${ARGI}" = "-e" ] ; then
-        M200_IP=192.168.5.1 #evan
-        VNAME="evan"
-	VMODEL="M300"
-        VPORT="9005"
-        SHARE_LISTEN="9305"
-        echo "EVAN vehicle selected."
-    elif [ "${ARGI}" = "--felix" -o "${ARGI}" = "-f" ] ; then
-        M200_IP=192.168.6.1 #felix
-        VNAME="felix"
-	VMODEL="M300"
-        VPORT="9006"
-        SHARE_LISTEN="9306"
-        echo "FELIX vehicle selected."
-    elif [ "${ARGI}" = "--gus" -o "${ARGI}" = "-g" ] ; then
-        M200_IP=192.168.7.1 #gus
-        VNAME="gus"
-	VMODEL="M300"
-        VPORT="9007"
-        SHARE_LISTEN="9307"
-        echo "GUS vehicle selected."
-    elif [ "${ARGI}" = "--hal" -o "${ARGI}" = "-H" ] ; then
-        M200_IP=192.168.8.1 #hal
-        VNAME="hal"
-	VMODEL="M300"
-        VPORT="9008"
-        SHARE_LISTEN="9308"
-        echo "HAL vehicle selected."
-    elif [ "${ARGI}" = "--ida" -o "${ARGI}" = "-i" ] ; then
-        M200_IP=192.168.9.1 #ida
-        VNAME="ida"
-	VMODEL="M300"
-        VPORT="9009"
-        SHARE_LISTEN="9309"
-        echo "IDA vehicle selected."
-    elif [ "${ARGI}" = "--jing" -o "${ARGI}" = "-J" ] ; then
-        M200_IP=192.168.10.1 #jing
-        VNAME="jing"
-	VMODEL="M300"
-        VPORT="9010"
-        SHARE_LISTEN="9310"
-        echo "JING vehicle selected."
     elif [ "${ARGI}" = "--kirk" -o "${ARGI}" = "-k" ] ; then
-        M200_IP=192.168.11.1 #kirk
-        VNAME="kirk"
-	VMODEL="M300"
-        VPORT="9011"
-        SHARE_LISTEN="9311"
-        echo "KIRK vehicle selected."
-    elif [ "${ARGI}" = "--luke" -o "${ARGI}" = "-l" ] ; then
         M200_IP=192.168.12.1 #luke
-        VNAME="luke"
+        VNAME="kirk"
 	VMODEL="M300"
         VPORT="9012"
         SHARE_LISTEN="9312"
         echo "KIRK vehicle selected."
     elif [ "${ARGI}" = "--money" -o "${ARGI}" = "-m" ] ; then
-        M200_IP=192.168.1.134 #money
-        VNAME="money"
+        M200_IP=192.168.1.134 #UAL_Heron
+        VNAME="UAL_Heron"
 	VMODEL="M300"
         VPORT="9013"
         SHARE_LISTEN="9313"
-        echo "MONEY vehicle selected for simulation."
+        echo "UAL_Heron vehicle selected"
     elif [ "${ARGI}" = "--nostromo" -o "${ARGI}" = "-n" ] ; then
         VNAME="nostromo"
 	VMODEL="kayak"
@@ -123,12 +74,12 @@ for ARGI; do
     elif [ "${ARGI:0:10}" = "--start-a=" ] ; then
         START_POS_A="${ARGI#--start-a=*}"
     #----------------------------------------
-    elif [ "${ARGI}" = "--couter_clockwise" -o "${ARGI}" = "-ccw" ] ; then
-        CLOCKWISE=0
-        echo "couter clockwise."
-    elif [ "${ARGI}" = "--clockwise" -o "${ARGI}" = "-cw" ] ; then
-        CLOCKWISE=1
-        echo "clockwise."
+    elif [ "${ARGI}" = "--first" -o "${ARGI}" = "-1" ] ; then
+        BHV_FILE="meta_vehicle1.bhv"
+        echo "doing first bhv file "
+    elif [ "${ARGI}" = "--second" -o "${ARGI}" = "-2" ] ; then
+        BHV_FILE="meta_vehicle2.bhv"
+        echo "doing second bhv file"
     #----------------------------------------
     else
         echo "Undefined argument:" $ARGI
@@ -143,23 +94,13 @@ done
 
 if [ "${HELP}" = "yes" ]; then
     echo "$0 [SWITCHES]"
-    echo "  --evan,       -e  : Evan vehicle."
-    echo "  --felix,      -f  : Felix vehicle."
-    echo "  --gus,        -g  : Gus vehicle."
-    echo "  --hal,        -H  : Hal vehicle."
-    echo "  --ida,        -i  : Ida vehicle."
-    echo "  --jing,       -J  : Jing vehicle."
-    echo "  --kirk,       -k  : Kirk vehicle."
-    echo "  --luke,       -l  : Luke vehicle."
-    echo "  --nostromo,   -n  : Nostromo vehicle."
-    echo "  --money,      -m  : Money vehicle."
-    echo "  --kestrel,   -ke  : Kestrel vehicle."
+    echo "  --UAL_Heron,  -m  : UAL_Heron vehicle."
     echo "  --sim,        -s  : Simulation mode."
-    echo "  --clock,     -cw  : clockwise moving,left region"
-    echo "  --cclock,   -ccw  : counterclockwise,right region"
     echo "  --start-x=        : Start from x position (requires x y a)."
     echo "  --start-y=        : Start from y position (requires x y a)."
     echo "  --start-a=        : Start from angle (requires x y a)."
+    echo "  --first,          : do meta_vehicle1.bhv"
+    echo "  --second,         : do meta_vehicle2.bhv"
     echo "  --just_build, -j"
     echo "  --help, -h"
     exit 0;
@@ -170,6 +111,14 @@ if [ -z $VNAME ]; then
     echo "Exiting."
     exit 2
 fi
+
+
+if [ -z $BHV_FILE ]; then
+    echo "No .bhv file has been selected..."
+    echo "Exiting."
+    exit 2
+fi
+
 
 #-------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files.
@@ -208,7 +157,7 @@ nsplug meta_vehicle.moos targ_${VNAME}.moos -f \
     $SIM                        \
     
 echo "Assembling BHV file targ_${VNAME}.bhv"
-nsplug meta_vehicle.bhv targ_${VNAME}.bhv -f  \
+nsplug ${BHV_FILE} targ_${VNAME}.bhv -f  \
         RETURN_POS=${RETURN_POS}    \
         TRAIL_RANGE=$TRAIL_RANGE    \
         TRAIL_ANGLE=$TRAIL_ANGLE    \
@@ -224,7 +173,6 @@ nsplug meta_vehicle.bhv targ_${VNAME}.bhv -f  \
         DEGREES=$DEGREES1           \
         START_POS=$START_POS        \
         CLOCKWISE=$CLOCKWISE
-        
 
 if [ ${JUST_BUILD} = "yes" ] ; then
     echo "Files assembled; vehicle not launched; exiting per request."

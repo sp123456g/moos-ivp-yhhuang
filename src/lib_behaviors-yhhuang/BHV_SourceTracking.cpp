@@ -1,15 +1,14 @@
 /************************************************************/
 /*    NAME: yhhuang                                         */
-/*    ORGN: NTU                                             */
+/*    ORGN: NTU, Taipei                                            */
 /*    FILE: BHV_SourceTracking.cpp                          */
-/*    DATE: Jan 3rd, 2019                                   */
+/*    DATE: Jan 11th, 2019                                   */
 /************************************************************/
 
 #include <iterator>
 #include <cstdlib>
 #include "MBUtils.h"
 #include "BuildUtils.h"
-#include "BHV_SourceTracking.h"
 #include "AngleUtils.h"
 #include "MBUtils.h"
 #include "OF_Coupler.h"
@@ -17,6 +16,7 @@
 #include <math.h>
 #include <cmath>
 #include <sstream>
+#include "BHV_SourceTracking.h"
 
 
 using namespace std;
@@ -34,7 +34,7 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
   m_domain = subDomain(m_domain, "course,speed");
 
   // Add any variables this behavior needs to subscribe for
-  addInfoVars("NAV_X, NAV_Y, SOURCE_ANGLE","no_warning");
+  addInfoVars("NAV_X, NAV_Y, SOURCE_ANGLE, WHISTLE_EXIST","no_warning");
 }
 
 //---------------------------------------------------------------
@@ -138,3 +138,37 @@ IvPFunction* BHV_SourceTracking::onRunState()
   return(ipf);
 }
 
+IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
+{
+  ZAIC_PEAK spd_zaic(m_domain, "speed");
+  spd_zaic.setSummit(m_desired_speed);
+  spd_zaic.setPeakWidth(0.5);
+  spd_zaic.setBaseWidth(1.0);
+  spd_zaic.setSummitDelta(0.8);
+  if(spd_zaic.stateOK() == false) {
+    string warnings = "Speed ZAIC problems " + spd_zaic.getWarnings();
+    postWMessage(warnings);
+    return(0);
+  }
+
+  double rel_ang_to_wpt = relAng(m_osx, m_osy, m_nextpt.x(), m_nextpt.y());
+  ZAIC_PEAK crs_zaic(m_domain, "course");
+  crs_zaic.setSummit(rel_ang_to_wpt);
+  crs_zaic.setPeakWidth(0);
+  crs_zaic.setBaseWidth(180.0);
+  crs_zaic.setSummitDelta(0);
+  crs_zaic.setValueWrap(true);
+  if(crs_zaic.stateOK() == false) {
+    string warnings = "Course ZAIC problems " + crs_zaic.getWarnings();
+    postWMessage(warnings);
+    return(0);
+  }
+
+  IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
+  IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
+
+  OF_Coupler coupler;
+  IvPFunction *ivp_function = coupler.couple(crs_ipf, spd_ipf, 50, 50);
+
+  return(ivp_function);
+}

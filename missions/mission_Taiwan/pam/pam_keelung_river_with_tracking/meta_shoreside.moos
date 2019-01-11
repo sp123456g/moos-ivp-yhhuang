@@ -60,6 +60,7 @@ ProcessConfig = uFldShoreBroker
   bridge   = src=UP_LOITER_$N,alias=UP_LOITER
   bridge   = src=UCTD_MSMNT_REPORT_$V,alias=UCTD_MSMNT_REPORT
   bridge   = src=APPCAST_REQ
+  bridge   = src=START_RECORD_ALL,alias=START_RECORD
 }
 
 //--------------------------------------------------
@@ -85,7 +86,9 @@ ProcessConfig = pMarineViewer
   CommsTick  = 4
 
 //  TIFF_FILE            = AerialMIT.tif
-  TIFF_FILE            = keelung_river.tif
+//  TIFF_FILE            = keelung_river.tif
+//  TIFF_FILE            = keelung_river_zoom.tif
+  TIFF_FILE            = keelung_river_zoom2.tif
   set_pan_x            = -30
   set_pan_y            = 60
   zoom                 = 2.3
@@ -105,6 +108,7 @@ ProcessConfig = pMarineViewer
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false # STATION_ALL=false 
   button_one   = RETURN_ALL=false
   button_one   = FRONT_SURVEY=true
+  button_one   = START_RECORD_ALL=true
   button_two   = RETURN_ALL  # RETURN_ALL=true 
   button_two   = STATION_ALL=false 
 
@@ -115,25 +119,26 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pWhistleDetector
 {
-    AppTick     = 10 
-    CommsTick   = 10 
+    AppTick     = 4 
+    CommsTick   = 4 
 
     overlap         = 0.9 
     sample_rate     = 96000
     iterate_data    = 1 
     window_type     = hanning
     bits            = 32 
-    SNR_threshold   = 15;
+    SNR_threshold   = 10;
     band_pass_frq_low   = 3000;
     band_pass_frq_high  = 11000;
 }
 
 ProcessConfig = pDataReceiver
 {
-    AppTick   = 1 
-    CommsTick = 1 
+    AppTick   = 2 
+    CommsTick = 2
 
-    file_path           = /home/yhh/google_drive_UALyhhuang/logfiles/keelung_river/data/
+  //  file_path           = /home/yhh/google_drive_UALyhhuang/logfiles/keelung_river/data/
+    file_path           = /media/yhh/YHHUANG/keelung_river/data/
     file_name           = whistle_data.txt
     file_order          = true
     from_pDataSender    = true
@@ -145,7 +150,7 @@ ProcessConfig = uTimerScript
     AppTick   = 1
     CommsTick = 1
 
-    event = var=VIEW_RANGE_PULSE, val="x=123,y=67,radius=15,duration=1,fill=0.5,label=sound_source,edge_color=blue,fill_color=pink,edge_size=1" , time=0.25
+    event = var=VIEW_RANGE_PULSE, val="x=-24,y=36,radius=15,duration=1,fill=0.5,label=sound_source,edge_color=blue,fill_color=pink,edge_size=1" , time=0.25
 
     reset_max  = unlimited
     reset_time = end
