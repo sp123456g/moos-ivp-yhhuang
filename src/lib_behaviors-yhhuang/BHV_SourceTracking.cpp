@@ -35,7 +35,28 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
 
   // Add any variables this behavior needs to subscribe for
   addInfoVars("NAV_X, NAV_Y, SOURCE_ANGLE, WHISTLE_EXIST","no_warning");
+
+  m_ipf_type    =   "zaic";
+  m_osx         =   0;
+  m_osy         =   0;
+
+  m_whistle_exist = false;
 }
+
+// Procedure: postViewPoint
+//---------------------------------------------------
+void BHV_SourceTracking::postViewPoint(bool viewable)
+{
+  m_nextpt.set_label(" tracking navigation next waypoint");
+
+  string point_spec;
+  if(viewable)
+    point_spec = m_nextpt.get_spec("active=true");
+  else
+    point_spec = m_nextpt.get_spec("active=false");
+  postMessage("VIEW_POINT", point_spec);
+}
+
 
 //---------------------------------------------------------------
 // Procedure: setParam()
@@ -54,6 +75,19 @@ bool BHV_SourceTracking::setParam(string param, string val)
   }
   else if (param == "bar") {
     // return(setBooleanOnString(m_my_bool, val));
+  }
+  else if (param == "loiter_center"){
+    
+        m_center_x = atof(biteStringX(val,',').c_str());
+        m_center_y = atof(val.c_str());
+
+    return(true);
+  }
+
+  else if ((param == "speed") && (double_val > 0) && (isNumber(val))){
+      m_desired_speed = double_val;
+    return(true);
+  
   }
 
   // If not handled above, then just return false;
@@ -127,7 +161,30 @@ IvPFunction* BHV_SourceTracking::onRunState()
   // Part 1: Build the IvP function
   IvPFunction *ipf = 0;
 
+  postMessage("CENTER_X",doubleToString(m_center_x));
+  postMessage("CENTER_Y",doubleToString(m_center_y));
 
+  bool ok1,ok2,ok3;
+  m_osx = getBufferDoubleVal("NAV_X",ok1);
+  m_osy = getBufferDoubleVal("NAV_Y",ok2);
+
+  if(!ok1 || !ok2)
+    postWMessage("No ownship X/Y info in info_buffer");
+  
+  string str_whistle_exist = getBufferStringVal("WHISTLE_EXIST",ok3);
+  if(str_whistle_exist == "true")
+      m_whistle_exist = true;
+  else 
+      m_whistle_exist = false;
+  
+  if(m_whistle_exist){
+      m_nextpt.set_vx(m_center_x);
+      m_nextpt.set_vy(m_center_y);
+      ipf = buildFunctionWithZAIC();
+      if(ipf == 0)
+          postWMessage("Problem Creating the IvP Function");
+      postViewPoint(true);
+  }
 
   // Part N: Prior to returning the IvP function, apply the priority wt
   // Actual weight applied may be some value different than the configured

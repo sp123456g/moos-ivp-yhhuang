@@ -81,6 +81,7 @@ void showExampleConfigAndExit()
   blk("  use_cc         = true                                          ");
   blk("  interval       = 0,5                                           ");
   blk("  band_pass      = 3:10                                          ");
+  blk("  threshold_time = 5                                             ");
   blk("}                                                               ");
   blk("                                                                ");
   blk("  sample_rate: sampling frequency in Hz                         ");
@@ -92,6 +93,9 @@ void showExampleConfigAndExit()
   blk("  interval   : set up signal duration for calculating TDOA      ");
   blk("               AppTick and CommsTick suggest to be 1/interval   ");
   blk("  band_pass  : band-pass filter from lower to higher frq (kHz)  ");
+  blk("                                                                ");
+  blk("  threshold_time: find peak voltage which is over avg_voltage*threshold_time ");
+  blk("                  use_cc need to be false                       ");
   blk("                                                                ");
   exit(0);
 }

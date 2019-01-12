@@ -27,7 +27,9 @@ public:
   void         onRunToIdleState();
   void         onIdleToRunState();
   IvPFunction* onRunState();
-  IvPFunction* buildFunctionWithZAIC();
+
+  IvPFunction*  buildFunctionWithZAIC();
+  void          postViewPoint(bool viewable);
 
 protected: // Local Utility functions
 
@@ -38,7 +40,14 @@ protected: // State variables
   double    m_desired_speed;
   double    m_osx;
   double    m_osy;
+  double    m_center_x;
+  double    m_center_y;
+  
   XYPoint   m_nextpt;
+
+  bool      m_whistle_exist;
+
+  std::string m_ipf_type;
 
 };
 

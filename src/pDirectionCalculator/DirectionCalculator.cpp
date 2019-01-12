@@ -375,23 +375,23 @@ bool DirectionCalculator::Iterate()
                 for(int j=0;j<m_access_data_num;j++)
                     ch2_data[j] = m_ch2[j];
 // save data
-                stringstream ss_file1, ss_file2, ss_file3,ss_file4;
-                ss_file1<<m_index<<"before_filter_ch1.csv"; 
-                Save_data(ss_file1.str(),ch1_data,"./csv_file/");
-                
-                ss_file2<<m_index<<"before_filter_ch2.csv"; 
-                Save_data(ss_file2.str(),ch2_data,"./csv_file/");
+//                stringstream ss_file1, ss_file2, ss_file3,ss_file4;
+//                ss_file1<<m_index<<"before_filter_ch1.csv"; 
+//                Save_data(ss_file1.str(),ch1_data,"./csv_file/");
+//                
+//                ss_file2<<m_index<<"before_filter_ch2.csv"; 
+//                Save_data(ss_file2.str(),ch2_data,"./csv_file/");
 
 //filtering
                Band_Filter(ch1_data);
                Band_Filter(ch2_data);
 
 // save data
-                ss_file3<<m_index<<"after_filter_ch1.csv"; 
-                Save_data(ss_file3.str(),ch1_data,"./csv_file/");
-
-                ss_file4<<m_index<<"after_filter_ch2.csv"; 
-                Save_data(ss_file4.str(),ch2_data,"./csv_file/");
+//                ss_file3<<m_index<<"after_filter_ch1.csv"; 
+//                Save_data(ss_file3.str(),ch1_data,"./csv_file/");
+//
+//                ss_file4<<m_index<<"after_filter_ch2.csv"; 
+//                Save_data(ss_file4.str(),ch2_data,"./csv_file/");
 
 
                 m_index ++;
