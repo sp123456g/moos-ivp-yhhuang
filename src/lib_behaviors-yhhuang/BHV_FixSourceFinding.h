@@ -1,22 +1,22 @@
 /************************************************************/
 /*    NAME: yhhuang                                         */
 /*    ORGN: NTU, Taipei                                     */
-/*    FILE: BHV_SourceTracking.h                            */
+/*    FILE: BHV_FixSourceFinding.h                            */
 /*    DATE: Jan 11, 2019                                    */
 /************************************************************/
 
-#ifndef SourceTracking_HEADER
-#define SourceTracking_HEADER
+#ifndef FixSourceFinding_HEADER
+#define FixSourceFinding_HEADER
 
 #include <string>
 #include "IvPBehavior.h"
 #include <ZAIC_PEAK.h>
 #include "XYPoint.h"
 
-class BHV_SourceTracking : public IvPBehavior {
+class BHV_FixSourceFinding : public IvPBehavior {
 public:
-  BHV_SourceTracking(IvPDomain);
-  ~BHV_SourceTracking() {};
+  BHV_FixSourceFinding(IvPDomain);
+  ~BHV_FixSourceFinding() {};
   
   bool         setParam(std::string, std::string);
   void         onSetParamComplete();
@@ -35,7 +35,6 @@ protected: // Local Utility functions
 
 protected: // Configuration parameters
 
-  std::string m_method;
   std::string m_ipf_type;
 
 protected: // State variables
@@ -57,6 +56,6 @@ protected: // State variables
 
 extern "C" {
   IVP_EXPORT_FUNCTION IvPBehavior * createBehavior(std::string name, IvPDomain domain) 
-  {return new BHV_SourceTracking(domain);}
+  {return new BHV_FixSourceFinding(domain);}
 }
 #endif

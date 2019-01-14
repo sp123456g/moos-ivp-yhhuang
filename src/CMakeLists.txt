@@ -38,6 +38,7 @@ ADD_SUBDIRECTORY(pDataSender)
 ADD_SUBDIRECTORY(pDataReceiver)
 ADD_SUBDIRECTORY(pDirectionCalculator)
 ADD_SUBDIRECTORY(pAmbientCalculate)
+ADD_SUBDIRECTORY(pPoseKeep)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################

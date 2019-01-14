@@ -1,0 +1,13 @@
+ProcessConfig = pPoseKeep                                       
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  activeflag   = THRUST_MODE_DIFFERENTIAL=true                  
+  inactiveflag = THRUST_MODE_DIFFERENTIAL=false                 
+  endflag      = MEASURE_START = true
+                                                                
+     hold_duration  = 1000  // seconds, default is -1, no limit      
+     hold_tolerance = 3   // degrees, default is 3                 
+//     hold_heading   = 270
+}

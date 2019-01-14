@@ -8,11 +8,18 @@ initialize  LOITER_SURVEY   = false
 initialize  ENTERING        = true
 initialize  SET_PARAMS      = true
 initialize  TRACK_STAND_BY  = true
+initialize  WHISTLE_EXIST   = false
+initialize  MEASURE_START   = false
 //----------------------------------------------
 
 set MODE = ACTIVE{
     DEPLOY = true
 } INACTIVE
+
+set MODE = POSEKEEPING{
+    DEPLOY = hold
+    MEASURE_START = false
+}
 
 set MODE = STATION-KEEPING{
     MODE = ACTIVE 
@@ -36,6 +43,7 @@ set MODE = LOITER_SURVEYING{
     LOITER_SURVEY = true
     RETURN = false
     STATION = false
+    WHISTLE_EXIST = false
 }
 
 set MODE = GOING_TO_LOITER{
@@ -44,6 +52,21 @@ set MODE = GOING_TO_LOITER{
     RETURN = false
     STATION = false
 }
+
+set MODE = GOING_TO_CENTER{
+    MODE = ACTIVE
+    WHISTLE_EXIST = true 
+    RETURN = false
+    STATION = false
+    MEASURE_START = false
+}
+
+
+set MODE = MEASURING{
+    MEASURE_START = true
+    RETURN = false
+}
+
 
 
 Behavior = BHV_Waypoint
@@ -84,6 +107,7 @@ Behavior = BHV_Waypoint
   pwt       = 100
   condition = MODE == GOING_TO_LOITER
   endflag   = LOITER_SURVEY = true
+  endflag   = ENTERING = false
 
   updates    = WPT_UPDATE
   perpetual  = false
@@ -167,6 +191,7 @@ Behavior=BHV_ConstantSpeed
 		 duration_reset = CONST_SPD_RESET=true
 }
 
+
 Behavior = BHV_OpRegion
 {
     name    = opregion
@@ -197,15 +222,34 @@ Behavior = BHV_StationKeep
        visual_hints = vertex_size=0, edge_size=1, edge_color=light_blue
 }
 
-Behavior = BHV_SourceTracking
+Behavior = BHV_StationKeep
 {
-    name = SourceFinding_$(VNAME)
-    pwt  = 200 
-    condition = TRACK_STAND_BY  = true
-    condition = RETURN          = false
-    condition = STATION         = false
-    endflag   = LOITER_SURVEY   = true
+ name      = station-measure
+ pwt       = 100
+ condition = MODE == POSEKEEPING
 
-    speed = 2
-    loiter_center = -56,40
+    center_activate = true
+       inner_radius = 5
+       outer_radius = 10
+        outer_speed = 1.0
+
+      transit_speed = 1.3
+         swing_time = 7
+       visual_hints = vertex_size=0, edge_size=1, edge_color=light_blue
+}
+
+Behavior=BHV_Waypoint
+{
+  name       = waypt_center_checking
+  pwt        = 100
+  condition  = MODE == GOING_TO_CENTER
+  perpetual  = true
+  updates    = CENTER_UPDATE
+  endflag    = DEPLOY = hold
+  endflag    = HOLD_HEADING = 0
+
+           speed = 1.3
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = -56,40
 }

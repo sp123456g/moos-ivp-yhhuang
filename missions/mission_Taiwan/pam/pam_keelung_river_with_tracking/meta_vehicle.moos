@@ -30,14 +30,16 @@ Processconfig = ANTLER
   Run = uFldNodeBroker     @ NewConsole = false
   Run = uFldMessageHandler @ NewConsole = false
   Run = pBasicContactMgr   @ NewConsole = false
+#ifdef SIM
   Run = uTimerScript       @ NewConsole = false
-
+#endif
   Run = pWhistleDetector_vehicle      @ NewConsole = false
   Run = pStoreSoundX                  @ NewConsole = false
   Run = pDirectionCalculator          @ NewConsole = false
   Run = pAmbientCalculate             @ NewConsole = false
   Run = pResultSaver                  @ NewConsole = false
   Run = pDataSender                   @ NewConsole = false 
+  Run = pPoseKeep                     @ NewConsole = false 
 }
 #include plug_uFldNodeBroker.moos
 #include plug_pShare.moos
@@ -56,6 +58,7 @@ Processconfig = ANTLER
 #include plug_pResultSaver.moos 
 #include plug_pDataSender.moos 
 #include plug_uTimerScript.moos
+#include plug_pPoseKeep.moos
 
 #ifdef SIM 
     #include plug_uSimMarine.moos

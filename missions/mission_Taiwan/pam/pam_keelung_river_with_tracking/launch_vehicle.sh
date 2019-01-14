@@ -1,7 +1,7 @@
 #!/bin/bash
 TIME_WARP=1
 JUST_MAKE="no"
-SHORE_IP="192.168.66.15"
+SHORE_IP="192.168.1.145"
 SHORE_LISTEN="9300"
 
 HELP="no"
@@ -83,6 +83,10 @@ for ARGI; do
     elif [ "${ARGI}" = "--third" -o "${ARGI}" = "-3" ] ; then
         BHV_FILE="meta_vehicle3.bhv"
         echo "doing Source Tracking bhv file"
+    elif [ "${ARGI}" = "--fourth" -o "${ARGI}" = "-4" ] ; then
+        BHV_FILE="meta_vehicle4.bhv"
+        echo "doing Fix Source finding bhv file"
+
 
     #----------------------------------------
     else
@@ -106,6 +110,7 @@ if [ "${HELP}" = "yes" ]; then
     echo "  --first,      -1  : do meta_vehicle1.bhv"
     echo "  --second,     -2  : do meta_vehicle2.bhv"
     echo "  --third,      -3  : do meta_vehicle3.bhv"
+    echo "  --fourth,     -4  : do meta_vehicle4.bhv"
     echo "  --just_build, -j"
     echo "  --help, -h"
     exit 0;

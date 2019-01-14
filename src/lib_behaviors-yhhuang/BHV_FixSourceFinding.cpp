@@ -1,7 +1,7 @@
 /************************************************************/
 /*    NAME: yhhuang                                         */
 /*    ORGN: NTU, Taipei                                            */
-/*    FILE: BHV_SourceTracking.cpp                          */
+/*    FILE: BHV_FixSourceFinding.cpp                          */
 /*    DATE: Jan 11th, 2019                                   */
 /************************************************************/
 
@@ -16,7 +16,7 @@
 #include <math.h>
 #include <cmath>
 #include <sstream>
-#include "BHV_SourceTracking.h"
+#include "BHV_FixSourceFinding.h"
 
 
 using namespace std;
@@ -24,7 +24,7 @@ using namespace std;
 //---------------------------------------------------------------
 // Constructor
 
-BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
+BHV_FixSourceFinding::BHV_FixSourceFinding(IvPDomain domain) :
   IvPBehavior(domain)
 {
   // Provide a default behavior name
@@ -37,7 +37,6 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
   addInfoVars("NAV_X, NAV_Y, SOURCE_ANGLE, WHISTLE_EXIST","no_warning");
 
   m_ipf_type    =   "zaic";
-  m_method        = "region";
   
   m_desired_speed = 2;
     m_osx         = 0;
@@ -51,7 +50,7 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
 
 // Procedure: postViewPoint
 //---------------------------------------------------
-void BHV_SourceTracking::postViewPoint(bool viewable)
+void BHV_FixSourceFinding::postViewPoint(bool viewable)
 {
   m_nextpt.set_label(" tracking navigation next waypoint");
 
@@ -67,7 +66,7 @@ void BHV_SourceTracking::postViewPoint(bool viewable)
 //---------------------------------------------------------------
 // Procedure: setParam()
 
-bool BHV_SourceTracking::setParam(string param, string val)
+bool BHV_FixSourceFinding::setParam(string param, string val)
 {
   // Convert the parameter to lower case for more general matching
   param = tolower(param);
@@ -95,11 +94,6 @@ bool BHV_SourceTracking::setParam(string param, string val)
         return(true);
   
   }
-  else if((param == "method")){
-        m_method = val;
-        return(true);
-  }
-
   // If not handled above, then just return false;
   return(false);
 }
@@ -110,7 +104,7 @@ bool BHV_SourceTracking::setParam(string param, string val)
 //            Good place to ensure all required params have are set.
 //            Or any inter-param relationships like a<b.
 
-void BHV_SourceTracking::onSetParamComplete()
+void BHV_FixSourceFinding::onSetParamComplete()
 {
 }
 
@@ -119,7 +113,7 @@ void BHV_SourceTracking::onSetParamComplete()
 //   Purpose: Invoked once upon helm start, even if this behavior
 //            is a template and not spawned at startup
 
-void BHV_SourceTracking::onHelmStart()
+void BHV_FixSourceFinding::onHelmStart()
 {
 }
 
@@ -127,14 +121,14 @@ void BHV_SourceTracking::onHelmStart()
 // Procedure: onIdleState()
 //   Purpose: Invoked on each helm iteration if conditions not met.
 
-void BHV_SourceTracking::onIdleState()
+void BHV_FixSourceFinding::onIdleState()
 {
 }
 
 //---------------------------------------------------------------
 // Procedure: onCompleteState()
 
-void BHV_SourceTracking::onCompleteState()
+void BHV_FixSourceFinding::onCompleteState()
 {
 }
 
@@ -142,7 +136,7 @@ void BHV_SourceTracking::onCompleteState()
 // Procedure: postConfigStatus()
 //   Purpose: Invoked each time a param is dynamically changed
 
-void BHV_SourceTracking::postConfigStatus()
+void BHV_FixSourceFinding::postConfigStatus()
 {
 }
 
@@ -150,7 +144,7 @@ void BHV_SourceTracking::postConfigStatus()
 // Procedure: onIdleToRunState()
 //   Purpose: Invoked once upon each transition from idle to run state
 
-void BHV_SourceTracking::onIdleToRunState()
+void BHV_FixSourceFinding::onIdleToRunState()
 {
 }
 
@@ -158,7 +152,7 @@ void BHV_SourceTracking::onIdleToRunState()
 // Procedure: onRunToIdleState()
 //   Purpose: Invoked once upon each transition from run to idle state
 
-void BHV_SourceTracking::onRunToIdleState()
+void BHV_FixSourceFinding::onRunToIdleState()
 {
 }
 
@@ -166,7 +160,7 @@ void BHV_SourceTracking::onRunToIdleState()
 // Procedure: onRunState()
 //   Purpose: Invoked each iteration when run conditions have been met.
 
-IvPFunction* BHV_SourceTracking::onRunState()
+IvPFunction* BHV_FixSourceFinding::onRunState()
 {
   // Part 1: Build the IvP function
   IvPFunction *ipf = 0;
@@ -179,7 +173,6 @@ IvPFunction* BHV_SourceTracking::onRunState()
   if(!ok1 || !ok2)
     postWMessage("No ownship X/Y info in info_buffer");
   
-  if(m_method == "region"){
     string str_whistle_exist = getBufferStringVal("WHISTLE_EXIST",ok3);
     if(str_whistle_exist == "true")
         m_whistle_exist = true;
@@ -194,13 +187,6 @@ IvPFunction* BHV_SourceTracking::onRunState()
             postWMessage("Problem Creating the IvP Function");
         postViewPoint(true);
     }
-  }
-  else if(m_method == "angle"){
-  
-  }
-
-  else 
-      postWMessage("Wrong method, choose to use \"angle\" or \"region\"");
   // Part N: Prior to returning the IvP function, apply the priority wt
   // Actual weight applied may be some value different than the configured
   // m_priority_wt, depending on the behavior author's insite.
@@ -210,7 +196,7 @@ IvPFunction* BHV_SourceTracking::onRunState()
   return(ipf);
 }
 
-IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
+IvPFunction *BHV_FixSourceFinding::buildFunctionWithZAIC()
 {
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(m_desired_speed);
