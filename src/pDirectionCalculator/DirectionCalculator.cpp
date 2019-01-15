@@ -414,8 +414,8 @@ bool DirectionCalculator::Iterate()
 
                 float before_asin = TDOA*m_c/m_mic_dis;
                 if(before_asin > 1){
-                    reportRunWarning("Invalid calculation, output 0\n");
-                    float angle = 0;
+                    reportRunWarning("Invalid calculation, output 400\n");
+                    float angle = 400;
                     Notify("SOURCE_ANGLE",angle);
                 }
                 else{

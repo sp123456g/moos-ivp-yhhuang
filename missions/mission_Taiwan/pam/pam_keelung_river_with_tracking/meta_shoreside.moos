@@ -110,6 +110,7 @@ ProcessConfig = pMarineViewer
   button_one   = FRONT_SURVEY=true
   button_one   = START_RECORD_ALL=true
   button_two   = RETURN_ALL  # RETURN_ALL=true 
+  button_two   = DEPLOY_ALL=true 
   button_two   = STATION_ALL=false 
 
   button_three = ALLSTOP  # DEPLOY_ALL=false # MOOS_MANUAL_OVERRIDE_ALL=true

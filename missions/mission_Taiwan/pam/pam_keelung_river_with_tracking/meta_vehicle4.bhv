@@ -8,8 +8,9 @@ initialize  LOITER_SURVEY   = false
 initialize  ENTERING        = true
 initialize  SET_PARAMS      = true
 initialize  TRACK_STAND_BY  = true
-initialize  WHISTLE_EXIST   = false
+initialize  WHISTLE_ONCE_EXIST   = false
 initialize  MEASURE_START   = false
+initialize  CENTER          = true
 //----------------------------------------------
 
 set MODE = ACTIVE{
@@ -19,6 +20,7 @@ set MODE = ACTIVE{
 set MODE = POSEKEEPING{
     DEPLOY = hold
     MEASURE_START = false
+    RETURN = false
 }
 
 set MODE = STATION-KEEPING{
@@ -43,7 +45,7 @@ set MODE = LOITER_SURVEYING{
     LOITER_SURVEY = true
     RETURN = false
     STATION = false
-    WHISTLE_EXIST = false
+    WHISTLE_ONCE_EXIST = false
 }
 
 set MODE = GOING_TO_LOITER{
@@ -55,10 +57,11 @@ set MODE = GOING_TO_LOITER{
 
 set MODE = GOING_TO_CENTER{
     MODE = ACTIVE
-    WHISTLE_EXIST = true 
+    WHISTLE_ONCE_EXIST = true 
     RETURN = false
     STATION = false
     MEASURE_START = false
+    CENTER = true
 }
 
 
@@ -66,7 +69,6 @@ set MODE = MEASURING{
     MEASURE_START = true
     RETURN = false
 }
-
 
 
 Behavior = BHV_Waypoint
@@ -247,9 +249,30 @@ Behavior=BHV_Waypoint
   updates    = CENTER_UPDATE
   endflag    = DEPLOY = hold
   endflag    = HOLD_HEADING = 0
+  endflag    = CENTER = false
 
            speed = 1.3
   capture_radius = 2.0
      slip_radius = 8.0
           points = -56,40
+}
+
+Behavior=BHV_FixSourceFinding
+{
+    name = findFixSource
+    pwt  = 100 
+    condition = TRACK_STAND_BY=true
+    perpetual = true
+    endflag   = RETURN = true
+    
+    speed  = 2    
+    radius = 8
+    method = two_point_measure
+    
+    loiter_center       = -56,40
+    median_check_size   = 5
+    right_bound         = -25
+    left_bound          = -81
+
+
 }

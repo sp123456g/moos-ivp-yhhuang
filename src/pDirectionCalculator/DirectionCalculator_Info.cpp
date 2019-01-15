@@ -127,8 +127,8 @@ void showInterfaceAndExit()
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  SOURCE_ANGLE:                                                 ");
-  blk("      string variable, \"NAN\" if no answer                     ");
   blk("      double variable,  direction angle in degree               ");
+  blk("                        400 if no answer                        ");
   blk("                                                                ");
   exit(0);
 }
