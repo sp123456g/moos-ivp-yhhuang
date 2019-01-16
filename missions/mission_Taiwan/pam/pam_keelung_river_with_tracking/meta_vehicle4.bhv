@@ -1,5 +1,5 @@
-//--------    FILE: meta_vehicle.bhv   -------------
-
+//--------    FILE: meta_vehicle.bhv----------------
+//--------    Left region with fix tracking-------------
 initialize  DEPLOY          = false
 initialize  RETURN          = false
 initialize  OPREGION        = true	
@@ -273,6 +273,4 @@ Behavior=BHV_FixSourceFinding
     median_check_size   = 5
     right_bound         = -25
     left_bound          = -81
-
-
 }

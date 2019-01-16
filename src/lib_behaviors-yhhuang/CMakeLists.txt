@@ -124,3 +124,16 @@ TARGET_LINK_LIBRARIES(BHV_FixSourceFinding
    mbutil
    geometry 
    ${SYSTEM_LIBS} )
+
+#ADD_LIBRARY(BHV_XStationKeep SHARED 
+#   BHV_XStationKeep.cpp AOF_SimpleWaypoint)
+#TARGET_LINK_LIBRARIES(BHV_XStationKeep
+#   helmivp
+#   behaviors 
+#   ivpbuild 
+#   logic 
+#   ivpcore 
+#   bhvutil 
+#   mbutil
+#   geometry 
+#   ${SYSTEM_LIBS} )

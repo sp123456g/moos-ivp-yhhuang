@@ -12,6 +12,8 @@
 #include "IvPBehavior.h"
 #include <ZAIC_PEAK.h>
 #include "XYPoint.h"
+#include <vector>
+#include <XYSegList.h>
 
 class BHV_SourceTracking : public IvPBehavior {
 public:
@@ -30,27 +32,45 @@ public:
 
   IvPFunction*  buildFunctionWithZAIC();
   void          postViewPoint(bool viewable);
+  double        getMedian(std::vector<double>);
+  bool          genNextPt(double);
+  bool          ShowLine(double,double,double,std::string);
+  bool          CheckSourceAngle();  
+  
 
 protected: // Local Utility functions
 
 protected: // Configuration parameters
 
-  std::string m_method;
   std::string m_ipf_type;
 
 protected: // State variables
 
-  double    m_desired_speed;
-  double    m_osx;
-  double    m_osy;
-  double    m_center_x;
-  double    m_center_y;
-  
   XYPoint   m_nextpt;
 
+  double    m_target_angle;
+  double    m_desired_speed;
+  double    m_check_num;
+  double    m_left_bd;
+  double    m_right_bd;
+  double    m_arrival_radius;
+
+  double    m_osx;
+  double    m_osy;
+  double    m_osheading;
+  
+
+  bool      m_start_gen_next_pt;
+  bool      m_gen_ipf;
+  bool      m_arrive;
+
+  int       m_no_dolphin_time;
+  int       m_no_wh_time;       //no whistle over this variable time stop generate ipf
+
+  std::vector<double> m_source_angle_buff;
+
+
   bool      m_whistle_exist;
-
-
 };
 
 #define IVP_EXPORT_FUNCTION

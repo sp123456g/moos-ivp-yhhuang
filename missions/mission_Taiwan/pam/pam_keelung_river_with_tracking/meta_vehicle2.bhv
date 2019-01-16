@@ -1,5 +1,5 @@
-//--------    FILE: meta_vehicle.bhv   -------------
-
+//--------    FILE: meta_vehicle2.bhv -------------
+//--------    Left region no track    -------------
 initialize  DEPLOY          = false
 initialize  RETURN          = false
 initialize  OPREGION        = true	

@@ -7,6 +7,7 @@
 
 #include <iterator>
 #include <cstdlib>
+#include "BHV_SourceTracking.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
 #include "AngleUtils.h"
@@ -16,7 +17,6 @@
 #include <math.h>
 #include <cmath>
 #include <sstream>
-#include "BHV_SourceTracking.h"
 
 
 using namespace std;
@@ -34,19 +34,20 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
   m_domain = subDomain(m_domain, "course,speed");
 
   // Add any variables this behavior needs to subscribe for
-  addInfoVars("NAV_X, NAV_Y, SOURCE_ANGLE, WHISTLE_EXIST","no_warning");
+  addInfoVars("NAV_X, NAV_Y, SOURCE_ANGLE, WHISTLE_EXIST, MEASURE_START","no_warning");
 
-  m_ipf_type    =   "zaic";
-  m_method        = "region";
-  
-  m_desired_speed = 2;
-    m_osx         = 0;
-    m_osy         = 0;
-    m_center_x    = 0;
-    m_center_y    = 0;
+    m_ipf_type          = "zaic";
 
-  m_whistle_exist = false;
+    m_target_angle  = 0;
+    m_whistle_exist = false;
+    m_osx           = 0;
+    m_osy           = 0;
+    m_osheading     = 0;
 
+    m_no_dolphin_time = 0;
+    m_no_wh_time    = 20;
+
+    m_gen_ipf       = false;
 }
 
 // Procedure: postViewPoint
@@ -82,24 +83,27 @@ bool BHV_SourceTracking::setParam(string param, string val)
   else if (param == "bar") {
     // return(setBooleanOnString(m_my_bool, val));
   }
-  else if (param == "loiter_center"){
-    
-        m_center_x = atof(biteStringX(val,',').c_str());
-        m_center_y = atof(val.c_str());
-
-        return(true);
-  }
-
   else if ((param == "speed") && (double_val > 0) && (isNumber(val))){
         m_desired_speed = double_val;
         return(true);
   
   }
-  else if((param == "method")){
-        m_method = val;
+  else if (param == "median_check_size"){
+        m_check_num = double_val;
         return(true);
   }
-
+  else if (param == "left_bound" && (isNumber(val))){
+        m_left_bd = double_val;
+        return(true);
+  }
+  else if (param == "right_bound" && (isNumber(val))){
+        m_right_bd = double_val;
+        return(true);
+  }
+  else if (param == "radius" && (double_val > 0) && (isNumber(val))){
+    m_arrival_radius = double_val;
+    return(true);
+  }
   // If not handled above, then just return false;
   return(false);
 }
@@ -171,36 +175,57 @@ IvPFunction* BHV_SourceTracking::onRunState()
   // Part 1: Build the IvP function
   IvPFunction *ipf = 0;
 
-
-  bool ok1,ok2,ok3;
+  bool ok1,ok2,ok3,ok4,ok5;
   m_osx = getBufferDoubleVal("NAV_X",ok1);
   m_osy = getBufferDoubleVal("NAV_Y",ok2);
+  m_osheading = getBufferDoubleVal("NAV_HEADING",ok3);
 
   if(!ok1 || !ok2)
     postWMessage("No ownship X/Y info in info_buffer");
   
-  if(m_method == "region"){
-    string str_whistle_exist = getBufferStringVal("WHISTLE_EXIST",ok3);
-    if(str_whistle_exist == "true")
+    string str_whistle_exist = getBufferStringVal("WHISTLE_EXIST",ok4);
+    if(str_whistle_exist == "true"){
         m_whistle_exist = true;
-    else 
-        m_whistle_exist = false;
-      
-    if(m_whistle_exist){
-        m_nextpt.set_vx(m_center_x);
-        m_nextpt.set_vy(m_center_y);
-        ipf = buildFunctionWithZAIC();
-        if(ipf == 0)
-            postWMessage("Problem Creating the IvP Function");
-        postViewPoint(true);
+        m_gen_ipf       = true;
     }
-  }
-  else if(m_method == "angle"){
-  
-  }
+//median filter with angle
+    if(m_whistle_exist){
+        double measure_angle = getBufferDoubleVal("SOURCE_ANGLE",ok5);
+        if(ok5 && measure_angle !=400){
+            m_source_angle_buff.push_back(measure_angle);
+            postMessage("SOURCE_ANGLE",400);
+        }
+// change source angle to 400 means that I got the angle, won't get agian next time
+        if(m_source_angle_buff.size() >= m_check_num){
+            std::vector<double> check_buff(m_check_num,0);
+            for(int i=0;i<m_check_num;i++)
+                check_buff[i] = m_source_angle_buff[i];
 
-  else 
-      postWMessage("Wrong method, choose to use \"angle\" or \"region\"");
+            m_target_angle = getMedian(check_buff);
+        }                
+        
+        if(m_gen_ipf)
+            ipf = buildFunctionWithZAIC();
+        
+#ifdef WIN32
+        double dist = _hypot((m_nextpt.x()-m_osx),(m_nextpt.y()-m_osy));
+#else
+        double dist = hypot((m_nextpt.x()-m_osx),(m_nextpt.y()-m_osy));
+#endif
+        if(dist <=m_arrival_radius)
+            m_arrive = true;
+    }
+    else{
+        postMessage("WAITING_FOR_DOLPHIN",true);    
+        m_no_dolphin_time +=1;
+
+        if(m_no_dolphin_time >= m_no_wh_time){
+            m_gen_ipf           = false;
+            m_no_dolphin_time   = 0;
+        }
+    }
+
+    
   // Part N: Prior to returning the IvP function, apply the priority wt
   // Actual weight applied may be some value different than the configured
   // m_priority_wt, depending on the behavior author's insite.
@@ -208,6 +233,36 @@ IvPFunction* BHV_SourceTracking::onRunState()
     ipf->setPWT(m_priority_wt);
 
   return(ipf);
+}
+
+bool BHV_SourceTracking::ShowLine(double angle, double x,double y, string label){
+
+    stringstream ss;
+    ss<<"x="<<x<<",y="<<y<<",mag=10,ang="<<angle<<",label="<<label;
+    string msg = ss.str();
+    postMessage("VIEW_VECTOR",msg);
+}
+
+bool BHV_SourceTracking::CheckSourceAngle(){
+}
+
+double BHV_SourceTracking::getMedian(vector<double> input){
+
+    int size = input.size();
+
+    for (unsigned int m = 0; m < (size+1)/2; ++m){
+        unsigned int min = m;
+        for (unsigned int n = m + 1; n < size; ++n)
+            if (input[n] < input[min])
+                min = n;
+        //   Put found minimum element in its place
+        float temp = input[m];
+        input[m] = input[min];
+        input[min] = temp;
+    }
+    double angle = input[(size-1)/2];
+
+    return(angle);
 }
 
 IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
@@ -222,10 +277,8 @@ IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
     postWMessage(warnings);
     return(0);
   }
-
-  double rel_ang_to_wpt = relAng(m_osx, m_osy, m_nextpt.x(), m_nextpt.y());
   ZAIC_PEAK crs_zaic(m_domain, "course");
-  crs_zaic.setSummit(rel_ang_to_wpt);
+  crs_zaic.setSummit(m_osheading + m_target_angle);
   crs_zaic.setPeakWidth(0);
   crs_zaic.setBaseWidth(180.0);
   crs_zaic.setSummitDelta(0);
