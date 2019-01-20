@@ -34,7 +34,7 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
   m_domain = subDomain(m_domain, "course,speed");
 
   // Add any variables this behavior needs to subscribe for
-  addInfoVars("NAV_X, NAV_Y, SOURCE_ANGLE, WHISTLE_EXIST, MEASURE_START","no_warning");
+  addInfoVars("NAV_X, NAV_Y, SOURCE_ANGLE, WHISTLE_EXIST, BAND_AVG_SPL","no_warning");
 
     m_ipf_type          = "zaic";
 
@@ -48,6 +48,10 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
     m_no_wh_time    = 20;
 
     m_gen_ipf       = false;
+    m_arrive        = false;
+    m_first_time    = true;
+    m_over_thr      = false;
+
 }
 
 // Procedure: postViewPoint
@@ -83,11 +87,15 @@ bool BHV_SourceTracking::setParam(string param, string val)
   else if (param == "bar") {
     // return(setBooleanOnString(m_my_bool, val));
   }
-  else if ((param == "speed") && (double_val > 0) && (isNumber(val))){
-        m_desired_speed = double_val;
+  else if ((param == "slow_speed") && (double_val > 0) && (isNumber(val))){
+        m_slow_speed = double_val;
         return(true);
-  
   }
+  else if ((param == "fast_speed") && (double_val > 0) && (isNumber(val))){
+        m_fast_speed = double_val;
+        return(true);
+  }
+
   else if (param == "median_check_size"){
         m_check_num = double_val;
         return(true);
@@ -100,7 +108,17 @@ bool BHV_SourceTracking::setParam(string param, string val)
         m_right_bd = double_val;
         return(true);
   }
-  else if (param == "radius" && (double_val > 0) && (isNumber(val))){
+  else if (param == "up_bound" && (isNumber(val))){
+        m_up_bd = double_val;
+        return(true);
+  }
+  else if (param == "low_bound" && (isNumber(val))){
+        m_low_bd = double_val;
+        return(true);
+  }
+
+
+  else if (param == "arrive_radius" && (double_val > 0) && (isNumber(val))){
     m_arrival_radius = double_val;
     return(true);
   }
@@ -133,6 +151,13 @@ void BHV_SourceTracking::onHelmStart()
 
 void BHV_SourceTracking::onIdleState()
 {
+    
+    bool ok;
+    string str_in = getBufferStringVal("WHISTLE_EXIST",ok);
+    if(str_in == "true")
+        m_whistle_exist = true;
+    if(m_whistle_exist && ok)
+        postMessage("TRACK",true);
 }
 
 //---------------------------------------------------------------
@@ -172,9 +197,9 @@ void BHV_SourceTracking::onRunToIdleState()
 
 IvPFunction* BHV_SourceTracking::onRunState()
 {
-  // Part 1: Build the IvP function
+// Part 1: Build the IvP function
   IvPFunction *ipf = 0;
-
+// get current position and heading
   bool ok1,ok2,ok3,ok4,ok5;
   m_osx = getBufferDoubleVal("NAV_X",ok1);
   m_osy = getBufferDoubleVal("NAV_Y",ok2);
@@ -182,28 +207,30 @@ IvPFunction* BHV_SourceTracking::onRunState()
 
   if(!ok1 || !ok2)
     postWMessage("No ownship X/Y info in info_buffer");
-  
+//  check whistle exist 
     string str_whistle_exist = getBufferStringVal("WHISTLE_EXIST",ok4);
     if(str_whistle_exist == "true"){
         m_whistle_exist = true;
-        m_gen_ipf       = true;
+        m_gen_ipf = true;
     }
+    
 //median filter with angle
     if(m_whistle_exist){
         double measure_angle = getBufferDoubleVal("SOURCE_ANGLE",ok5);
-        if(ok5 && measure_angle !=400){
+        if(ok5 && measure_angle !=400)
             m_source_angle_buff.push_back(measure_angle);
-            postMessage("SOURCE_ANGLE",400);
-        }
-// change source angle to 400 means that I got the angle, won't get agian next time
+        
         if(m_source_angle_buff.size() >= m_check_num){
             std::vector<double> check_buff(m_check_num,0);
             for(int i=0;i<m_check_num;i++)
                 check_buff[i] = m_source_angle_buff[i];
 
             m_target_angle = getMedian(check_buff);
-        }                
-        
+        }              
+//Calculate next point and check if it's possible
+        CheckNextSpeed();
+        CheckBound();
+
         if(m_gen_ipf)
             ipf = buildFunctionWithZAIC();
         
@@ -243,9 +270,6 @@ bool BHV_SourceTracking::ShowLine(double angle, double x,double y, string label)
     postMessage("VIEW_VECTOR",msg);
 }
 
-bool BHV_SourceTracking::CheckSourceAngle(){
-}
-
 double BHV_SourceTracking::getMedian(vector<double> input){
 
     int size = input.size();
@@ -265,6 +289,34 @@ double BHV_SourceTracking::getMedian(vector<double> input){
     return(angle);
 }
 
+bool BHV_SourceTracking::CheckNextSpeed(){
+
+    bool ok;
+    double band_avg = getBufferDoubleVal("BAND_AVG_SPL",ok);
+
+    if(m_first_time){
+        m_over_thr = band_avg;
+        m_first_time = false;
+        m_desired_speed = m_fast_speed;
+        m_over_thr = true;
+    }
+    else if(ok){    
+        if(band_avg > m_band_level_thr)
+            m_over_thr = true;
+    }
+    else 
+        m_desired_speed = m_fast_speed;
+    
+    if(m_over_thr)
+        m_desired_speed = m_fast_speed;
+    else 
+        m_desired_speed = m_slow_speed;
+}
+
+bool BHV_SourceTracking::CheckBound(){
+
+}
+
 IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
 {
   ZAIC_PEAK spd_zaic(m_domain, "speed");
@@ -277,6 +329,7 @@ IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
     postWMessage(warnings);
     return(0);
   }
+  double rel_ang_to_wpt = relAng(m_osx, m_osy, m_nextpt.x(), m_nextpt.y());
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(m_osheading + m_target_angle);
   crs_zaic.setPeakWidth(0);

@@ -1,0 +1,20 @@
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  PAUSED     = false
+  RESET_MAX  = unlimited
+  RESET_TIME = end
+
+  DELAY_RESET = 0.5
+
+//  EVENT = var=TRACK_START, val="true", time=100
+}
+
+
+ 
+

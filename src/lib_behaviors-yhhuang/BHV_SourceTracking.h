@@ -33,9 +33,9 @@ public:
   IvPFunction*  buildFunctionWithZAIC();
   void          postViewPoint(bool viewable);
   double        getMedian(std::vector<double>);
-  bool          genNextPt(double);
+  bool          CheckNextSpeed();
+  bool          CheckBound();
   bool          ShowLine(double,double,double,std::string);
-  bool          CheckSourceAngle();  
   
 
 protected: // Local Utility functions
@@ -49,28 +49,38 @@ protected: // State variables
   XYPoint   m_nextpt;
 
   double    m_target_angle;
-  double    m_desired_speed;
   double    m_check_num;
+  
   double    m_left_bd;
   double    m_right_bd;
+  double    m_up_bd;
+  double    m_low_bd;
+  double    m_band_level_thr;
+
   double    m_arrival_radius;
 
   double    m_osx;
   double    m_osy;
   double    m_osheading;
+
+  double    m_fast_speed;
+  double    m_slow_speed;
+  double    m_desired_speed;
   
 
-  bool      m_start_gen_next_pt;
   bool      m_gen_ipf;
   bool      m_arrive;
 
   int       m_no_dolphin_time;
   int       m_no_wh_time;       //no whistle over this variable time stop generate ipf
+  
 
   std::vector<double> m_source_angle_buff;
 
 
   bool      m_whistle_exist;
+  bool      m_first_time;
+  bool      m_over_thr;
 };
 
 #define IVP_EXPORT_FUNCTION

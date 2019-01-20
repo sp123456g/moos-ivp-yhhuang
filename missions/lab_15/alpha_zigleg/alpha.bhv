@@ -76,6 +76,6 @@ Behavior = BHV_ZigLeg
 {
     name         = zigleg_alpha
     pwt          = 150 
-    angle        = 45
+    angle        = 180
     zig_duration = 10
 }

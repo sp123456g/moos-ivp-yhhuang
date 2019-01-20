@@ -1,0 +1,19 @@
+//-----------------------------------------------------------
+//pWhistleDetector_vehicler
+
+
+ProcessConfig = pWhistleDetector_vehicle
+{
+   AppTick   = 4
+   CommsTick = 4
+
+    overlap             = 0.9
+    sample_rate         = 96000
+    iterate_data        = 0.1
+    window_type         = hanning
+    bits                = 32
+    SNR_threshold       = 10 
+    band_pass_frq_low   = 3000
+    band_pass_frq_high  = 11000
+    channel_need        = 2
+}
