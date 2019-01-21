@@ -80,6 +80,7 @@ Behavior = BHV_Waypoint
   pwt       = 100
   condition = MODE == ENTERING
   endflag   = SQ_SURVEY = true
+  endflag   = ENTER = false
 
   updates    = WPT_UPDATE
   perpetual  = false
@@ -178,8 +179,15 @@ Behavior = BHV_SourceTracking
     perpetual = true 
     endflag   = RETURN = true
     
-    min_speed  = 1 
-    max_speed  = 2.5 
+    slow_speed  = 1 
+    fast_speed  = 2.5 
+    
+    median_check_size = 5 
+
+    left_bound  = -13 
+    right_bound = 85 
+    up_bound    = 86
+    low_bound   = 18
 
     arrive_radius = 5
 }

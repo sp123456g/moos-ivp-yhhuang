@@ -39,19 +39,33 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
     m_ipf_type          = "zaic";
 
     m_target_angle  = 0;
-    m_whistle_exist = false;
+    m_check_num     = 5;
+
+    m_left_bd       = 0;
+    m_right_bd      = 100;
+    m_up_bd         = 100;
+    m_low_bd        = 0;
+    m_band_level_thr= 100;
+
+    m_arrival_radius= 5;
+    
     m_osx           = 0;
     m_osy           = 0;
     m_osheading     = 0;
 
-    m_no_dolphin_time = 0;
-    m_no_wh_time    = 20;
+    m_fast_speed    = 2.5;
+    m_slow_speed    = 1;
+    m_desired_speed = 2.5;
 
     m_gen_ipf       = false;
     m_arrive        = false;
+
+    m_no_dolphin_time = 0;
+    m_no_wh_time    = 20;
+
+    m_whistle_exist = false;
     m_first_time    = true;
     m_over_thr      = false;
-
 }
 
 // Procedure: postViewPoint
@@ -157,7 +171,7 @@ void BHV_SourceTracking::onIdleState()
     if(str_in == "true")
         m_whistle_exist = true;
     if(m_whistle_exist && ok)
-        postMessage("TRACK",true);
+        postMessage("TRACK","true");
 }
 
 //---------------------------------------------------------------
@@ -231,8 +245,10 @@ IvPFunction* BHV_SourceTracking::onRunState()
         CheckNextSpeed();
         CheckBound();
 
+        postMessage("TARGET_ANGLE",m_target_angle);
+        postMessage("TARGET_SPEED",m_desired_speed);
         if(m_gen_ipf)
-            ipf = buildFunctionWithZAIC();
+          ipf = buildFunctionWithZAIC();
         
 #ifdef WIN32
         double dist = _hypot((m_nextpt.x()-m_osx),(m_nextpt.y()-m_osy));

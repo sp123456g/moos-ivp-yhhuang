@@ -13,7 +13,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 400
 
   Run = MOOSDB              @ NewConsole = false
-  Run = pMarineViewer       @ NewConsole = false
+//  Run = pMarineViewer       @ NewConsole = false
   Run = pLogger             @ NewConsole = false
   Run = uTimerScript        @ NewConsole = false
 
@@ -140,7 +140,7 @@ ProcessConfig = pDataReceiver
 
   //  file_path           = /home/yhh/google_drive_UALyhhuang/logfiles/keelung_river/data/
     file_path           = /media/yhh/YHHUANG/keelung_river/data/
-    file_name           = whistle_data_ch1.txt
+    file_name           = whistle_data.txt
     file_order          = true
     from_pDataSender    = true
 

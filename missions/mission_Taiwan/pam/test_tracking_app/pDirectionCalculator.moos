@@ -13,21 +13,38 @@ ProcessConfig = ANTLER
     MSBetweenLaunches = 200
 
     Run = MOOSDB                    @ NewConsole = false
-    Run = pDataReceiver             @ NewConsole = true
-    Run = pDirectionCalculator      @ NewConsole = false
+    Run = pDataReceiver             @ NewConsole = true  ~ pDataReceiver_ch1
+    Run = pDataReceiver             @ NewConsole = true  ~ pDataReceiver_ch2
+    Run = pDirectionCalculator      @ NewConsole = false 
     Run = pAmbientCalculate         @ NewConsole = true
     Run = pWhistleDetector_vehicle  @ NewConsole = true
     Run = pLogger                   @ NewConsole = false
 }
 
 //--------------------------------------------
-ProcessConfig = pDataReceiver
+ProcessConfig = pDataReceiver_ch1
 {
     AppTick   = 1
     CommsTick = 1
 
-    file_path        = /home/yhh/google_drive_UALyhhuang/logfiles/TestDataSender/2018_12_07/
-    file_name        = whistle_data.txt
+    file_path        = /home/yhh/Documents/Real_field_Data_TX1_20190117/2019_0117_1547/Data_for_scp/
+    file_name        = whistle_data_ch1.txt
+
+    file_order       = true
+    from_pDataSender = true
+    
+//    sound_data_fps = 10
+    
+}
+
+//--------------------------------------------
+ProcessConfig = pDataReceiver_ch2
+{
+    AppTick   = 1
+    CommsTick = 1
+
+    file_path        = /home/yhh/Documents/Real_field_Data_TX1_20190117/2019_0117_1547/Data_for_scp/
+    file_name        = whistle_data_ch2.txt
 
     file_order       = true
     from_pDataSender = true
