@@ -142,6 +142,9 @@ bool WhistleDetector_vehicle::GetVoltageData(std::string input)
     for(int i=0; i<voltages.size(); i++){
       float volt = atof(voltages[i].c_str());
       
+      if(volt >0.9)
+          volt = 0;
+
       m_voltage_data.push_back(volt);
     }
 
@@ -156,6 +159,8 @@ bool WhistleDetector_vehicle::GetVoltageData_ch2(std::string input)
     for(int i=0; i<voltages.size(); i++){
       float volt = atof(voltages[i].c_str());
       
+      if(volt >0.9)
+          volt = 0;
       m_voltage_data_ch2.push_back(volt);
     }
 

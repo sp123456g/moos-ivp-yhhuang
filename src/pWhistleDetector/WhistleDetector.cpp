@@ -95,7 +95,10 @@ bool WhistleDetector::GetVoltageData(std::string input)
 
     for(int i=0; i<voltages.size(); i++){
       float volt = atof(voltages[i].c_str());
-      
+
+      if(volt > 0.9)
+          volt=0;
+
       m_voltage_data.push_back(volt);
     }
 }

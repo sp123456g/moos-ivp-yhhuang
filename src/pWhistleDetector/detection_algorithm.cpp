@@ -227,7 +227,7 @@ void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int ju
         }
              
         for(int j=jump_num;j<time_column.size();j++){
-            if(j>=time_column.size()-jump_num)
+            if(j>=time_column.size()-jump_num || j+jump_num>=time_column.size())
                 P[j][i] = 0;
             else{
                  if(time_column[j-jump_num]!=0 || time_column[j+jump_num]!=0){    
@@ -312,7 +312,7 @@ void detect_whistle(vector<vector<float> > &P,int fs,unsigned int N,float overla
 //    median_filter(P);
 //step3: edge_detector
 //   edge_detector(P,SNR_threshold,5,N,fs,frq_low,frq_high);
-   edge_detector(P,SNR_threshold,15,N,fs,frq_low,frq_high);
+   edge_detector(P,SNR_threshold,5,N,fs,frq_low,frq_high);
 //step4: using moving square for narrow band checking 
     moving_square(P,fs,N,overlap,frq_low,frq_high);
 //step5: save data after detection    

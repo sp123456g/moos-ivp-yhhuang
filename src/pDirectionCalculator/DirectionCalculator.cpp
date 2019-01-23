@@ -82,12 +82,12 @@ bool DirectionCalculator::OnNewMail(MOOSMSG_LIST &NewMail)
      if(key == "FOO") 
        cout << "great!";
      else if(key == "WHISTLE_VOLTAGE_DATA_CH_ONE"){
-//        GetVoltageData_ch1(msg.GetString());
-        m_ch1_str.push_back(msg.GetString());
+//        m_ch1_str.push_back(msg.GetString());
+        GetVoltageData_ch1(msg.GetString());
      }
      else if(key == "WHISTLE_VOLTAGE_DATA_CH_TWO"){
-//        GetVoltageData_ch2(msg.GetString());
-        m_ch2_str.push_back(msg.GetString());
+//        m_ch2_str.push_back(msg.GetString());
+        GetVoltageData_ch2(msg.GetString());
      }
      else if(key == "AVG_VOLTAGE_CH_ONE"){
         if(msg.IsDouble()){
@@ -150,6 +150,9 @@ bool DirectionCalculator::GetVoltageData_ch1(string input)
     for(int i=0; i<voltages.size(); i++){
       float volt = atof(voltages[i].c_str());
 
+      if(volt > 0.9)
+          volt = 0;
+
       m_ch1.push_back(volt);
     }
 }
@@ -161,6 +164,9 @@ bool DirectionCalculator::GetVoltageData_ch2(string input)
 
     for(int i=0; i<voltages.size(); i++){
       float volt = atof(voltages[i].c_str());
+
+      if(volt > 0.9)
+          volt = 0;
 
       m_ch2.push_back(volt);
     }
@@ -217,7 +223,6 @@ float DirectionCalculator::CalTDOA_by_cc(std::vector<float> ch1, std::vector<flo
     }
 //find the maximun index after correlation
     vector<float>::iterator maxPosition = max_element(output.begin(), output.end());
-    cout << *maxPosition << " at the postion of " << maxPosition - output.begin() <<endl;
     int max_index = maxPosition - output.begin();
 
     int     digi_TDOA = max_index - correlation_factor;
@@ -361,12 +366,12 @@ bool DirectionCalculator::Iterate()
             ss2<<m_ch1_str.size()<<","<<m_ch2_str.size();
             reportEvent("size of ch1 and ch2 str:" +ss2.str());
 // get voltage data in both ch, from ch1 ch2 str buff
-            if(!m_ch1_str.empty() && !m_ch2_str.empty()){
-                GetVoltageData_both(m_ch1_str.front(),m_ch2_str.front());
-
-                m_ch1_str.pop_front();
-                m_ch2_str.pop_front();
-            }
+//            if(!m_ch1_str.empty() && !m_ch2_str.empty()){
+//                GetVoltageData_both(m_ch1_str.front(),m_ch2_str.front());
+//
+//                m_ch1_str.pop_front();
+//                m_ch2_str.pop_front();
+//            }
             if(m_ch1.size() >=m_access_data_num && m_ch2.size() >= m_access_data_num && m_get_avg_vol){
 // Step 2. Calculate TDOA
 //copy_data: 
@@ -375,15 +380,24 @@ bool DirectionCalculator::Iterate()
                 for(int j=0;j<m_access_data_num;j++)
                     ch2_data[j] = m_ch2[j];
 // save data
-//                stringstream ss_file1, ss_file2, ss_file3,ss_file4;
-//                ss_file1<<m_index<<"before_filter_ch1.csv"; 
-//                Save_data(ss_file1.str(),ch1_data,"./csv_file/");
-//                
-//                ss_file2<<m_index<<"before_filter_ch2.csv"; 
-//                Save_data(ss_file2.str(),ch2_data,"./csv_file/");
+                stringstream ss_file1, ss_file2, ss_file3,ss_file4;
+                ss_file1<<m_index<<"before_filter_ch1.csv"; 
+                Save_data(ss_file1.str(),ch1_data,"./csv_file/");
+                
+                ss_file2<<m_index<<"before_filter_ch2.csv"; 
+                Save_data(ss_file2.str(),ch2_data,"./csv_file/");
 
 //filtering
                Band_Filter(ch1_data);
+               Band_Filter(ch1_data);
+               Band_Filter(ch1_data);
+               Band_Filter(ch1_data);
+               Band_Filter(ch1_data);
+
+               Band_Filter(ch2_data);
+               Band_Filter(ch2_data);
+               Band_Filter(ch2_data);
+               Band_Filter(ch2_data);
                Band_Filter(ch2_data);
 
 // save data
@@ -404,8 +418,10 @@ bool DirectionCalculator::Iterate()
                 else
                     TDOA = CalTDOA_by_peak(ch1_data,ch2_data);
 
-                m_ch1.erase(m_ch1.begin(),m_ch1.begin()+round(m_access_data_num*1));
-                m_ch2.erase(m_ch2.begin(),m_ch2.begin()+round(m_access_data_num*1));
+ //               m_ch1.erase(m_ch1.begin(),m_ch1.begin()+round(m_access_data_num*1));
+ //               m_ch2.erase(m_ch2.begin(),m_ch2.begin()+round(m_access_data_num*1));
+                m_ch1.clear();
+                m_ch2.clear();
 
 // Step 3. check angle
                 stringstream ss1;
@@ -413,7 +429,7 @@ bool DirectionCalculator::Iterate()
                 reportEvent("TDOA="+ss1.str());
 
                 float before_asin = TDOA*m_c/m_mic_dis;
-                if(before_asin > 1){
+                if(before_asin > 1 || before_asin < -1){
                     reportRunWarning("Invalid calculation, output 400\n");
                     float angle = 400;
                     Notify("SOURCE_ANGLE",angle);

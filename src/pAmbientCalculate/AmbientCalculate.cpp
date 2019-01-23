@@ -127,11 +127,16 @@ bool AmbientCalculate::Iterate()
         for(int i=0;i<access_data_num;i++)
             ch1[i] = m_ch1[i];
 
-        for(int i=0;i<ch1.size();i++)
-            total1 +=abs(ch1[i]);
+        for(int i=0;i<access_data_num;i++){
+          //  total1 +=abs(ch1[i]);
+            if(ch1[i] > 0.9)
+                ch1[i] = 0;
+            
+            total1 +=pow(ch1[i],2);
+        }
 
         m_avg_voltage1 = total1/access_data_num;
-        m_avg_spl1 = 20*log10(m_avg_voltage1) - m_sen + m_gain;
+        m_avg_spl1 = 10*log10(m_avg_voltage1) - m_sen + m_gain;
 
         Notify("AVG_SPL_CH_ONE", m_avg_spl1);
         Notify("AVG_VOLTAGE_CH_ONE", m_avg_voltage1);

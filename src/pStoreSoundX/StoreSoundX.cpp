@@ -358,6 +358,7 @@ void StoreSoundX::setRecordParams(){/*{{{*/
 }/*}}}*/
 
 
+// modify by yhh
 void StoreSoundX::Capture()
 {
   int rc;
@@ -409,7 +410,7 @@ void StoreSoundX::Capture()
             m_tem_buffer_ch2.push_back(voltage_ch2);
 
 //store data to check if voltage is right or not 
-            fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
+//            fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
  
         }
        }
@@ -476,6 +477,8 @@ void StoreSoundX::Capture()
 
           m_tem_buffer_ch1.push_back(voltage_ch1);
           m_tem_buffer_ch2.push_back(voltage_ch2);
+
+//            fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
         }
        }
         break;
