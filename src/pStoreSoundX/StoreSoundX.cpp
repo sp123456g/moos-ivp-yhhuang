@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME: CTHung                                              */
-/*    ORGN: MIT                                             */
-/*    FILE: StoreSoundX.cpp                                        */
-/*    DATE:                                                 */
+/*    NAME: yhhuang                                         */
+/*    ORGN: NTU                                             */
+/*    FILE: StoreSoundX.cpp                                 */
+/*    DATE: Jan 23th, 2019                                  */
 /************************************************************/
 
 #include <iterator>

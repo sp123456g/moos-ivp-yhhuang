@@ -1,6 +1,6 @@
 #--------------------------------------------------------
 # The CMakeLists.txt for:                       pStoreSoundX
-# Author(s):                              CTHung
+# Author(s):                              yhhuang
 #--------------------------------------------------------
 
 SET(SRC

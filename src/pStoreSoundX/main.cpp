@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME: CTHung                                              */
-/*    ORGN: MIT                                             */
+/*    NAME: yhhuang                                         */
+/*    ORGN: NTU, Taipei                                     */
 /*    FILE: main.cpp                                        */
-/*    DATE: December 29th, 1963                             */
+/*    DATE: Jan 23th, 2019                                  */
 /************************************************************/
 
 #include <string>

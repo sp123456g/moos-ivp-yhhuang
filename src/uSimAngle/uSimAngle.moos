@@ -1,0 +1,12 @@
+//------------------------------------------------
+// uSimAngle config block
+
+ProcessConfig = uSimAngle
+{
+   AppTick   = 4
+   CommsTick = 4
+
+    source_x = 10;
+    source_y = 20;
+}
+

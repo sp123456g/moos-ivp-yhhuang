@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME: CTHung                                              */
-/*    ORGN: MIT                                             */
-/*    FILE: StoreSoundX.h                                          */
-/*    DATE: December 29th, 1963                             */
+/*    NAME: yhhuang                                         */
+/*    ORGN: NTU                                             */
+/*    FILE: StoreSoundX.h                                   */
+/*    DATE: Jan 23th, 2019                                  */
 /************************************************************/
 
 #ifndef StoreSoundX_HEADER

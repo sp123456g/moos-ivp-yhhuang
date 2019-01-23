@@ -1,8 +1,8 @@
 /****************************************************************/
-/*   NAME: CTHung                                             */
-/*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: StoreSoundX_Info.cpp                               */
-/*   DATE: Dec 29th 1963                                        */
+/*   NAME: yhhuang                                              */
+/*   ORGN: NTU, Taipei                                          */
+/*   FILE: StoreSoundX_Info.cpp                                 */
+/*   DATE: Jan 23th, 2019                                       */
 /****************************************************************/
 
 #include <cstdlib>
