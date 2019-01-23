@@ -44,11 +44,13 @@ class StoreSoundX_TX1 : public AppCastingMOOSApp
    bool m_start_check;
    bool m_pass_record;
    bool m_dir_flag;
+   bool m_save_file;
    std::string m_path;
    std::string m_filename;
    std::string m_repeat;
    std::deque<int> m_tem_buffer;
    FILE *m_fp;
+   FILE *m_fp_checking;
 
  private: // Record params
    std::string m_recordDevice;

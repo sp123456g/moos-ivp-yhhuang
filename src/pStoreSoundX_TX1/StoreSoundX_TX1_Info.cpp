@@ -84,6 +84,7 @@ void showExampleConfigAndExit()
   blk("  RECORD_TIME = 3                                               ");
   blk("  PASS_TIME = 5                                                 ");
   blk("  REPEAT = false                                                ");
+  blk("  SAVE_FILE = true                                              ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

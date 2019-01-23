@@ -43,6 +43,7 @@ StoreSoundX_TX1::StoreSoundX_TX1()
   m_dir = 0;
   m_repeat = "true";
   m_tem_buffer.clear();
+  m_save_file = false;
 }
 
 //---------------------------------------------------------
@@ -85,6 +86,9 @@ bool StoreSoundX_TX1::OnNewMail(MOOSMSG_LIST &NewMail)
         }
           else
           reportConfigWarning("Create file fail: " + m_filename);
+
+          if(m_save_file)
+              m_fp_checking = fopen("check.csv","w");
       }
     }else if(key == "SET_PARAMS"){
       string sval = msg.GetString();
@@ -202,6 +206,10 @@ bool StoreSoundX_TX1::OnStartUp()/*{{{*/
     }else if(param == "SEND_SIZE"){
       m_send_size = atoi(value.c_str());
       handled = true;
+    }
+    else if(param == "SAVE_CSV"){
+        if(value == "true")
+            m_save_file = true;
     }
 
     if(!handled)
@@ -367,39 +375,50 @@ void StoreSoundX_TX1::Capture()
       case 16:
         for(int i=0; i<m_period_size-3; i=i+4){
           int sum = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1];
+          float volt;
 
           if(sum <=0)
-              sum/=32768;
+              volt=sum/32768;
           else 
-              sum/=32767;
-          m_tem_buffer.push_back(sum);
+              volt=sum/32767;
+          m_tem_buffer.push_back(volt);
+
+          if(m_save_file)
+              fprintf(m_fp_checking,"%f %s",volt,"\n");
         }
         break;
 
       case 24:
         for(int i=0; i<m_period_size-5; i=i+6){
           int sum = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1]+256*256*(unsigned char)m_period_buffer[i+2];
-
+          float volt;
             if(sum <=0)
-                sum/=8388608;
+                volt=sum/8388608;
             else 
-                sum/=8388607;
+                volt=sum/8388607;
 
-          m_tem_buffer.push_back(sum);
+          m_tem_buffer.push_back(volt);
 
+            if(m_save_file)
+              fprintf(m_fp_checking,"%f %s",volt,"\n");
         }
         break;
 
       case 32:
         for(int i=0; i<m_period_size-7; i=i+8){
           int sum = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1]+256*256*(unsigned char)m_period_buffer[i+2]+256*256*256*m_period_buffer[i+3];
+          float volt;
 
           if(sum <=0)
-              sum/=2147483648;
+              volt =sum/2147483648;
           else 
-              sum/=2147483647;
+              volt = sum/2147483647;
 
-          m_tem_buffer.push_back(sum);
+          m_tem_buffer.push_back(volt);
+            
+          if(m_save_file)
+            fprintf(m_fp_checking,"%f %s",volt,"\n");
+
         }
         break;
     }
