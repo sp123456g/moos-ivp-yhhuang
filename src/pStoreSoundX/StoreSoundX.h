@@ -44,6 +44,7 @@ class StoreSoundX : public AppCastingMOOSApp
    bool m_start_check;
    bool m_pass_record;
    bool m_dir_flag;
+   bool m_save_file;
    std::string m_path;
    std::string m_filename;
    std::string m_repeat;

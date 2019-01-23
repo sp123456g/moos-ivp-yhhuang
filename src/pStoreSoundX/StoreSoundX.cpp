@@ -45,6 +45,8 @@ StoreSoundX::StoreSoundX()
   m_repeat = "true";
   m_tem_buffer_ch1.clear();
   m_tem_buffer_ch2.clear();
+
+  m_save_file = false;
 }
 
 //---------------------------------------------------------
@@ -81,8 +83,8 @@ bool StoreSoundX::OnNewMail(MOOSMSG_LIST &NewMail)
         m_loops = m_recordTime*m_sampleRate/m_frames;
         m_filename = m_path + "/" + fileTime('f'); //filename = start_record_time.bin
         m_fp = fopen(m_filename.c_str(), "wb");
-
-//        m_fp_checking = fopen("check.dat","w");
+        if(m_save_file)
+            m_fp_checking = fopen("check.csv","w");
 
         if(m_fp){
           reportEvent("Create file sucess: " + m_filename);
@@ -217,6 +219,12 @@ bool StoreSoundX::OnStartUp()/*{{{*/
     }else if(param == "SEND_SIZE"){
       m_send_size = atoi(value.c_str());
       handled = true;
+    }
+    else if(param == "SAVE_FILE"){
+        if(value == "true")
+            m_save_file = true;
+        
+        handled = true;
     }
 
     if(!handled)
@@ -410,7 +418,8 @@ void StoreSoundX::Capture()
             m_tem_buffer_ch2.push_back(voltage_ch2);
 
 //store data to check if voltage is right or not 
-//            fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
+            if(m_save_file)
+                fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
  
         }
        }
@@ -478,7 +487,8 @@ void StoreSoundX::Capture()
           m_tem_buffer_ch1.push_back(voltage_ch1);
           m_tem_buffer_ch2.push_back(voltage_ch2);
 
-//            fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
+            if(m_save_file)
+                fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
         }
        }
         break;
