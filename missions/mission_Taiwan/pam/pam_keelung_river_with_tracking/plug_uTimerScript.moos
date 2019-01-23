@@ -12,7 +12,29 @@ ProcessConfig = uTimerScript
 
   DELAY_RESET = 0.5
 
-//  EVENT = var=TRACK_START, val="true", time=100
+  EVENT = var=WHISTLE_EXIST, val="true", time=5
+
+  EVENT = var=SOURCE_ANGLE,  val=-45, time=15
+  EVENT = var=SOURCE_ANGLE,  val=-45, time=16
+  EVENT = var=SOURCE_ANGLE,  val=-45, time=17
+  EVENT = var=SOURCE_ANGLE,  val=-45, time=18
+  EVENT = var=SOURCE_ANGLE,  val=-45, time=19
+  EVENT = var=SOURCE_ANGLE,  val=-45, time=20
+
+  EVENT = var=SOURCE_ANGLE,  val=45, time=30
+  EVENT = var=SOURCE_ANGLE,  val=45, time=31
+  EVENT = var=SOURCE_ANGLE,  val=45, time=32
+  EVENT = var=SOURCE_ANGLE,  val=45, time=33
+  EVENT = var=SOURCE_ANGLE,  val=45, time=34
+  EVENT = var=SOURCE_ANGLE,  val=45, time=35
+
+  EVENT = var=SOURCE_ANGLE,  val=45, time=45
+  EVENT = var=SOURCE_ANGLE,  val=45, time=46
+  EVENT = var=SOURCE_ANGLE,  val=45, time=47
+  EVENT = var=SOURCE_ANGLE,  val=45, time=48
+  EVENT = var=SOURCE_ANGLE,  val=45, time=49
+  EVENT = var=SOURCE_ANGLE,  val=45, time=50
+
 }
 
 

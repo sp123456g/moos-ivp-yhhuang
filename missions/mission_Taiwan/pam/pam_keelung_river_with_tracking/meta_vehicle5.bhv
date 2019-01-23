@@ -129,7 +129,7 @@ Behavior=BHV_Waypoint
            speed = 1.3
   capture_radius = 2.0
      slip_radius = 8.0
-          points = 35,40
+          points = 5,38
 }
 
 //----------------------------------------------

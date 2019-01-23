@@ -13,7 +13,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 400
 
   Run = MOOSDB              @ NewConsole = false
-//  Run = pMarineViewer       @ NewConsole = false
+  Run = pMarineViewer       @ NewConsole = false
   Run = pLogger             @ NewConsole = false
   Run = uTimerScript        @ NewConsole = false
 
@@ -151,7 +151,7 @@ ProcessConfig = uTimerScript
     AppTick   = 1
     CommsTick = 1
 
-    event = var=VIEW_RANGE_PULSE, val="x=-24,y=36,radius=15,duration=1,fill=0.5,label=sound_source,edge_color=blue,fill_color=pink,edge_size=1" , time=0.25
+//    event = var=VIEW_RANGE_PULSE, val="x=-24,y=36,radius=15,duration=1,fill=0.5,label=sound_source,edge_color=blue,fill_color=pink,edge_size=1" , time=0.25
 
     reset_max  = unlimited
     reset_time = end

@@ -1,0 +1,12 @@
+ProcessConfig = pResultSaver_ch2
+{
+     AppTick   = 4
+     CommsTick = 4
+ 
+     sending_variable_name = SOUND_VOLTAGE_DATA_CH_TWO
+     filepath              = ./Data_for_scp/
+     filename              = whistle_data_ch2.txt
+     send_by_pDataSender   = true
+     wait_number_of_line   = 10
+ }
+

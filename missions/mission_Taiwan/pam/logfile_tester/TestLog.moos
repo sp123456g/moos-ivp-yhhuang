@@ -15,11 +15,49 @@ ProcessConfig = ANTLER
     Run = MOOSDB                    @ NewConsole = false
     Run = pDataReceiver             @ NewConsole = true  ~ pDataReceiver_ch1
     Run = pDataReceiver             @ NewConsole = true  ~ pDataReceiver_ch2
+    Run = pStoreSoundX              @ NewConsole = true 
+    Run = pResultSaver              @ NewConsole = true 
     Run = pDirectionCalculator      @ NewConsole = false 
     Run = pAmbientCalculate         @ NewConsole = true
     Run = pWhistleDetector_vehicle  @ NewConsole = true
     Run = pWhistleDetector          @ NewConsole = true
     Run = pLogger                   @ NewConsole = false
+}
+
+
+//--------------------------------------------
+ProcessConfig = pStoreSoundX
+{
+   AppTick   = 10
+   CommsTick = 10
+
+  PATH = ./
+  SAMPLE_RATE = 96000
+  CHANNELS = 2
+  RECORD_DEVICE = hw:1,0
+  BITS = 32
+  RECORD_TIME = 3
+  PASS_TIME = 20
+  FRAMES = 9600
+  REPEAT = false
+  SEND_SIZE = 9600
+  TOTAL_CHANNEL = 2
+  SAVE_FILE = true
+}
+
+
+
+//--------------------------------------------
+ProcessConfig = pResultSaver
+{
+     AppTick   = 4
+     CommsTick = 4
+
+     sending_variable_name = SOUND_VOLTAGE_DATA_CH_ONE
+     filepath              = ./Data_for_scp/
+     filename              = whistle_data.txt
+     send_by_pDataSender   = false
+     wait_number_of_line   = 10
 }
 
 //--------------------------------------------
@@ -28,8 +66,8 @@ ProcessConfig = pDataReceiver_ch1
     AppTick   = 4
     CommsTick = 4
 
-    file_path        = /home/yhh/LogFile_Thesis/exp2/Real_field_Data_TX1_20190117/2019_0117_1540/Data_for_scp/
-    file_name        = whistle_data_ch1.txt
+    file_path        = /home/yhh/LogFile_Thesis/exp1/scp_data/data/
+    file_name        = whistle_data.txt
 
     file_order       = true
     from_pDataSender = true
@@ -44,7 +82,7 @@ ProcessConfig = pDataReceiver_ch2
     AppTick   = 4
     CommsTick = 4
 
-    file_path        = /home/yhh/LogFile_Thesis/exp2/Real_field_Data_TX1_20190117/2019_0117_1540/Data_for_scp/
+    file_path        = /home/yhh/LogFile_Thesis/exp2/Real_field_Data_TX1_20190117/sq_ccw_survey_with_chirp/Data_for_scp/
     file_name        = whistle_data_ch2.txt
 
     file_order       = true
@@ -66,16 +104,16 @@ ProcessConfig = pLogger
 //-------------------------------------------
 ProcessConfig = pDirectionCalculator
 {
-    AppTick     = 10;
-    CommsTick   = 10;
+    AppTick     = 20;
+    CommsTick   = 20;
 
     sample_rate = 96000
     sound_speed = 1500
     hyd_dis     = 0.4
     hyd_number  = 2 
-    use_cc      = false
-    interval    = 0.1
-    band_pass   = 3:11
+    use_cc      = true
+    interval    = 1
+    band_pass   = 4:8
     threshold_time  = 50;
 }
 
@@ -88,21 +126,21 @@ ProcessConfig = pAmbientCalculate
     duration    = 2
     fs          = 96000
     sen         = -224
-    gain        = 0
+    gain        = 20
 }
 
 //------------------------------------------
 ProcessConfig = pWhistleDetector_vehicle
 {
-    AppTick   = 10
-    CommsTick = 10
+    AppTick   = 20
+    CommsTick = 20
 
     overlap             = 0.9
     sample_rate         = 96000
     iterate_data        = 0.5
     window_type         = hanning
     bits                = 32;
-    SNR_threshold       = 10;
+    SNR_threshold       = 14;
     band_pass_frq_low   = 3000;
     band_pass_frq_high  = 11000;
 
@@ -120,7 +158,7 @@ ProcessConfig = pWhistleDetector
      iterate_data        = 1
      window_type         = hanning
      bits                = 32;
-     SNR_threshold       = 15;
-     band_pass_frq_low   = 3000;
-     band_pass_frq_high  = 11000;
+     SNR_threshold       = 14;
+     band_pass_frq_low   = 4000;
+     band_pass_frq_high  = 8000;
 }

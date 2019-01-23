@@ -37,8 +37,9 @@ Processconfig = ANTLER
   Run = pStoreSoundX                  @ NewConsole = false
   Run = pDirectionCalculator          @ NewConsole = false
   Run = pAmbientCalculate             @ NewConsole = false
-  Run = pResultSaver                  @ NewConsole = false
-  Run = pDataSender                   @ NewConsole = false 
+  Run = pResultSaver                  @ NewConsole = false ~ pResultSaver_ch1
+  Run = pResultSaver                  @ NewConsole = false ~ pResultSaver_ch2
+//  Run = pDataSender                   @ NewConsole = false 
   Run = pPoseKeep                     @ NewConsole = false 
 }
 #include plug_uFldNodeBroker.moos
@@ -55,7 +56,8 @@ Processconfig = ANTLER
 #include plug_pStoreSoundX.moos
 #include plug_pDirectionCalculator.moos 
 #include plug_pAmbientCalculate.moos
-#include plug_pResultSaver.moos 
+#include plug_pResultSaver_ch1.moos 
+#include plug_pResultSaver_ch2.moos 
 #include plug_pDataSender.moos 
 #include plug_uTimerScript.moos
 #include plug_pPoseKeep.moos

@@ -54,7 +54,7 @@ function GUI_spectrogramViewer_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for GUI_spectrogramViewer
 handles.output = hObject;
-handles.colorbarmax = '50';
+handles.colorbarmax = '1';
 handles.colorbarmin = '0';
 handles.fs = '96000';
 handles.style = 'jet';
@@ -163,7 +163,7 @@ detection_plot = zeros(input_frq_axis_size,input_time_axis_size*(time_buff-1));
 while 1
     
 set(handles.text4,'String','Plotting...');
-A = importdata("./Spectrogram_data/original_P");
+A = 1000*importdata("./Spectrogram_data/original_P");
 B = importdata("./Spectrogram_data/final_P");
 
 A_matrix_size = size(A);
