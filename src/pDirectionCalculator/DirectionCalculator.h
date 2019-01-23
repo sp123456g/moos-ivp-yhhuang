@@ -59,6 +59,7 @@ class DirectionCalculator : public AppCastingMOOSApp
     int     m_threshold_time;
     
     bool    m_use_cc; 
+    bool    m_save_file;
     
 
     std::deque<float> m_ch1;

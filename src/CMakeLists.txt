@@ -39,7 +39,8 @@ ADD_SUBDIRECTORY(pDataReceiver)
 ADD_SUBDIRECTORY(pDirectionCalculator)
 ADD_SUBDIRECTORY(pAmbientCalculate)
 ADD_SUBDIRECTORY(pPoseKeep)
-ADD_SUBDIRECTORY(uSimAngle)
+#ADD_SUBDIRECTORY(uSimAngle)
+ADD_SUBDIRECTORY(pStoreSoundX_TX1)
 ##############################################################################
 #                           END of CMakeLists.txt
 ##############################################################################

@@ -82,6 +82,7 @@ void showExampleConfigAndExit()
   blk("  interval       = 0,5                                           ");
   blk("  band_pass      = 3:10                                          ");
   blk("  threshold_time = 5                                             ");
+  blk("  save_csv       = true                                          ");
   blk("}                                                               ");
   blk("                                                                ");
   blk("  sample_rate: sampling frequency in Hz                         ");
@@ -96,6 +97,9 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  threshold_time: find peak voltage which is over avg_voltage*threshold_time ");
   blk("                  use_cc need to be false                       ");
+  blk("                                                                ");
+  blk("  save_csv: save csv file for debug in ./csv_file/              ");
+  blk("                                                                ");
   blk("                                                                ");
   exit(0);
 }

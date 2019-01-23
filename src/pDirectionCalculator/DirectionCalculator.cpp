@@ -30,6 +30,7 @@ DirectionCalculator::DirectionCalculator()
     m_get_avg_ch1   = false;
     m_get_avg_ch2   = false;
     m_get_avg_vol   = false;
+    m_save_file     = false;
 
     m_access_data_num   = 9600;
     m_mic_num           = 2;
@@ -381,11 +382,13 @@ bool DirectionCalculator::Iterate()
                     ch2_data[j] = m_ch2[j];
 // save data
                 stringstream ss_file1, ss_file2, ss_file3,ss_file4;
-                ss_file1<<m_index<<"before_filter_ch1.csv"; 
-                Save_data(ss_file1.str(),ch1_data,"./csv_file/");
-                
-                ss_file2<<m_index<<"before_filter_ch2.csv"; 
-                Save_data(ss_file2.str(),ch2_data,"./csv_file/");
+                if(m_save_file){
+                    ss_file1<<m_index<<"before_filter_ch1.csv"; 
+                    Save_data(ss_file1.str(),ch1_data,"./csv_file/");
+                    
+                    ss_file2<<m_index<<"before_filter_ch2.csv"; 
+                    Save_data(ss_file2.str(),ch2_data,"./csv_file/");
+                }
 
 //filtering
                Band_Filter(ch1_data);
@@ -401,12 +404,13 @@ bool DirectionCalculator::Iterate()
                Band_Filter(ch2_data);
 
 // save data
-//                ss_file3<<m_index<<"after_filter_ch1.csv"; 
-//                Save_data(ss_file3.str(),ch1_data,"./csv_file/");
-//
-//                ss_file4<<m_index<<"after_filter_ch2.csv"; 
-//                Save_data(ss_file4.str(),ch2_data,"./csv_file/");
+                if(m_save_file){
+                    ss_file3<<m_index<<"after_filter_ch1.csv"; 
+                    Save_data(ss_file3.str(),ch1_data,"./csv_file/");
 
+                    ss_file4<<m_index<<"after_filter_ch2.csv"; 
+                    Save_data(ss_file4.str(),ch2_data,"./csv_file/");
+                }
 
                 m_index ++;
 
@@ -524,6 +528,10 @@ bool DirectionCalculator::OnStartUp()
     else if(param == "threshold_time"){
         m_threshold_time = atoi(value.c_str());
         handled = true;
+    }
+    else if(param == "save_csv"){
+        if(value == "true")
+            m_save_file = true;
     }
     if(!handled)
       reportUnhandledConfigWarning(orig);

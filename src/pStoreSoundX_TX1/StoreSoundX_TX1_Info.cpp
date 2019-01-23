@@ -1,13 +1,13 @@
 /****************************************************************/
-/*   NAME: CTHung                                             */
+/*   NAME: yhhuang                                             */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: StoreSoundX_Info.cpp                               */
-/*   DATE: Dec 29th 1963                                        */
+/*   FILE: StoreSoundX_TX1_Info.cpp                               */
+/*   DATE: Jan 23th, 2019                                        */
 /****************************************************************/
 
 #include <cstdlib>
 #include <iostream>
-#include "StoreSoundX_Info.h"
+#include "StoreSoundX_TX1_Info.h"
 #include "ColorParse.h"
 #include "ReleaseInfo.h"
 
@@ -21,7 +21,7 @@ void showSynopsis()
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
   blk("  Need to install libasound2-dev first.                         ");
-  blk("  The pStoreSoundX application is used for recording sound.      ");
+  blk("  The pStoreSoundX_TX1_TX1 application is used for recording sound.      ");
   blk("  It will create a folder at the pointing path which is set by  ");
   blk("  user. The record file will be saved as a .bin file in the folder");
   blk("  The default path is ~/moos-ivp-cthung/.                       ");
@@ -35,15 +35,15 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: pStoreSoundX file.moos [OPTIONS]                   ");
+  blu("Usage: pStoreSoundX_TX1_TX1 file.moos [OPTIONS]                   ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pStoreSoundX with the given process name         ");
-  blk("      rather than pStoreSoundX.                           ");
+  blk("      Launch pStoreSoundX_TX1_TX1 with the given process name         ");
+  blk("      rather than pStoreSoundX_TX1_TX1.                           ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -51,7 +51,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pStoreSoundX.        ");
+  blk("      Display the release version of pStoreSoundX_TX1_TX1.        ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -67,10 +67,10 @@ void showExampleConfigAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pStoreSoundX Example MOOS Configuration                   ");
+  blu("pStoreSoundX_TX1_TX1 Example MOOS Configuration                   ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = pStoreSoundX                              ");
+  blk("ProcessConfig = pStoreSoundX_TX1_TX1                              ");
   blk("{                                                               ");
   blk("  AppTick   = 10                                                ");
   blk("  CommsTick = 10                                                ");
@@ -84,7 +84,6 @@ void showExampleConfigAndExit()
   blk("  RECORD_TIME = 3                                               ");
   blk("  PASS_TIME = 5                                                 ");
   blk("  REPEAT = false                                                ");
-  blk("  SAVE_FILE = true                                              ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -98,7 +97,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pStoreSoundX INTERFACE                                    ");
+  blu("pStoreSoundX_TX1_TX1 INTERFACE                                    ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -111,11 +110,8 @@ void showInterfaceAndExit()
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  Publications are determined by the node message content.      ");
-  blk("  SOUND_VOLTAGE_DATA_CH_ONE = string type                       ");
-  blk("  SOUND_VOLTAGE_DATA_CH_TWO = string type                       ");
+  blk("  Sound_Data = string type                                      ");
   blk("  START_CHECK = false                                           ");
-  blk("  RECORD_FRAMES = 9600, \"string\" type                         ");
-  blk("                                                                ");
   blk("                                                                ");
   exit(0);
 }
@@ -125,7 +121,7 @@ void showInterfaceAndExit()
 
 void showReleaseInfoAndExit()
 {
-  showReleaseInfo("pStoreSoundX", "gpl");
+  showReleaseInfo("pStoreSoundX_TX1_TX1", "gpl");
   exit(0);
 }
 
