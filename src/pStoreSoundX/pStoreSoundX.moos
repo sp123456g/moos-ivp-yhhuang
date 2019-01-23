@@ -33,6 +33,8 @@ ProcessConfig = pStoreSoundX
   REPEAT = false
   SEND_SIZE = 9600
   TOTAL_CHANNEL = 2
+  SAVE_FILE = false 
+  USE_JETSON = true
 }
 
 ProcessConfig = pLogger

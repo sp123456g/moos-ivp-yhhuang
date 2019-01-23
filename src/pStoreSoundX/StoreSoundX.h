@@ -45,13 +45,15 @@ class StoreSoundX : public AppCastingMOOSApp
    bool m_pass_record;
    bool m_dir_flag;
    bool m_save_file;
+   bool m_jetson;
    std::string m_path;
    std::string m_filename;
    std::string m_repeat;
    std::deque<float> m_tem_buffer_ch1;
    std::deque<float> m_tem_buffer_ch2;
    FILE *m_fp;
-   FILE *m_fp_checking;
+   FILE *m_fp_check1;
+   FILE *m_fp_check2;
 
  private: // Record params
    std::string m_recordDevice;

@@ -47,6 +47,7 @@ StoreSoundX::StoreSoundX()
   m_tem_buffer_ch2.clear();
 
   m_save_file = false;
+  m_jetson       = false;
 }
 
 //---------------------------------------------------------
@@ -59,8 +60,10 @@ StoreSoundX::~StoreSoundX()
   free(m_period_buffer);
   if(m_fp)
     fclose(m_fp);
-  if(m_fp_checking)
-    fclose(m_fp_checking);
+  if(m_fp_check1)
+    fclose(m_fp_check1);
+  if(m_fp_check2)
+    fclose(m_fp_check2);
 }
 
 //---------------------------------------------------------
@@ -83,8 +86,10 @@ bool StoreSoundX::OnNewMail(MOOSMSG_LIST &NewMail)
         m_loops = m_recordTime*m_sampleRate/m_frames;
         m_filename = m_path + "/" + fileTime('f'); //filename = start_record_time.bin
         m_fp = fopen(m_filename.c_str(), "wb");
-        if(m_save_file)
-            m_fp_checking = fopen("check.csv","w");
+        if(m_save_file){
+            m_fp_check1 = fopen("check1.csv","w");
+            m_fp_check2 = fopen("check2.csv","w");
+        }
 
         if(m_fp){
           reportEvent("Create file sucess: " + m_filename);
@@ -223,7 +228,11 @@ bool StoreSoundX::OnStartUp()/*{{{*/
     else if(param == "SAVE_FILE"){
         if(value == "true")
             m_save_file = true;
-        
+        handled = true;
+    }
+    else if(param == "USE_JETSON"){
+        if(value == "true")
+            m_jetson = true;
         handled = true;
     }
 
@@ -387,113 +396,241 @@ void StoreSoundX::Capture()
       fwrite(m_period_buffer, 1, m_period_size, m_fp);
     }
 
-    float ch1_part1=0,ch1_part2=0,ch1_part3=0,ch1_part4=0;
-    float ch2_part1=0,ch2_part2=0,ch2_part3=0,ch2_part4=0;
-    float voltage_ch1=0,voltage_ch2=0;
+    if(!m_jetson){
+        float ch1_part1=0,ch1_part2=0,ch1_part3=0,ch1_part4=0;
+        float ch2_part1=0,ch2_part2=0,ch2_part3=0,ch2_part4=0;
+        float voltage_ch1=0,voltage_ch2=0;
 
-    switch(m_bits){
-      case 16:
-       if(m_channels == 1){
-          for(int i=0; i<m_period_size-3; i=i+m_total_ch*2){
-            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,16)));
-            ch1_part2 = (float)(m_period_buffer[i+1])*(1/pow(2,8)); 
+        switch(m_bits){
+          case 16:
+           if(m_channels == 1){
+              for(int i=0; i<m_period_size-3; i=i+m_total_ch*2){
+                ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,16)));
+                ch1_part2 = (float)(m_period_buffer[i+1])*(1/pow(2,8)); 
 
-            voltage_ch1 = ch1_part1 + ch1_part2; 
-            m_tem_buffer_ch1.push_back(voltage_ch1);
-            
-         }
-       }
-       else if(m_channels == 2){
-        for(int i=0; i<m_period_size-3; i=i+m_total_ch*2){
-            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,16)));
-            ch1_part2 = (float)(m_period_buffer[i+1])*(1/pow(2,8)); 
+                voltage_ch1 = ch1_part1 + ch1_part2; 
+                m_tem_buffer_ch1.push_back(voltage_ch1);
+                
+             }
+           }
+           else if(m_channels == 2){
+            for(int i=0; i<m_period_size-3; i=i+m_total_ch*2){
+                ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,16)));
+                ch1_part2 = (float)(m_period_buffer[i+1])*(1/pow(2,8)); 
 
-            ch2_part1 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
-            ch2_part2 = (float)(m_period_buffer[i+3])*(1/pow(2,8)); 
+                ch2_part1 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
+                ch2_part2 = (float)(m_period_buffer[i+3])*(1/pow(2,8)); 
 
-            voltage_ch1 = ch1_part1 + ch1_part2; 
-            voltage_ch2 = ch2_part1 + ch2_part2; 
+                voltage_ch1 = ch1_part1 + ch1_part2; 
+                voltage_ch2 = ch2_part1 + ch2_part2; 
 
-            m_tem_buffer_ch1.push_back(voltage_ch1);
-            m_tem_buffer_ch2.push_back(voltage_ch2);
+                m_tem_buffer_ch1.push_back(voltage_ch1);
+                m_tem_buffer_ch2.push_back(voltage_ch2);
 
-//store data to check if voltage is right or not 
-            if(m_save_file)
-                fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
- 
+    //store data to check if voltage is right or not 
+                if(m_save_file)
+                    fprintf(m_fp_check1,"%f %s",voltage_ch1,"\n");
+     
+            }
+           }
+           break;
+
+          case 24:
+           if(m_channels == 1){
+            for(int i=0; i<m_period_size-5; i=i+m_total_ch*3){
+                ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,24)));
+                ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,16)); 
+                ch1_part3 = (float)(m_period_buffer[i+2])*(1/pow(2,8));
+
+                voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3; 
+
+                m_tem_buffer_ch1.push_back(voltage_ch1);
+            }
+           }
+           else if(m_channels ==2){ 
+            for(int i=0; i<m_period_size-5; i=i+m_total_ch*3){
+                ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,24)));
+                ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,16)); 
+                ch1_part3 = (float)(m_period_buffer[i+2])*(1/pow(2,8));
+
+                ch2_part1 = (unsigned char)(m_period_buffer[i+3])*(1/pow(2,24)); 
+                ch2_part2 = (unsigned char)(m_period_buffer[i+4])*(1/pow(2,16)); 
+                ch2_part3 = (float)(m_period_buffer[i+5])*(1/pow(2,8));
+
+                voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3; 
+                voltage_ch2 = ch2_part1 + ch2_part2 + ch2_part3; 
+
+                m_tem_buffer_ch1.push_back(voltage_ch1);
+                m_tem_buffer_ch1.push_back(voltage_ch2);
+            }
+           }
+           break;
+
+          case 32:
+           if(m_channels == 1){
+            for(int i=0; i<m_period_size-7; i=i+m_total_ch*4){
+                ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,32)));
+                ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,24)); 
+                ch1_part3 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
+                ch1_part4 = (float)(m_period_buffer[i+3])*(1/pow(2,8));
+
+                voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3 + ch1_part4; 
+                
+                m_tem_buffer_ch1.push_back(voltage_ch1);
+            }
+           }
+           else if(m_channels == 2){
+            for(int i=0; i<m_period_size-7; i=i+m_total_ch*4){
+                ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,32)));
+                ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,24)); 
+                ch1_part3 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
+                ch1_part4 = (float)(m_period_buffer[i+3])*(1/pow(2,8));
+
+                ch2_part1 = (unsigned char)(m_period_buffer[i+4])*(1/pow(2,32)); 
+                ch2_part2 = (unsigned char)(m_period_buffer[i+5])*(1/pow(2,24)); 
+                ch2_part3 = (unsigned char)(m_period_buffer[i+6])*(1/pow(2,16));
+                ch2_part4 = (float)(m_period_buffer[i+7])*(1/pow(2,8));
+
+                voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3 + ch1_part4; 
+                voltage_ch2 = ch2_part1 + ch2_part2 + ch2_part3 + ch2_part4; 
+
+              m_tem_buffer_ch1.push_back(voltage_ch1);
+              m_tem_buffer_ch2.push_back(voltage_ch2);
+
+                if(m_save_file)
+                    fprintf(m_fp_check1,"%f %s",voltage_ch1,"\n");
+            }
+           }
+            break;
         }
-       }
-       break;
-
-      case 24:
-       if(m_channels == 1){
-        for(int i=0; i<m_period_size-5; i=i+m_total_ch*3){
-            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,24)));
-            ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,16)); 
-            ch1_part3 = (float)(m_period_buffer[i+2])*(1/pow(2,8));
-
-            voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3; 
-
-            m_tem_buffer_ch1.push_back(voltage_ch1);
-        }
-       }
-       else if(m_channels ==2){ 
-        for(int i=0; i<m_period_size-5; i=i+m_total_ch*3){
-            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,24)));
-            ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,16)); 
-            ch1_part3 = (float)(m_period_buffer[i+2])*(1/pow(2,8));
-
-            ch2_part1 = (unsigned char)(m_period_buffer[i+3])*(1/pow(2,24)); 
-            ch2_part2 = (unsigned char)(m_period_buffer[i+4])*(1/pow(2,16)); 
-            ch2_part3 = (float)(m_period_buffer[i+5])*(1/pow(2,8));
-
-            voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3; 
-            voltage_ch2 = ch2_part1 + ch2_part2 + ch2_part3; 
-
-            m_tem_buffer_ch1.push_back(voltage_ch1);
-            m_tem_buffer_ch1.push_back(voltage_ch2);
-        }
-       }
-       break;
-
-      case 32:
-       if(m_channels == 1){
-        for(int i=0; i<m_period_size-7; i=i+m_total_ch*4){
-            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,32)));
-            ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,24)); 
-            ch1_part3 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
-            ch1_part4 = (float)(m_period_buffer[i+3])*(1/pow(2,8));
-
-            voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3 + ch1_part4; 
-            
-            m_tem_buffer_ch1.push_back(voltage_ch1);
-        }
-       }
-       else if(m_channels == 2){
-        for(int i=0; i<m_period_size-7; i=i+m_total_ch*4){
-            ch1_part1 = (unsigned char)(m_period_buffer[i])*(1/(pow(2,32)));
-            ch1_part2 = (unsigned char)(m_period_buffer[i+1])*(1/pow(2,24)); 
-            ch1_part3 = (unsigned char)(m_period_buffer[i+2])*(1/pow(2,16)); 
-            ch1_part4 = (float)(m_period_buffer[i+3])*(1/pow(2,8));
-
-            ch2_part1 = (unsigned char)(m_period_buffer[i+4])*(1/pow(2,32)); 
-            ch2_part2 = (unsigned char)(m_period_buffer[i+5])*(1/pow(2,24)); 
-            ch2_part3 = (unsigned char)(m_period_buffer[i+6])*(1/pow(2,16));
-            ch2_part4 = (float)(m_period_buffer[i+7])*(1/pow(2,8));
-
-            voltage_ch1 = ch1_part1 + ch1_part2 + ch1_part3 + ch1_part4; 
-            voltage_ch2 = ch2_part1 + ch2_part2 + ch2_part3 + ch2_part4; 
-
-          m_tem_buffer_ch1.push_back(voltage_ch1);
-          m_tem_buffer_ch2.push_back(voltage_ch2);
-
-            if(m_save_file)
-                fprintf(m_fp_checking,"%f %s",voltage_ch1,"\n");
-        }
-       }
-        break;
     }
-//  }
+    else{
+        switch(m_bits){
+          case 16:
+            if(m_channels == 1){
+                for(int i=0; i<m_period_size-3; i=i+m_total_ch*2){
+                    int sum = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1];
+                    float volt;
+
+                    if(sum <=0)
+                        volt=(float)sum/32768;
+                    else 
+                        volt=(float)sum/32767;
+                    m_tem_buffer_ch1.push_back(volt);
+
+                    if(m_save_file)
+                        fprintf(m_fp_check1,"%f %s",volt,"\n");
+                }
+            }
+            else if(m_channels == 2){
+                for(int i=0; i<m_period_size-3; i=i+m_total_ch*2){
+                    int sum1 = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1];
+                    int sum2 = (unsigned char)m_period_buffer[i+2]+256*(unsigned char)m_period_buffer[i+3];
+                    float volt1,volt2;
+
+                    if(sum1 <=0)
+                        volt1=(float)sum1/32768;
+                    else 
+                        volt1=(float)sum1/32767;
+                    if(sum2 <=0)
+                        volt2=(float)sum2/32768;
+                    else 
+                        volt2=(float)sum2/32767;
+                        
+                    m_tem_buffer_ch1.push_back(volt1);
+                    m_tem_buffer_ch2.push_back(volt2);
+
+                    if(m_save_file)
+                        fprintf(m_fp_check1,"%f %s",volt1,"\n");
+                        fprintf(m_fp_check2,"%f %s",volt2,"\n");
+                }
+            }
+            break;
+
+          case 24:
+            if(m_channels == 1){
+                for(int i=0; i<m_period_size-5; i=i+m_total_ch*3){
+                  int sum = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1]+256*256*(unsigned char)m_period_buffer[i+2];
+                  float volt;
+                    if(sum <=0)
+                        volt=(float)sum/8388608;
+                    else 
+                        volt=(float)sum/8388607;
+
+                  m_tem_buffer_ch1.push_back(volt);
+
+                    if(m_save_file)
+                      fprintf(m_fp_check1,"%f %s",volt,"\n");
+                }
+            }
+            else if(m_channels ==2){
+                for(int i=0; i<m_period_size-5; i=i+m_total_ch*3){
+                  int sum1 = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1]+256*256*(unsigned char)m_period_buffer[i+2];
+                  int sum2 = (unsigned char)m_period_buffer[i+3]+256*(unsigned char)m_period_buffer[i+4]+256*256*(unsigned char)m_period_buffer[i+5];
+                  float volt1,volt2;
+                    if(sum1 <=0)
+                        volt1=(float)sum1/8388608;
+                    else 
+                        volt1=(float)sum1/8388607;
+                    if(sum2 <=0)
+                        volt2=(float)sum2/8388608;
+                    else 
+                        volt2=(float)sum2/8388607;
+
+                  m_tem_buffer_ch1.push_back(volt1);
+                  m_tem_buffer_ch2.push_back(volt2);
+
+                    if(m_save_file)
+                      fprintf(m_fp_check1,"%f %s",volt1,"\n");
+                      fprintf(m_fp_check2,"%f %s",volt2,"\n");
+                }
+            }
+            break;
+
+          case 32:
+            if(m_channels == 1){
+                for(int i=0; i<m_period_size-7; i=i+m_total_ch*4){
+                  int sum = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1]+256*256*(unsigned char)m_period_buffer[i+2]+256*256*256*m_period_buffer[i+3];
+                  float volt;
+
+                  if(sum <=0)
+                      volt =(float)sum/2147483648;
+                  else 
+                      volt = (float)sum/2147483647;
+
+                  m_tem_buffer_ch1.push_back(volt);
+                    
+                  if(m_save_file)
+                    fprintf(m_fp_check1,"%f %s",volt,"\n");
+
+                }
+            }
+            else if(m_channels == 2){
+                for(int i=0; i<m_period_size-7; i=i+m_total_ch*4){
+                  int sum1 = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1]+256*256*(unsigned char)m_period_buffer[i+2]+256*256*256*m_period_buffer[i+3];
+                  int sum2 = (unsigned char)m_period_buffer[i+4]+256*(unsigned char)m_period_buffer[i+5]+256*256*(unsigned char)m_period_buffer[i+6]+256*256*256*m_period_buffer[i+7];
+                  float volt1,volt2;
+
+                  if(sum1 <=0)
+                      volt1 =(float)sum1/2147483648;
+                  else 
+                      volt1 = (float)sum1/2147483647;
+                  if(sum2 <=0)
+                      volt2 =(float)sum2/2147483648;
+                  else 
+                      volt2 = (float)sum2/2147483647;
+
+                  m_tem_buffer_ch1.push_back(volt1);
+                  m_tem_buffer_ch2.push_back(volt2);
+                    
+                  if(m_save_file)
+                    fprintf(m_fp_check1,"%f %s",volt1,"\n");
+                    fprintf(m_fp_check2,"%f %s",volt2,"\n");
+                }
+            }
+            break;
+        }
+    }
 }
 
 void StoreSoundX::SendData()
