@@ -207,9 +207,10 @@ bool StoreSoundX_TX1::OnStartUp()/*{{{*/
       m_send_size = atoi(value.c_str());
       handled = true;
     }
-    else if(param == "SAVE_CSV"){
+    else if(param == "SAVE_FILE"){
         if(value == "true")
             m_save_file = true;
+      handled = true;
     }
 
     if(!handled)
@@ -378,9 +379,9 @@ void StoreSoundX_TX1::Capture()
           float volt;
 
           if(sum <=0)
-              volt=sum/32768;
+              volt=(float)sum/32768;
           else 
-              volt=sum/32767;
+              volt=(float)sum/32767;
           m_tem_buffer.push_back(volt);
 
           if(m_save_file)
@@ -393,9 +394,9 @@ void StoreSoundX_TX1::Capture()
           int sum = (unsigned char)m_period_buffer[i]+256*(unsigned char)m_period_buffer[i+1]+256*256*(unsigned char)m_period_buffer[i+2];
           float volt;
             if(sum <=0)
-                volt=sum/8388608;
+                volt=(float)sum/8388608;
             else 
-                volt=sum/8388607;
+                volt=(float)sum/8388607;
 
           m_tem_buffer.push_back(volt);
 
@@ -410,9 +411,9 @@ void StoreSoundX_TX1::Capture()
           float volt;
 
           if(sum <=0)
-              volt =sum/2147483648;
+              volt =(float)sum/2147483648;
           else 
-              volt = sum/2147483647;
+              volt = (float)sum/2147483647;
 
           m_tem_buffer.push_back(volt);
             
