@@ -29,6 +29,8 @@ class SimAngle : public AppCastingMOOSApp
    void registerVariables();
     
    bool PulseOut();
+   bool Coordinate_check();
+   bool CheckAngle();
 
  private: // Configuration variables
 
@@ -41,6 +43,10 @@ class SimAngle : public AppCastingMOOSApp
    double m_current_y;
    double m_current_heading;
    double m_source_angle;
+   double m_relate_x;
+   double m_relate_y;
+
+   bool m_whistle_exist;
 
    std::string m_fill_color;
    std::string m_edge_color;

@@ -38,7 +38,7 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
 
     m_ipf_type          = "zaic";
 
-    m_target_angle  = 0;
+    m_target_angle  = 30;
     m_check_num     = 5;
 
     m_left_bd       = 0;
@@ -46,7 +46,10 @@ BHV_SourceTracking::BHV_SourceTracking(IvPDomain domain) :
     m_up_bd         = 100;
     m_low_bd        = 0;
     m_band_level_thr= 100;
-
+    m_fs            = 96000;
+    m_dis           = 0.4;
+    m_c             = 1500;
+    
     m_arrival_radius= 5;
     
     m_osx           = 0;
@@ -130,12 +133,23 @@ bool BHV_SourceTracking::setParam(string param, string val)
         m_low_bd = double_val;
         return(true);
   }
-
-
   else if (param == "arrive_radius" && (double_val > 0) && (isNumber(val))){
     m_arrival_radius = double_val;
     return(true);
   }
+  else if( param == "fs" && (isNumber(val))){
+    m_fs = double_val;
+    return(true);
+  }
+  else if( param == "hydro_dis" && (isNumber(val))){
+    m_dis = double_val;
+    return(true);
+  }
+  else if(param == "sound_speed" && (isNumber(val))){
+    m_c = double_val;
+    return(true);
+  }
+
   // If not handled above, then just return false;
   return(false);
 }
@@ -217,7 +231,6 @@ IvPFunction* BHV_SourceTracking::onRunState()
   bool ok1,ok2,ok3,ok4,ok5;
   m_osx = getBufferDoubleVal("NAV_X",ok1);
   m_osy = getBufferDoubleVal("NAV_Y",ok2);
-  m_osheading = getBufferDoubleVal("NAV_HEADING",ok3);
 
   if(!ok1 || !ok2)
     postWMessage("No ownship X/Y info in info_buffer");
@@ -240,6 +253,7 @@ IvPFunction* BHV_SourceTracking::onRunState()
                 check_buff[i] = m_source_angle_buff[i];
 
             m_target_angle = getMedian(check_buff);
+            m_osheading = getBufferDoubleVal("NAV_HEADING",ok3);
         }              
 //Calculate next point and check if it's possible
         CheckNextSpeed();
@@ -314,7 +328,7 @@ bool BHV_SourceTracking::CheckNextSpeed(){
         m_over_thr = band_avg;
         m_first_time = false;
         m_desired_speed = m_fast_speed;
-        m_over_thr = true;
+        m_over_thr = false;
     }
     else if(ok){    
         if(band_avg > m_band_level_thr)
@@ -324,9 +338,9 @@ bool BHV_SourceTracking::CheckNextSpeed(){
         m_desired_speed = m_fast_speed;
     
     if(m_over_thr)
-        m_desired_speed = m_fast_speed;
-    else 
         m_desired_speed = m_slow_speed;
+    else 
+        m_desired_speed = m_fast_speed;
 }
 
 bool BHV_SourceTracking::CheckBound(){
@@ -335,6 +349,9 @@ bool BHV_SourceTracking::CheckBound(){
 
 IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
 {
+    
+  double pkwidth = 180*10*asin(m_c/(m_dis*m_fs))/3.1415926;
+
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(m_desired_speed);
   spd_zaic.setPeakWidth(0.5);
@@ -348,9 +365,9 @@ IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
   double rel_ang_to_wpt = relAng(m_osx, m_osy, m_nextpt.x(), m_nextpt.y());
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(m_osheading + m_target_angle);
-  crs_zaic.setPeakWidth(0);
+  crs_zaic.setPeakWidth(pkwidth);
   crs_zaic.setBaseWidth(180.0);
-  crs_zaic.setSummitDelta(0);
+  crs_zaic.setSummitDelta(10);
   crs_zaic.setValueWrap(true);
   if(crs_zaic.stateOK() == false) {
     string warnings = "Course ZAIC problems " + crs_zaic.getWarnings();
@@ -362,7 +379,12 @@ IvPFunction *BHV_SourceTracking::buildFunctionWithZAIC()
   IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
 
   OF_Coupler coupler;
-  IvPFunction *ivp_function = coupler.couple(crs_ipf, spd_ipf, 50, 50);
+  IvPFunction *ivp_function; 
+  if(m_desired_speed == m_fast_speed)
+    ivp_function = coupler.couple(crs_ipf, spd_ipf, 80, 20);
+  else 
+    ivp_function = coupler.couple(crs_ipf, spd_ipf, 20, 80);
+ // IvPFunction *ivp_function = coupler.couple(crs_ipf, spd_ipf, 50, 50);
 
   return(ivp_function);
 }

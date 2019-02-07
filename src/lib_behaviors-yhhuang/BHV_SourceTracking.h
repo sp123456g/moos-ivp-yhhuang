@@ -56,6 +56,9 @@ protected: // State variables
   double    m_up_bd;
   double    m_low_bd;
   double    m_band_level_thr;
+  double    m_fs;
+  double    m_dis;
+  double    m_c;
 
   double    m_arrival_radius;
 

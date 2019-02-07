@@ -20,11 +20,11 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The uSimAngle application is used for               ");
+  blk("  The uSimAngle application is used for simulating acoustic source");
+  blk("  direction if the source location is set up                    ");
   blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The output is the angle between y axis and the line of        ");
+  blk("  simulating source and vehicle                                 ");
 }
 
 //----------------------------------------------------------------
@@ -74,6 +74,12 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
+  blk("  source_x = 0                                                  ");
+  blk("  source_y = 0                                                  ");
+  blk("                                                                ");
+  blk("  edge_color = blue                                             ");
+  blk("  fill_color = pink                                             ");
+  blk("                                                                ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -94,12 +100,14 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk(" NAV_X , NAV_Y, NAV_HEADING, SIM_SOURCE_X, SIM_SOURCE_Y         ");
+  blk("     double value                                               ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk(" SOURCE_ANGLE, double value                                     ");
+  blk(" VIEW_RANGE_PULSE, str value                                    ");
+  blk("                                                                ");
   blk("                                                                ");
   exit(0);
 }

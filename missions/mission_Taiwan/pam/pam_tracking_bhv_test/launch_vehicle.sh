@@ -80,24 +80,6 @@ for ARGI; do
     elif [ "${ARGI}" = "--second" -o "${ARGI}" = "-2" ] ; then
         BHV_FILE="meta_vehicle2.bhv"
         echo "doing second bhv file"
-    elif [ "${ARGI}" = "--third" -o "${ARGI}" = "-3" ] ; then
-        BHV_FILE="meta_vehicle3.bhv"
-        echo "doing Source Tracking bhv file"
-    elif [ "${ARGI}" = "--fourth" -o "${ARGI}" = "-4" ] ; then
-        BHV_FILE="meta_vehicle4.bhv"
-        echo "doing Fix Source finding bhv file"
-    elif [ "${ARGI}" = "--fifth" -o "${ARGI}" = "-5" ] ; then
-        BHV_FILE="meta_vehicle5.bhv"
-        echo "doing posekeep measure bhv file"
-    elif [ "${ARGI}" = "--sixth" -o "${ARGI}" = "-6" ] ; then
-        BHV_FILE="meta_vehicle6.bhv"
-        echo "doing posekeep measure bhv file"
-    elif [ "${ARGI}" = "--seven" -o "${ARGI}" = "-7" ] ; then
-        BHV_FILE="meta_vehicle7.bhv"
-        echo "doing moving source tracking file"
-
-
-
     #----------------------------------------
     else
         echo "Undefined argument:" $ARGI
@@ -117,13 +99,8 @@ if [ "${HELP}" = "yes" ]; then
     echo "  --start-x=        : Start from x position (requires x y a)."
     echo "  --start-y=        : Start from y position (requires x y a)."
     echo "  --start-a=        : Start from angle (requires x y a)."
-    echo "  --first,      -1  : do right region without tracking"
-    echo "  --second,     -2  : do left  region without tracking"
-    echo "  --third,      -3  : do right region with fix tracking"
-    echo "  --fourth,     -4  : do left  region with fix tracking"
-    echo "  --fifth,      -5  : do right region pose keep measure"
-    echo "  --sixth,      -6  : do left  region pose keep measure"
-    echo "  --seven,      -7  : do moving source tracking"
+    echo "  --first,      -1  : do right region with tracking bhv"
+    echo "  --second,     -2  : still working"
     echo "  --just_build, -j"
     echo "  --help, -h"
     exit 0;

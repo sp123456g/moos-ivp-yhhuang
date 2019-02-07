@@ -339,6 +339,18 @@ bool DirectionCalculator::Save_data(string filename, vector<float> in, string fi
 
     fclose(fp);
 }
+
+bool DirectionCalculator::Band_spl_out(vector<float> input){
+
+    float sum=0;
+    float length = input.size();
+    for(int i=0;i<length;i++)
+        sum += input[i];
+
+    m_band_avg = sum/length;
+    
+    Notify("BAND_AVG_SPL",m_band_avg);
+}
 //---------------------------------------------------------
 // Procedure: Iterate()
 //            happens AppTick times per second
@@ -402,6 +414,9 @@ bool DirectionCalculator::Iterate()
                Band_Filter(ch2_data);
                Band_Filter(ch2_data);
                Band_Filter(ch2_data);
+
+               Band_spl_out(ch1_data);
+               Band_spl_out(ch2_data);
 
 // save data
                 if(m_save_file){
@@ -570,6 +585,7 @@ bool DirectionCalculator::buildReport()
   m_msgs << "   Upper Frequency:"<<intToString(m_up_fq)<<"k Hz\n";
   m_msgs << "============================================ \n";
   m_msgs << "Direction Angle: "<<m_output_angle<<"\n";
+  m_msgs << "Band Average SPL: "<<m_band_avg<<"\n";
   m_msgs << actab.getFormattedString();
 
   return(true);

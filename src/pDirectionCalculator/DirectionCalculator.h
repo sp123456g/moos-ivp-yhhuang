@@ -34,6 +34,7 @@ class DirectionCalculator : public AppCastingMOOSApp
     bool    GetVoltageData_ch2(std::string);
     bool    GetVoltageData_both(std::string,std::string);
     bool    Band_Filter(std::vector<float> &input);
+    bool    Band_spl_out(std::vector<float> input);
 
     float   CalTDOA_by_cc(std::vector<float> ch1, std::vector<float> ch2);
     float   CalTDOA_by_peak(std::vector<float> ch1, std::vector<float> ch2);
@@ -49,6 +50,8 @@ class DirectionCalculator : public AppCastingMOOSApp
     float   m_output_angle;
     float   m_avg_vol_ch1;
     float   m_avg_vol_ch2;
+    float   m_band_avg;
+    
 
     int     m_access_data_num;
     int     m_mic_num;

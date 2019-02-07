@@ -6,7 +6,10 @@ ProcessConfig = uSimAngle
    AppTick   = 4
    CommsTick = 4
 
-    source_x = 10;
-    source_y = 20;
+    source_x = 10
+    source_y = 20
+
+    edge_color = blue 
+    fill_color = pink
 }
 

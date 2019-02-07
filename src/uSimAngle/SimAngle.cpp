@@ -23,6 +23,7 @@ SimAngle::SimAngle()
     m_current_y = 0;
     m_current_heading = 0;
     m_source_angle = 0;
+    m_whistle_exist = false;
 }
 
 //---------------------------------------------------------
@@ -67,6 +68,8 @@ bool SimAngle::OnNewMail(MOOSMSG_LIST &NewMail)
          m_src_x = msg.GetDouble();
      else if(key == "SIM_SOURCE_Y")
          m_src_y = msg.GetDouble();
+     else if(key == "WHISTLE_EXIST_SIM")
+         m_whistle_exist = true;
      else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
    }
@@ -91,26 +94,58 @@ bool SimAngle::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  if(m_whistle_exist){
 //output pulse as source in pMarineViewer
     PulseOut();
 //calculate relative coordinate
-
+    Coordinate_check();
 //check left or right
+    CheckAngle();
+//Output
+    Notify("SOURCE_ANGLE",m_source_angle);
 
-//check angle and output
-
+  }    
   AppCastingMOOSApp::PostReport();
   return(true);
 }
 
 bool SimAngle::PulseOut()
 {
-    stringstream ss;
-    ss<<"x="<<m_src_x<<",y="<<m_src_y<<"radius=15,duration=1,fill=0.5,label=";
+    stringstream ss,ss2;
+    ss<<"x="<<m_src_x<<",y="<<m_src_y<<",radius=15,duration=1,fill=0.5,label=";
     ss<<"sound_source,edge_color="<<m_edge_color<<",fill_color="<<m_fill_color;
+    ss2<<ss.str();
     ss<<",edge_size=1";
+    ss2<<",edge_size=2";
 
     Notify("VIEW_RANGE_PULSE",ss.str());
+    Notify("VIEW_RANGE_PULSE",ss2.str());
+}
+
+//---------------------------------------------------------
+// Procedure: Coordinate_check()
+// Check the relative coordinate between source and vehicle
+// vehicle is origin and heading line is y axis
+bool SimAngle::Coordinate_check()
+{
+    double dx = m_src_x - m_current_x;
+    double dy = m_src_y - m_current_y;
+
+    m_relate_x = dx*cos(m_current_heading) - dy*sin(m_current_heading);
+    m_relate_y = dx*sin(m_current_heading) + dy*cos(m_current_heading);
+}
+
+//---------------------------------------------------------
+// Procedure: Checkside()
+// Check the source is in left or right side relative to heading line
+bool SimAngle::CheckAngle()
+{
+    if(m_relate_x > 0)
+        m_source_angle = 180*fabs(atan(m_relate_x/m_relate_y))/PI;   
+    else if(m_relate_x < 0)
+        m_source_angle = -180*fabs(atan(m_relate_x/m_relate_y))/PI;
+    else
+        m_source_angle = 0;
 }
 
 //---------------------------------------------------------
@@ -177,6 +212,7 @@ void SimAngle::registerVariables()
     Register("NAV_HEADING",0);
     Register("SIM_SOURCE_X",0);
     Register("SIM_SOURCE_Y",0);
+    Register("WHISTLE_EXIST_SIM",0);
 }
 
 
@@ -185,14 +221,17 @@ void SimAngle::registerVariables()
 
 bool SimAngle::buildReport() 
 {
-  m_msgs << "============================================ \n";
-  m_msgs << "Source location:                             \n";
-  m_msgs << "   x="<<m_src_x<<"\n";
-  m_msgs << "   y="<<m_src_y<<"\n";
-  m_msgs << "============================================ \n";
-  m_msgs << "   source angle ="<<m_source_angle<<"\n";
+      m_msgs << "============================================ \n";
+  if(m_whistle_exist){
+      m_msgs << "Source location:                             \n";
+      m_msgs << "   x="<<m_src_x<<"\n";
+      m_msgs << "   y="<<m_src_y<<"\n";
+      m_msgs << "   source angle ="<<m_source_angle<<"\n";
+  }
+  else 
+      m_msgs << "Waiting for whistle"<<"\n";
 
-
+      m_msgs << "============================================ \n";
   return(true);
 }
 
