@@ -24,6 +24,7 @@ SimAngle::SimAngle()
     m_current_heading = 0;
     m_source_angle = 0;
     m_whistle_exist = false;
+    m_avg_spl       = 100;
 }
 
 //---------------------------------------------------------
@@ -101,12 +102,24 @@ bool SimAngle::Iterate()
     Coordinate_check();
 //check left or right
     CheckAngle();
-//Output
+//Output Angle
     Notify("SOURCE_ANGLE",m_source_angle);
 
+//Check distance
+    CheckSPL();
+//output band_level
+    Notify("BAND_AVG_SPL",m_avg_spl);
   }    
   AppCastingMOOSApp::PostReport();
   return(true);
+}
+
+bool SimAngle::CheckSPL()
+{
+    double dis = sqrt(pow(m_relate_x,2)+pow(m_relate_y,2));
+    double TL = 0.3;
+    Notify("RELATE_DIS",dis);
+    m_avg_spl = m_source_level - dis*TL;
 }
 
 bool SimAngle::PulseOut()
@@ -130,9 +143,13 @@ bool SimAngle::Coordinate_check()
 {
     double dx = m_src_x - m_current_x;
     double dy = m_src_y - m_current_y;
-
-    m_relate_x = dx*cos(m_current_heading) - dy*sin(m_current_heading);
-    m_relate_y = dx*sin(m_current_heading) + dy*cos(m_current_heading);
+    double cos_heading = cos(3.1415926*m_current_heading/180);
+    double sin_heading = sin(3.1415926*m_current_heading/180);
+        m_relate_x = dx*cos_heading - dy*sin_heading;
+        m_relate_y = dx*sin_heading + dy*cos_heading;
+    
+    Notify("RELATE_X",m_relate_x);
+    Notify("RELATE_Y",m_relate_y);
 }
 
 //---------------------------------------------------------
@@ -191,6 +208,10 @@ bool SimAngle::OnStartUp()
         m_fill_color = value;
         handled = true;
     }
+    else if(param == "source_level"){
+        m_source_level = atof(value.c_str());
+        handled = true;
+    }
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
@@ -227,14 +248,14 @@ bool SimAngle::buildReport()
       m_msgs << "   x="<<m_src_x<<"\n";
       m_msgs << "   y="<<m_src_y<<"\n";
       m_msgs << "   source angle ="<<m_source_angle<<"\n";
+      m_msgs << "   source level ="<<m_source_level<<"\n";
+      m_msgs << "   source SPL   ="<<m_avg_spl<<"\n";
   }
-  else 
+  else{ 
       m_msgs << "Waiting for whistle"<<"\n";
-
+      m_msgs << "Waiting for WHISTLE_EXIST_SIM = true"<<"\n";
+  }
       m_msgs << "============================================ \n";
   return(true);
 }
-
-
-
 

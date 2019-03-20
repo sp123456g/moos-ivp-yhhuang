@@ -102,6 +102,8 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk(" NAV_X , NAV_Y, NAV_HEADING, SIM_SOURCE_X, SIM_SOURCE_Y         ");
   blk("     double value                                               ");
+  blk(" WHISTLE_EXIST_SIM                                              ");
+  blk("                                                                ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");

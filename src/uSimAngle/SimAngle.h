@@ -31,6 +31,7 @@ class SimAngle : public AppCastingMOOSApp
    bool PulseOut();
    bool Coordinate_check();
    bool CheckAngle();
+   bool CheckSPL();
 
  private: // Configuration variables
 
@@ -45,6 +46,8 @@ class SimAngle : public AppCastingMOOSApp
    double m_source_angle;
    double m_relate_x;
    double m_relate_y;
+   double m_avg_spl;
+   double m_source_level;
 
    bool m_whistle_exist;
 

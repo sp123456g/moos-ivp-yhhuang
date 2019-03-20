@@ -137,3 +137,16 @@ TARGET_LINK_LIBRARIES(BHV_FixSourceFinding
 #   mbutil
 #   geometry 
 #   ${SYSTEM_LIBS} )
+
+ADD_LIBRARY(BHV_example SHARED 
+   BHV_example.cpp)
+TARGET_LINK_LIBRARIES(BHV_example
+   helmivp
+   behaviors 
+   ivpbuild 
+   logic 
+   ivpcore 
+   bhvutil 
+   mbutil
+   geometry 
+   ${SYSTEM_LIBS} )

@@ -149,6 +149,14 @@ bool BHV_SourceTracking::setParam(string param, string val)
     m_c = double_val;
     return(true);
   }
+  else if(param == "band_spl_thr" && (isNumber(val))){
+    m_band_level_thr = double_val;
+    return(true);
+  }
+  else if( param == "fix_source" ){
+    m_fix_source = true; 
+    return(true);
+  }
 
   // If not handled above, then just return false;
   return(false);
@@ -252,6 +260,8 @@ IvPFunction* BHV_SourceTracking::onRunState()
             for(int i=0;i<m_check_num;i++)
                 check_buff[i] = m_source_angle_buff[i];
 
+            m_source_angle_buff.erase(m_source_angle_buff.begin(),m_source_angle_buff.begin()+m_check_num);
+
             m_target_angle = getMedian(check_buff);
             m_osheading = getBufferDoubleVal("NAV_HEADING",ok3);
         }              
@@ -325,20 +335,22 @@ bool BHV_SourceTracking::CheckNextSpeed(){
     double band_avg = getBufferDoubleVal("BAND_AVG_SPL",ok);
 
     if(m_first_time){
-        m_over_thr = band_avg;
         m_first_time = false;
         m_desired_speed = m_fast_speed;
         m_over_thr = false;
     }
     else if(ok){    
-        if(band_avg > m_band_level_thr)
+        if(band_avg > m_band_level_thr - 3)
             m_over_thr = true;
     }
     else 
         m_desired_speed = m_fast_speed;
     
-    if(m_over_thr)
+    if(m_over_thr){
         m_desired_speed = m_slow_speed;
+        if(band_avg>= m_band_level_thr && m_fix_source)
+            m_desired_speed = 0;
+    }
     else 
         m_desired_speed = m_fast_speed;
 }

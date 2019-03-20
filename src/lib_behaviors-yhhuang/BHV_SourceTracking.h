@@ -84,6 +84,7 @@ protected: // State variables
   bool      m_whistle_exist;
   bool      m_first_time;
   bool      m_over_thr;
+  bool      m_fix_source;
 };
 
 #define IVP_EXPORT_FUNCTION
