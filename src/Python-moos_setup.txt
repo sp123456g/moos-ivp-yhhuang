@@ -1,0 +1,7 @@
+1. Install MOOS-IvP tree
+2. git clone https://github.com/moos-tutorials/python-moos-tutorials 
+3. Follow read me in the repo and only need to install python-moos if you already have MOOS-IvP
+4. Check your path: echo $PYTHONPATH, 
+    If there is nothing, set variable: export PYTHONPATH=/usr/local/lib/python3/dist-packages
+    If there is something: export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3/dist-packages
+5. Try the example in python-moos-tutorials
