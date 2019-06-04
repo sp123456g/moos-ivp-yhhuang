@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME:                                               */
-/*    ORGN: MIT                                             */
-/*    FILE: DirectionCalculator.h                                          */
-/*    DATE: December 29th, 1963                             */
+/*    NAME: yhhuang                                         */
+/*    ORGN: NTU                                             */
+/*    FILE: DirectionCalculator.h                           */
+/*    DATE: Aug. 28th, 2018                                 */
 /************************************************************/
 
 #ifndef DirectionCalculator_HEADER

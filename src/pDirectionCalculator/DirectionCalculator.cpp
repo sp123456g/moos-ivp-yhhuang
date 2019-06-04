@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME:                                               */
-/*    ORGN: MIT                                             */
+/*    NAME: yhhuang                                           */
+/*    ORGN: NTU                                             */
 /*    FILE: DirectionCalculator.cpp                                        */
-/*    DATE:                                                 */
+/*    DATE: Aug. 28th, 2018                                                */
 /************************************************************/
 
 #include <iterator>

@@ -23,7 +23,8 @@ ProcessConfig = pDataReceiver
     AppTick   = 1
     CommsTick = 1
 
-    file_path        = /home/yhh/google_drive_UALyhhuang/logfiles/TestDataSender/2018_12_07/
+//    file_path        = /home/yhh/google_drive_UALyhhuang/logfiles/TestDataSender/for_post_processing_7_minutes/
+    file_path        = /home/yhh/LogFile_Thesis/exp1/scp_data/data/
     file_name        = whistle_data.txt
     file_order       = true
     from_pDataSender = true

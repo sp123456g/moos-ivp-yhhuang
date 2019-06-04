@@ -231,7 +231,7 @@ void edge_detector(vector<vector<float> > &P,float SNR_threshold,unsigned int ju
                 P[j][i] = 0;
             else{
                  if(time_column[j-jump_num]!=0 || time_column[j+jump_num]!=0){    
-                    SNR= 10*log(time_column[j]/(time_column[j-jump_num]*0.5+time_column[j+jump_num]*0.5));
+                    SNR= 10*log10(time_column[j]/(time_column[j-jump_num]*0.5+time_column[j+jump_num]*0.5));
                     if(SNR > SNR_threshold)
                         P_new[j][i] = 1;
                 }
