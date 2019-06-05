@@ -189,5 +189,7 @@ Behavior = BHV_SourceTracking
     up_bound    = 86
     low_bound   = 18
 
+    fix_source = true
+    band_spl_thr = 119
     arrive_radius = 5
 }

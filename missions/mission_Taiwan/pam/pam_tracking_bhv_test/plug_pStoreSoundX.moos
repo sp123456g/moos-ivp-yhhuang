@@ -4,14 +4,14 @@ ProcessConfig = pStoreSoundX
     CommsTick       = 10
 
     PATH            = ./
-    SAMPLE_RATE     = 96000
+    SAMPLE_RATE     = 48000
     CHANNELS        = 2
-    RECORD_DEVICE   = hw:2,0
-    BITS            = 32
+    RECORD_DEVICE   = hw:0,0
+    BITS            = 16
     RECORD_TIME     = 30
     PASS_TIME       = 5
     FRAMES          = 9600  
     REPEAT          = true
-    SEND_SIZE       = 9600
+    SEND_SIZE       = 4800
     TOTAL_CHANNEL   = 2
 }

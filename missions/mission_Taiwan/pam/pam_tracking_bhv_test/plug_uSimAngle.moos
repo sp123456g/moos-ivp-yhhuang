@@ -1,0 +1,15 @@
+//------------------------------------------------------
+// uSimAngle Configuration Block  (Created from plugin)
+
+ProcessConfig = uSimAngle
+{
+    AppTick   = 4
+    CommsTick = 4
+
+    source_x = -3
+    source_y = 35
+    source_level = 120
+
+    edge_color = red 
+    fill_color = pink
+}
