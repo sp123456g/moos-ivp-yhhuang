@@ -1,0 +1,34 @@
+//Configuration file: YHHuang
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = BUOY
+
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB                   @ NewConsole = false
+  Run = pStoreSoundX             @ NewConsole = false
+}
+
+//------------------------------------------------
+ProcessConfig = pStoreSoundX
+{
+    AppTick     = 10 
+    CommsTick   = 10 
+    PATH = ./ 
+    SAMPLE_RATE = 96000
+    CHANNELS = 2
+    RECORD_DEVICE = hw:2,0
+    BITS = 32
+    RECORD_TIME = 60
+    PASS_TIME = 1
+    FRAMES = 9600
+    REPEAT = false
+    SEND_SIZE = 9600
+    USE_JETSON = true
+}

@@ -231,9 +231,11 @@ bool StoreSoundX::OnStartUp()/*{{{*/
         handled = true;
     }
     else if(param == "USE_JETSON"){
-        if(value == "true")
+        if(value == "true"){
             m_jetson = true;
-        handled = true;
+            reportEvent("Using Jetson");
+            handled = true;
+        }
     }
 
     if(!handled)
@@ -518,8 +520,9 @@ void StoreSoundX::Capture()
                         volt=(float)sum/32767;
                     m_tem_buffer_ch1.push_back(volt);
 
-                    if(m_save_file)
+                    if(m_save_file){
                         fprintf(m_fp_check1,"%f %s",volt,"\n");
+                    }
                 }
             }
             else if(m_channels == 2){
@@ -540,9 +543,10 @@ void StoreSoundX::Capture()
                     m_tem_buffer_ch1.push_back(volt1);
                     m_tem_buffer_ch2.push_back(volt2);
 
-                    if(m_save_file)
+                    if(m_save_file){
                         fprintf(m_fp_check1,"%f %s",volt1,"\n");
                         fprintf(m_fp_check2,"%f %s",volt2,"\n");
+                    }
                 }
             }
             break;
@@ -559,8 +563,9 @@ void StoreSoundX::Capture()
 
                   m_tem_buffer_ch1.push_back(volt);
 
-                    if(m_save_file)
+                    if(m_save_file){
                       fprintf(m_fp_check1,"%f %s",volt,"\n");
+                    }
                 }
             }
             else if(m_channels ==2){
@@ -580,9 +585,10 @@ void StoreSoundX::Capture()
                   m_tem_buffer_ch1.push_back(volt1);
                   m_tem_buffer_ch2.push_back(volt2);
 
-                    if(m_save_file)
+                    if(m_save_file){
                       fprintf(m_fp_check1,"%f %s",volt1,"\n");
                       fprintf(m_fp_check2,"%f %s",volt2,"\n");
+                    }
                 }
             }
             break;
@@ -600,8 +606,9 @@ void StoreSoundX::Capture()
 
                   m_tem_buffer_ch1.push_back(volt);
                     
-                  if(m_save_file)
+                  if(m_save_file){
                     fprintf(m_fp_check1,"%f %s",volt,"\n");
+                  }
 
                 }
             }
@@ -623,9 +630,10 @@ void StoreSoundX::Capture()
                   m_tem_buffer_ch1.push_back(volt1);
                   m_tem_buffer_ch2.push_back(volt2);
                     
-                  if(m_save_file)
+                  if(m_save_file){
                     fprintf(m_fp_check1,"%f %s",volt1,"\n");
                     fprintf(m_fp_check2,"%f %s",volt2,"\n");
+                  }
                 }
             }
             break;

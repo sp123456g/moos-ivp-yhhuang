@@ -1,0 +1,50 @@
+//Configuration file: YHHuang
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = BUOY
+
+//------------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB                   @ NewConsole = false
+  Run = pLogger                  @ NewConsole = false     
+  Run = pDirectionCalculator     @ NewConsole = false
+}
+
+
+//------------------------------------------------
+//pLogger config block
+ProcessConfig = pLogger
+{
+
+    AppTick   = 10
+    CommsTick = 10
+
+    AsyncLog = true 
+    WildCardLogging = true
+    WildCardOmitPattern = *_STATUS
+}
+
+//------------------------------------------------
+//pLogger config block
+ProcessConfig = pDirectionCalculator
+{
+
+    AppTick   = 10
+    CommsTick = 10
+    
+    sample_rate = 96000 
+    sound_speed = 1500
+    hyd_dis     = 0.1 
+    hyd_number  = 2 
+    use_cc      = true 
+    interval    = 0.1 
+    band_pass   =3:11 
+
+    threshold_time = 50
+
+}
