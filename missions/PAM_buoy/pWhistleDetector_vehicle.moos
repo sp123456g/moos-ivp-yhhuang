@@ -57,6 +57,7 @@ ProcessConfig = pStoreSoundX
     FRAMES = 9600
     REPEAT = false
     SEND_SIZE = 9600
+    USE_JETSON = true
 }
 
 //------------------------------------------------
