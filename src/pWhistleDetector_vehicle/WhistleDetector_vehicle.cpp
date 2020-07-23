@@ -340,7 +340,7 @@ bool WhistleDetector_vehicle::Iterate()
         
             if(m_all_get){
                 m_active = true;
-                reportEvent("Analysing!");
+              //  reportEvent("Analysing!");
                 for(int i=0;i<m_access_data_number;i++)
                     input_x[i] = m_voltage_data[i];
                 // Analysis (detection algorithm) 
@@ -516,14 +516,16 @@ bool WhistleDetector_vehicle::buildReport()
 
   ACTable actab(4);
 
-  if(m_whistle_exist)
+  if(m_whistle_exist){
     m_msgs << "Whistle exist!!";
+    reportEvent("Whistle exist");
+  }
   else
     m_msgs << "No whistle in this "<<iterate_data_second<<" seconds\n";
-    m_msgs << "Ch1 size:"<<m_voltage_data.size()<<"\n";
-    m_msgs << "Ch2 size:"<<m_voltage_data_ch2.size()<<"\n";
-    m_msgs << "Ch1 str size:"<<m_input_data.size()<<"\n";
-    m_msgs << "Ch2 str size:"<<m_ch2_str_buff.size()<<"\n";
+//    m_msgs << "Ch1 size:"<<m_voltage_data.size()<<"\n";
+//    m_msgs << "Ch2 size:"<<m_voltage_data_ch2.size()<<"\n";
+//    m_msgs << "Ch1 str size:"<<m_input_data.size()<<"\n";
+//    m_msgs << "Ch2 str size:"<<m_ch2_str_buff.size()<<"\n";
 
     m_msgs << actab.getFormattedString();
 

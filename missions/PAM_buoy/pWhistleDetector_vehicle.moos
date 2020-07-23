@@ -11,10 +11,11 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB           @ NewConsole = false
-  Run = pLogger          @ NewConsole = false     
+  Run = MOOSDB                   @ NewConsole = false
+  Run = pLogger                  @ NewConsole = false     
   Run = pWhistleDetector_vehicle @ NewConsole = false
-  Run = pStoreSoundX     @ NewConsole = false
+  Run = pStoreSoundX             @ NewConsole = false
+  Run = pDirectionCalculator     @ NewConsole = false
 }
 
 
@@ -50,12 +51,25 @@ ProcessConfig = pStoreSoundX
     SAMPLE_RATE = 96000
     CHANNELS = 2
     RECORD_DEVICE = hw:2,0
-    BITS = 16
-    RECORD_TIME = 2
-    PASS_TIME = 20
+    BITS = 32
+    RECORD_TIME = 60
+    PASS_TIME = 1
     FRAMES = 9600
     REPEAT = false
     SEND_SIZE = 9600
+}
+
+//------------------------------------------------
+//pLogger config block
+ProcessConfig = pLogger
+{
+
+    AppTick   = 10
+    CommsTick = 10
+
+    AsyncLog = true 
+    WildCardLogging = true
+    WildCardOmitPattern = *_STATUS
 }
 
 //------------------------------------------------
