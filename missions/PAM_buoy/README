@@ -1,0 +1,13 @@
+1. Connect TX1 with wire or wireless method: 
+        wire:       nmap -sP 10.42.0.*      -------> find wire IP of TX1
+        wireless:   nmap -sP 192.168.1.*    -------> find wireless IP of TX1
+        using ssh:  ssh ual@192.168.1.... or ssh ual@10.42.0.58
+2. get moos-ivp-yhhuang:
+        git: https://github.com/sp123456g/moos-ivp-yhhuang.git
+3. build it 
+4. Open PAM_buoy folder in moos-ivp-yhhuang/trunk/missions
+5. pAntler pStoreSoundX.moos 
+6. Open another terminal to uPokeDB SET_PARAMS=true
+7. Open another terminal to pAntler pWhistleDetector_vehicle.moos 
+8. Open another terminal to pAntler pDirectionCalculator.moos
+9. uPokeDB START_RECORD=true 
