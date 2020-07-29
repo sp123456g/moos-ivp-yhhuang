@@ -55,6 +55,34 @@ WhistleDetector_vehicle::~WhistleDetector_vehicle()
 {
 }
 
+//--------------------------------------------------------
+//Get current time 
+std::string WhistleDetector_vehicle::fileTime(char kind)/*{{{*/
+{
+  time_t timep;
+  struct tm *p;
+  int year, mon, day, hour, min, sec;
+  stringstream file_time;
+  stringstream dir_date;
+  time(&timep);
+  p = localtime(&timep);
+  year = 1900+p->tm_year;
+  mon = 1+p->tm_mon;
+  day = p->tm_mday;
+  hour = p->tm_hour;
+  min = p->tm_min;
+  sec = p->tm_sec;
+  if(kind == 'f'){
+    file_time << year << "_" << mon << "_" << day << "_" << hour << "_" << min << "_" << sec;
+    return(file_time.str());
+  }else if(kind == 'd'){
+    dir_date << year << "_" << mon << "_" << day;
+    return(dir_date.str());
+  }
+}
+
+
+
 //---------------------------------------------------------
 // Procedure: OnNewMail
 
@@ -106,6 +134,9 @@ bool WhistleDetector_vehicle::OnNewMail(MOOSMSG_LIST &NewMail)
      }
      else if(key == "TEST_MESSAGE"){
         m_testing_message = msg.GetString();
+     }
+     else if(key == "DB_UPTIME"){
+            m_current_time = msg.GetDouble();
      }
      else if(key == "RECORD_FRAMES"){
          stringstream ss;
@@ -258,6 +289,8 @@ bool WhistleDetector_vehicle::Analysis(vector<float> input_data)
     if(m_whistle_exist){
 
         Notify("WHISTLE_EXIST","true");
+        Notify("APEAR_TIME",fileTime('f'));
+        
 
 //send result data to MOOSDB
         SendData(input_data);        

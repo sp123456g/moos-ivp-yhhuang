@@ -30,6 +30,7 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
    bool GetVoltageData_ch2(std::string);
    bool Analysis(std::vector<float>);
    bool SendData(std::vector<float>);
+   std::string fileTime(char kind);
 
  protected:
    void registerVariables();
@@ -58,6 +59,7 @@ class WhistleDetector_vehicle : public AppCastingMOOSApp
     double      m_iterate_data;   // "m_iterate_data" seconds per iterate loop  
     double      m_overlap;
     double      m_update_percent;
+    double      m_current_time;
 
     bool        m_ch1_full;
     bool        m_ch2_full;
